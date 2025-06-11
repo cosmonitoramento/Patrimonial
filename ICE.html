@@ -1,0 +1,2851 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Configurações - ICE Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                        url('https://raw.githubusercontent.com/cosmonitoramento/imagem_ice/refs/heads/main/Imagem1.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        /* Container principal */
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        /* Sidebar com navegação vertical */
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+        }
+        
+        .nav-vertical {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-vertical .nav-link {
+            color: #333;
+            padding: 15px 20px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            text-align: left;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .nav-vertical .nav-link:hover {
+            background: linear-gradient(45deg, #3b82f6, #2563eb);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .nav-vertical .nav-link.active {
+            background: linear-gradient(45deg, #4a7c59, #2c5530);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 124, 89, 0.3);
+        }
+        
+        .nav-vertical .nav-link i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Área de conteúdo */
+        .content-area {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+        
+        /* Header do sistema */
+        .system-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .system-header h1 {
+            color: #4a7c59;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .system-header .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* Cards */
+        .card { 
+            background: rgba(255, 255, 255, 0.98); 
+            color: #333;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .card-header {
+            background: linear-gradient(45deg, #4a7c59, #2c5530);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 20px;
+            border: none;
+        }
+        
+        .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .btn-primary { 
+            background: linear-gradient(45deg, #3b82f6, #2563eb);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #10b981, #059669);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+        
+        .item-lista {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4a7c59;
+            transition: all 0.3s ease;
+        }
+        
+        .item-lista:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .error {
+            color: #dc3545;
+            padding: 15px;
+            background: #f8d7da;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .form-section {
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+        }
+        
+        .form-section h6 {
+            color: #4a7c59;
+            border-bottom: 2px solid #4a7c59;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .numero-ice-container {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 2px solid #2196f3;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .numero-ice {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1976d2;
+            margin: 5px 0;
+        }
+        
+        .numero-ice-label {
+            color: #424242;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .dashboard-card {
+            height: 400px;
+            margin-bottom: 25px;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+            padding: 20px;
+        }
+        
+        .filter-section {
+            background: rgba(74, 124, 89, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(74, 124, 89, 0.2);
+        }
+        
+        .kpi-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .kpi-card {
+            flex: 1;
+            min-height: 140px;
+        }
+        
+        .ice-list-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .ice-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .ice-item:hover {
+            background: #e9ecef;
+            border-color: #4a7c59;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
+        .ice-badge {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: flex-end;
+        }
+        
+        .mini-chart-container {
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .nav-vertical {
+                padding: 15px;
+            }
+            
+            .nav-vertical .nav-link {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .kpi-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        /* Animações */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Scrollbar personalizada */
+        .content-area::-webkit-scrollbar,
+        .ice-list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .content-area::-webkit-scrollbar-track,
+        .ice-list-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .content-area::-webkit-scrollbar-thumb,
+        .ice-list-container::-webkit-scrollbar-thumb {
+            background: #4a7c59;
+            border-radius: 4px;
+        }
+        
+        .content-area::-webkit-scrollbar-thumb:hover,
+        .ice-list-container::-webkit-scrollbar-thumb:hover {
+            background: #2c5530;
+        }
+        
+        @media print {
+            body { background: white !important; color: black !important; }
+            .sidebar { display: none !important; }
+            .main-container { flex-direction: column; }
+            .content-area { background: white !important; box-shadow: none !important; }
+            .export-buttons { display: none !important; }
+            .btn { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar com navegação vertical -->
+        <div class="sidebar">
+            <div class="nav-vertical">
+                <div class="text-center mb-4">
+                    <h4 style="color: #4a7c59; font-weight: 700; margin: 0;">
+                        <i class="fas fa-cog"></i> Sistema ICE
+                    </h4>
+                    <small style="color: #666;">Painel de Controle</small>
+                </div>
+                
+                <button class="nav-link active" data-target="dashboard">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Dashboard</span>
+                </button>
+                
+                <button class="nav-link" data-target="ice">
+                    <i class="fas fa-file-alt"></i>
+                    <span>ICE</span>
+                </button>
+                
+                <button class="nav-link" data-target="tipificacao">
+                    <i class="fas fa-tags"></i>
+                    <span>Tipificação</span>
+                </button>
+                
+                <button class="nav-link" data-target="operadores">
+                    <i class="fas fa-users"></i>
+                    <span>Operadores</span>
+                </button>
+                
+                <button class="nav-link" data-target="gestores">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Gestores</span>
+                </button>
+                
+                <button class="nav-link" data-target="gerencias">
+                    <i class="fas fa-building"></i>
+                    <span>Gerências</span>
+                </button>
+                
+                <button class="nav-link" data-target="empresas">
+                    <i class="fas fa-industry"></i>
+                    <span>Empresas</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Área de conteúdo -->
+        <div class="content-area">
+            <!-- Header do sistema -->
+            <div class="system-header">
+                <h1><i class="fas fa-exclamation-triangle"></i> ÍNDICE DE CONTROLE DE EMERGÊNCIA - ICE</h1>
+                <p class="subtitle">Gestão Integrada de Incidentes e Comunicação de Emergência</p>
+            </div>
+
+            <!-- Conteúdo das abas -->
+            <div class="tab-content">
+                <!-- Aba Dashboard -->
+                <div class="tab-pane fade show active fade-in" id="dashboard">
+                    <!-- Botões de Export -->
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="exportarExcel()">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
+                        </button>
+                        <button class="btn btn-warning" onclick="imprimirRelatorio()">
+                            <i class="fas fa-print"></i> Imprimir Relatório
+                        </button>
+                        <button class="btn btn-info" onclick="debugGraficos()">
+                            <i class="fas fa-bug"></i> Debug Gráficos
+                        </button>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="filter-section">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label" style="color: #4a7c59; font-weight: 500;">Período</label>
+                                <select id="filtro_periodo" class="form-select">
+                                    <option value="todos">Todos os períodos</option>
+                                    <option value="hoje">Hoje</option>
+                                    <option value="7dias">Últimos 7 dias</option>
+                                    <option value="30dias">Últimos 30 dias</option>
+                                    <option value="90dias">Últimos 90 dias</option>
+                                    <option value="personalizado">Período personalizado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" style="color: #4a7c59; font-weight: 500;">Data Início</label>
+                                <input type="date" id="data_inicio" class="form-control" style="display: none;">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" style="color: #4a7c59; font-weight: 500;">Data Fim</label>
+                                <input type="date" id="data_fim" class="form-control" style="display: none;">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div>
+                                    <button class="btn btn-primary w-100" onclick="atualizarDashboard()">
+                                        <i class="fas fa-sync"></i> Atualizar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPIs -->
+                    <div class="kpi-row">
+                        <div class="metric-card kpi-card">
+                            <div class="metric-label">Total de ICEs</div>
+                            <div class="metric-number" id="total_ices">0</div>
+                        </div>
+                        <div class="metric-card kpi-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <div class="metric-label">Acionamentos Reais</div>
+                            <div class="metric-number" id="acionamentos_reais">0</div>
+                        </div>
+                        <div class="metric-card kpi-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <div class="metric-label">Simulados</div>
+                            <div class="metric-number" id="simulados">0</div>
+                        </div>
+                        <div class="metric-card kpi-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <div class="metric-label">Taxa Real (%)</div>
+                            <div class="metric-number" id="taxa_real">0%</div>
+                        </div>
+                        <div class="metric-card kpi-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                            <div class="metric-label">Total BCs</div>
+                            <div class="metric-number" id="total_bcs">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos Principais -->
+                    <div class="row">
+                        <!-- Comparativo ICE 2024 vs 2025 -->
+                        <div class="col-lg-6">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> COMPARATIVO ICE 2024 vs 2025</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chart_comparativo_anos"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tipificação por Mês - Novo Gráfico -->
+                        <div class="col-lg-6">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> TIPIFICAÇÃO POR MÊS - 2025</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chart_tipificacao_por_mes"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Quantitativo por Tipificação - Mês Atual -->
+                        <div class="col-lg-6">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-tags"></i> TIPIFICAÇÃO - MÊS ATUAL</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chart_tipificacao_mes"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quantitativo BCs por Mês -->
+                        <div class="col-lg-6">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-broadcast-tower"></i> QUANTITATIVO BCs POR MÊS</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chart_bcs_mes"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Quantitativo por Gerência - Mês Atual -->
+                        <div class="col-lg-6">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-building"></i> GERÊNCIAS - MÊS ATUAL</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chart_gerencia_mes"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tipificação Anual -->
+                        <div class="col-lg-6">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> TIPIFICAÇÃO - ANO ATUAL</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chart_tipificacao_anual"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Gerência Anual -->
+                        <div class="col-lg-6">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> GERÊNCIAS - ANO ATUAL</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chart_gerencia_anual"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BCs Comparativo Anual -->
+                        <div class="col-lg-6">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-signal"></i> BCs COMPARATIVO 2024 vs 2025</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chart_bcs_comparativo"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Evolução Mensal ICEs -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-area"></i> EVOLUÇÃO MENSAL - 2025</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chart_evolucao_mensal"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de ICEs no Dashboard -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-list"></i> Lista de ICEs Cadastrados</h5>
+                                    <button class="btn btn-light btn-sm" onclick="atualizarListaIceDashboard()">
+                                        <i class="fas fa-refresh"></i> Atualizar
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaIceDashboard" class="ice-list-container">
+                                        <div class="loading">Carregando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba ICE -->
+                <div class="tab-pane fade" id="ice" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-plus"></i> Novo ICE</h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Container do Número ICE -->
+                                    <div class="numero-ice-container">
+                                        <div class="numero-ice-label">Número do ICE</div>
+                                        <div class="numero-ice" id="numeroIceDisplay">Carregando...</div>
+                                        <small class="text-muted">Numeração automática baseada na última entrada</small>
+                                    </div>
+
+                                    <form id="formIce" onsubmit="cadastrarIce(event)">
+                                        <input type="hidden" id="ice_numero" name="ice_numero">
+                                        
+                                        <!-- Informações Básicas -->
+                                        <div class="form-section">
+                                            <h6><i class="fas fa-info-circle"></i> Informações Básicas</h6>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Operador</label>
+                                                    <select id="ice_operador" class="form-select" required>
+                                                        <option value="">Selecione um operador</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Data</label>
+                                                    <input type="date" id="ice_data" class="form-control" required>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Hora</label>
+                                                    <input type="time" id="ice_hora" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Tipificação</label>
+                                                    <select id="ice_tipificacao" class="form-select" required>
+                                                        <option value="">Selecione uma tipificação</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Local</label>
+                                                    <input type="text" id="ice_local" class="form-control" required>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Referência</label>
+                                                    <input type="text" id="ice_referencia" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Gerência Jirau</label>
+                                                    <select id="ice_ger_jirau" class="form-select">
+                                                        <option value="">Selecione uma gerência</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Gerente</label>
+                                                    <select id="ice_gerente" class="form-select">
+                                                        <option value="">Selecione um gestor</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Informações do Informante -->
+                                        <div class="form-section">
+                                            <h6><i class="fas fa-user"></i> Informações do Informante</h6>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Nome Informante</label>
+                                                    <input type="text" id="ice_nome_informante" class="form-control">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Mat. Informante</label>
+                                                    <input type="text" id="ice_mat_informante" class="form-control">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Empresa Informante</label>
+                                                    <select id="ice_empresa_informante" class="form-select">
+                                                        <option value="">Selecione uma empresa</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Gerência Informante</label>
+                                                    <select id="ice_gerencia_informante" class="form-select">
+                                                        <option value="">Selecione uma gerência</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Data Inf.</label>
+                                                    <input type="date" id="ice_data_inf" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Hora Inf.</label>
+                                                    <input type="time" id="ice_hora_inf" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Ramal/Fone</label>
+                                                    <input type="text" id="ice_ramal" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Informações das Vítimas -->
+                                        <div class="form-section">
+                                            <h6><i class="fas fa-users"></i> Informações das Vítimas</h6>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Nome Vítima 1</label>
+                                                    <input type="text" id="ice_nome_vitima1" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Função Vítima 1</label>
+                                                    <input type="text" id="ice_funcao_vitima1" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Mat. Vítima 1</label>
+                                                    <input type="text" id="ice_mat_vitima1" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Empresa Vítima 1</label>
+                                                    <select id="ice_empresa_vitima1" class="form-select">
+                                                        <option value="">Selecione uma empresa</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Nome Vítima 2</label>
+                                                    <input type="text" id="ice_nome_vitima2" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Função Vítima 2</label>
+                                                    <input type="text" id="ice_funcao_vitima2" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Mat. Vítima 2</label>
+                                                    <input type="text" id="ice_mat_vitima2" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Empresa Vítima 2</label>
+                                                    <select id="ice_empresa_vitima2" class="form-select">
+                                                        <option value="">Selecione uma empresa</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Informações de Acionamento -->
+                                        <div class="form-section">
+                                            <h6><i class="fas fa-phone"></i> Informações de Acionamento</h6>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Nome Acionamento 1</label>
+                                                    <input type="text" id="ice_nome_acionamento1" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Telefone 1</label>
+                                                    <input type="text" id="ice_telefone1" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Área 1</label>
+                                                    <input type="text" id="ice_area1" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Atendeu 1</label>
+                                                    <select id="ice_atendeu1" class="form-select">
+                                                        <option value="">Selecione</option>
+                                                        <option value="sim">Sim</option>
+                                                        <option value="nao">Não</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Nome Acionamento 2</label>
+                                                    <input type="text" id="ice_nome_acionamento2" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Telefone 2</label>
+                                                    <input type="text" id="ice_telefone2" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Área 2</label>
+                                                    <input type="text" id="ice_area2" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Atendeu 2</label>
+                                                    <select id="ice_atendeu2" class="form-select">
+                                                        <option value="">Selecione</option>
+                                                        <option value="sim">Sim</option>
+                                                        <option value="nao">Não</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Acionaram Polícia</label>
+                                                    <select id="ice_acionaram_policia" class="form-select">
+                                                        <option value="">Selecione</option>
+                                                        <option value="sim">Sim</option>
+                                                        <option value="nao">Não</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Polícia Compareceu</label>
+                                                    <select id="ice_policia_compareceu" class="form-select">
+                                                        <option value="">Selecione</option>
+                                                        <option value="sim">Sim</option>
+                                                        <option value="nao">Não</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Acionamento Real</label>
+                                                    <select id="ice_acionamento_real" class="form-select">
+                                                        <option value="">Selecione</option>
+                                                        <option value="sim">Sim</option>
+                                                        <option value="nao">Não</option>
+                                                        <option value="simulado">Simulado</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Informações de Lançamento -->
+                                        <div class="form-section">
+                                            <h6><i class="fas fa-calendar"></i> Informações de Lançamento</h6>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Data Lançamento</label>
+                                                    <input type="date" id="ice_data_lancamento" class="form-control">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Hora Lançamento</label>
+                                                    <input type="time" id="ice_hora_lancamento" class="form-control">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Quantidade de BCs</label>
+                                                    <select id="ice_quantidade_bcs" class="form-select">
+                                                        <option value="">Selecione</option>
+                                                        <option value="0">0</option>
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5">5</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-12">
+                                                    <label class="form-label">Descrição da Ocorrência</label>
+                                                    <textarea id="ice_descricao_ocorrencia" class="form-control" rows="4" placeholder="Descreva detalhadamente a ocorrência..."></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary w-100 mt-3">
+                                            <i class="fas fa-save"></i> Cadastrar ICE
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-list"></i> ICEs Cadastrados</h5>
+                                    <button class="btn btn-outline-primary" onclick="atualizarListaIce()">
+                                        <i class="fas fa-refresh"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaIce">
+                                        <div class="loading">Carregando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba Tipificação -->
+                <div class="tab-pane fade" id="tipificacao" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-plus"></i> Nova Tipificação</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="formTipificacao" onsubmit="cadastrarTipificacao(event)">
+                                        <div class="mb-3">
+                                            <label class="form-label">ID</label>
+                                            <input type="text" id="tipificacao_id" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nome</label>
+                                            <input type="text" id="tipificacao_nome" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-save"></i> Cadastrar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-list"></i> Tipificações Cadastradas</h5>
+                                    <div class="d-flex gap-2">
+                                        <input type="text" id="searchTipificacao" class="form-control" placeholder="Pesquisar" style="width: 200px;">
+                                        <button class="btn btn-outline-primary" onclick="atualizarListaTipificacoes()">
+                                            <i class="fas fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaTipificacoes">
+                                        <div class="loading">Carregando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba Operadores -->
+                <div class="tab-pane fade" id="operadores" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-plus"></i> Novo Operador</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="formOperador" onsubmit="cadastrarOperador(event)">
+                                        <div class="mb-3">
+                                            <label class="form-label">ID</label>
+                                            <input type="text" id="operador_id" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nome</label>
+                                            <input type="text" id="operador_nome" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-save"></i> Cadastrar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-list"></i> Operadores Cadastrados</h5>
+                                    <div class="d-flex gap-2">
+                                        <input type="text" id="searchOperador" class="form-control" placeholder="Pesquisar" style="width: 200px;">
+                                        <button class="btn btn-outline-primary" onclick="atualizarListaOperadores()">
+                                            <i class="fas fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaOperadores">
+                                        <div class="loading">Carregando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba Gestores -->
+                <div class="tab-pane fade" id="gestores" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-plus"></i> Novo Gestor</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="formGestor" onsubmit="cadastrarGestor(event)">
+                                        <div class="mb-3">
+                                            <label class="form-label">ID</label>
+                                            <input type="text" id="gestor_id" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nome</label>
+                                            <input type="text" id="gestor_nome" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-save"></i> Cadastrar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-list"></i> Gestores Cadastrados</h5>
+                                    <div class="d-flex gap-2">
+                                        <input type="text" id="searchGestor" class="form-control" placeholder="Pesquisar" style="width: 200px;">
+                                        <button class="btn btn-outline-primary" onclick="atualizarListaGestores()">
+                                            <i class="fas fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaGestores">
+                                        <div class="loading">Carregando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba Gerências -->
+                <div class="tab-pane fade" id="gerencias" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-plus"></i> Nova Gerência</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="formGerencia" onsubmit="cadastrarGerencia(event)">
+                                        <div class="mb-3">
+                                            <label class="form-label">ID</label>
+                                            <input type="text" id="gerencia_id" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nome</label>
+                                            <input type="text" id="gerencia_nome" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-save"></i> Cadastrar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-list"></i> Gerências Cadastradas</h5>
+                                    <div class="d-flex gap-2">
+                                        <input type="text" id="searchGerencia" class="form-control" placeholder="Pesquisar" style="width: 200px;">
+                                        <button class="btn btn-outline-primary" onclick="atualizarListaGerencias()">
+                                            <i class="fas fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaGerencias">
+                                        <div class="loading">Carregando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba Empresas -->
+                <div class="tab-pane fade" id="empresas" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-plus"></i> Nova Empresa</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="formEmpresa" onsubmit="cadastrarEmpresa(event)">
+                                        <div class="mb-3">
+                                            <label class="form-label">ID</label>
+                                            <input type="text" id="empresa_id" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nome</label>
+                                            <input type="text" id="empresa_nome" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Status</label>
+                                            <select id="empresa_status" class="form-select">
+                                                <option value="ativo">Ativo</option>
+                                                <option value="inativo">Inativo</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-save"></i> Cadastrar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-list"></i> Empresas Cadastradas</h5>
+                                    <div class="d-flex gap-2">
+                                        <input type="text" id="searchEmpresa" class="form-control" placeholder="Pesquisar" style="width: 200px;">
+                                        <button class="btn btn-outline-primary" onclick="atualizarListaEmpresas()">
+                                            <i class="fas fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaEmpresas">
+                                        <div class="loading">Carregando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwlmRP4hZwVhPt36QtLs2MJ2ow76Xx3kTvMm6O4Pkf0R_rNCgMsVXQtu0UuEMaHK0zpNw/exec';
+
+        // ========== VARIÁVEIS GLOBAIS ==========
+        let proximoNumeroICE = 1;
+        let dadosOperadores = [];
+        let dadosTipificacoes = [];
+        let dadosGestores = [];
+        let dadosGerencias = [];
+        let dadosEmpresas = [];
+        let dadosIce = [];
+
+        // Objeto para armazenar instâncias dos gráficos
+        const charts = {
+            comparativoAnos: null,
+            tipificacaoMes: null,
+            tipificacaoPorMes: null,
+            bcsMes: null,
+            gerenciaMes: null,
+            tipificacaoAnual: null,
+            gerenciaAnual: null,
+            bcsComparativo: null,
+            evolucaoMensal: null
+        };
+
+        // ========== CONTROLE DE NAVEGAÇÃO ==========
+        function showTab(tabName) {
+            console.log('Mudando para aba:', tabName);
+            
+            // Esconder todas as abas
+            const allTabs = document.querySelectorAll('.tab-pane');
+            allTabs.forEach(tab => {
+                tab.style.display = 'none';
+                tab.classList.remove('show', 'active');
+            });
+
+            // Remover classe active de todos os nav-links
+            const allNavLinks = document.querySelectorAll('.nav-link');
+            allNavLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Mostrar aba selecionada
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.style.display = 'block';
+                selectedTab.classList.add('show', 'active', 'fade-in');
+            }
+
+            // Ativar nav-link correspondente
+            const activeNavLink = document.querySelector(`[data-target="${tabName}"]`);
+            if (activeNavLink) {
+                activeNavLink.classList.add('active');
+            }
+
+            // Se for o dashboard, garantir que os gráficos sejam atualizados
+            if (tabName === 'dashboard') {
+                setTimeout(() => {
+                    console.log('Dashboard ativo, atualizando gráficos...');
+                    atualizarTodosGraficos();
+                }, 300);
+            }
+        }
+
+        // ========== FUNÇÕES DA API ==========
+        async function callAPI(method, action, data = null) {
+            try {
+                console.log(`Chamando API: ${method} ${action}`);
+                const url = new URL(API_URL);
+                
+                if (method === 'GET') {
+                    url.searchParams.append('action', action);
+                    if (data) {
+                        Object.keys(data).forEach(key => url.searchParams.append(key, data[key]));
+                    }
+                    
+                    const response = await fetch(url);
+                    const result = await response.json();
+                    return result;
+                } else {
+                    data = data || {};
+                    data.action = action;
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: new URLSearchParams(data)
+                    });
+                    const result = await response.json();
+                    return result;
+                }
+            } catch (error) {
+                console.error('Erro na API:', error);
+                return {
+                    status: 'error',
+                    message: 'Erro de conexão: ' + error.message
+                };
+            }
+        }
+
+        // ========== FUNÇÕES DE FILTRO E UTILITÁRIOS ==========
+        function filtrarDadosPorPeriodo() {
+            const periodo = document.getElementById('filtro_periodo').value;
+            const dataInicio = document.getElementById('data_inicio').value;
+            const dataFim = document.getElementById('data_fim').value;
+            
+            let dadosFiltrados = [...dadosIce];
+            
+            if (periodo !== 'todos' && dadosIce.length > 0) {
+                const hoje = new Date();
+                let dataLimite;
+                
+                switch (periodo) {
+                    case 'hoje':
+                        dataLimite = new Date(hoje);
+                        dataLimite.setHours(0, 0, 0, 0);
+                        break;
+                    case '7dias':
+                        dataLimite = new Date(hoje);
+                        dataLimite.setDate(hoje.getDate() - 7);
+                        break;
+                    case '30dias':
+                        dataLimite = new Date(hoje);
+                        dataLimite.setDate(hoje.getDate() - 30);
+                        break;
+                    case '90dias':
+                        dataLimite = new Date(hoje);
+                        dataLimite.setDate(hoje.getDate() - 90);
+                        break;
+                    case 'personalizado':
+                        if (dataInicio && dataFim) {
+                            const inicio = new Date(dataInicio);
+                            const fim = new Date(dataFim);
+                            fim.setHours(23, 59, 59, 999);
+                            
+                            dadosFiltrados = dadosFiltrados.filter(ice => {
+                                if (!ice.data) return false;
+                                const dataIce = new Date(ice.data);
+                                return dataIce >= inicio && dataIce <= fim;
+                            });
+                        }
+                        return dadosFiltrados;
+                }
+                
+                if (dataLimite) {
+                    dadosFiltrados = dadosFiltrados.filter(ice => {
+                        if (!ice.data) return false;
+                        const dataIce = new Date(ice.data);
+                        return dataIce >= dataLimite;
+                    });
+                }
+            }
+            
+            return dadosFiltrados;
+        }
+
+        function preencherDataHoraAtual() {
+            const agora = new Date();
+            const dataAtual = agora.toISOString().split('T')[0];
+            const horaAtual = agora.toTimeString().split(' ')[0].substring(0, 5);
+            
+            document.getElementById('ice_data_lancamento').value = dataAtual;
+            document.getElementById('ice_hora_lancamento').value = horaAtual;
+        }
+
+        function preencherSelect(selectId, dados, valueField, textField) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+
+            const opcaoPadrao = select.querySelector('option[value=""]');
+            select.innerHTML = '';
+            if (opcaoPadrao) {
+                select.appendChild(opcaoPadrao);
+            }
+
+            dados.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item[valueField];
+                option.textContent = item[textField];
+                select.appendChild(option);
+            });
+        }
+
+        // ========== FUNÇÕES DOS GRÁFICOS ==========
+        function destruirGrafico(chartKey) {
+            if (charts[chartKey]) {
+                try {
+                    charts[chartKey].destroy();
+                    charts[chartKey] = null;
+                } catch (error) {
+                    console.warn(`Erro ao destruir gráfico ${chartKey}:`, error);
+                }
+            }
+        }
+
+        function destruirTodosGraficos() {
+            Object.keys(charts).forEach(key => {
+                destruirGrafico(key);
+            });
+        }
+
+        function criarGraficoVazio(canvasId, chartKey, title = 'Sem dados') {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                console.error(`Canvas ${canvasId} não encontrado`);
+                return;
+            }
+
+            destruirGrafico(chartKey);
+
+            charts[chartKey] = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Sem dados'],
+                    datasets: [{
+                        label: title,
+                        data: [0],
+                        backgroundColor: '#E5E5E5'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { 
+                        legend: { display: false },
+                        title: { display: true, text: title }
+                    }
+                }
+            });
+        }
+
+        function criarGraficosVazios() {
+            console.log('Criando gráficos vazios...');
+            
+            criarGraficoVazio('chart_comparativo_anos', 'comparativoAnos', 'Comparativo ICE 2024 vs 2025');
+            criarGraficoVazio('chart_tipificacao_mes', 'tipificacaoMes', 'Tipificação - Mês Atual');
+            criarGraficoVazio('chart_tipificacao_por_mes', 'tipificacaoPorMes', 'Tipificação por Mês - 2025');
+            criarGraficoVazio('chart_bcs_mes', 'bcsMes', 'BCs por Mês');
+            criarGraficoVazio('chart_gerencia_mes', 'gerenciaMes', 'Gerências - Mês Atual');
+            criarGraficoVazio('chart_tipificacao_anual', 'tipificacaoAnual', 'Tipificação - Ano Atual');
+            criarGraficoVazio('chart_gerencia_anual', 'gerenciaAnual', 'Gerências - Ano Atual');
+            criarGraficoVazio('chart_bcs_comparativo', 'bcsComparativo', 'BCs Comparativo 2024 vs 2025');
+            criarGraficoVazio('chart_evolucao_mensal', 'evolucaoMensal', 'Evolução Mensal - 2025');
+        }
+
+        function atualizarGraficoComparativoAnos(dados) {
+            console.log('Atualizando gráfico comparativo anos...');
+            const canvas = document.getElementById('chart_comparativo_anos');
+            if (!canvas) {
+                console.error('Canvas chart_comparativo_anos não encontrado');
+                return;
+            }
+            
+            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const dados2024 = new Array(12).fill(0);
+            const dados2025 = new Array(12).fill(0);
+            
+            dados.forEach(ice => {
+                if (!ice.data) return;
+                try {
+                    const data = new Date(ice.data);
+                    const ano = data.getFullYear();
+                    const mes = data.getMonth();
+                    
+                    if (ano === 2024) {
+                        dados2024[mes]++;
+                    } else if (ano === 2025) {
+                        dados2025[mes]++;
+                    }
+                } catch (error) {
+                    console.warn('Erro ao processar data do ICE:', ice.data);
+                }
+            });
+            
+            destruirGrafico('comparativoAnos');
+            
+            charts.comparativoAnos = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: '2024',
+                        data: dados2024,
+                        borderColor: '#4a7c59',
+                        backgroundColor: 'rgba(74, 124, 89, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }, {
+                        label: '2025',
+                        data: dados2025,
+                        borderColor: '#2c5530',
+                        backgroundColor: 'rgba(44, 85, 48, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        }
+
+        function atualizarGraficoTipificacaoMes(dados) {
+            console.log('Atualizando gráfico tipificação mês atual...');
+            const canvas = document.getElementById('chart_tipificacao_mes');
+            if (!canvas) return;
+            
+            const mesAtual = new Date().getMonth();
+            const anoAtual = new Date().getFullYear();
+            
+            const dadosMes = dados.filter(ice => {
+                if (!ice.data) return false;
+                try {
+                    const data = new Date(ice.data);
+                    return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
+                } catch (error) {
+                    return false;
+                }
+            });
+            
+            const contagem = {};
+            dadosMes.forEach(ice => {
+                const tip = ice.tipificacao || 'Não informado';
+                contagem[tip] = (contagem[tip] || 0) + 1;
+            });
+            
+            const labels = Object.keys(contagem);
+            const values = Object.values(contagem);
+            
+            destruirGrafico('tipificacaoMes');
+            
+            if (labels.length === 0) {
+                criarGraficoVazio('chart_tipificacao_mes', 'tipificacaoMes', 'Sem dados para o mês atual');
+                return;
+            }
+            
+            charts.tipificacaoMes = new Chart(canvas.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            '#4a7c59', '#6b8e5a', '#8fa85c', '#b3c25e', 
+                            '#d7dc60', '#fbf662', '#f4d03f', '#f7dc6f'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function atualizarGraficoTipificacaoPorMes(dados) {
+            console.log('Atualizando gráfico tipificação por mês...');
+            const canvas = document.getElementById('chart_tipificacao_por_mes');
+            if (!canvas) return;
+            
+            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const anoAtual = new Date().getFullYear();
+            
+            // Filtrar dados do ano atual
+            const dadosAno = dados.filter(ice => {
+                if (!ice.data) return false;
+                try {
+                    const data = new Date(ice.data);
+                    return data.getFullYear() === anoAtual;
+                } catch (error) {
+                    return false;
+                }
+            });
+            
+            // Obter todas as tipificações
+            const tipificacoes = [...new Set(dadosAno.map(ice => ice.tipificacao || 'Não informado'))];
+            
+            // Criar datasets para cada tipificação
+            const datasets = tipificacoes.map((tip, index) => {
+                const cores = [
+                    '#4a7c59', '#6b8e5a', '#8fa85c', '#b3c25e', 
+                    '#d7dc60', '#fbf662', '#f4d03f', '#f7dc6f',
+                    '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+                    '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f'
+                ];
+                
+                const dadosMes = new Array(12).fill(0);
+                
+                dadosAno.forEach(ice => {
+                    if ((ice.tipificacao || 'Não informado') === tip) {
+                        try {
+                            const data = new Date(ice.data);
+                            const mes = data.getMonth();
+                            dadosMes[mes]++;
+                        } catch (error) {
+                            console.warn('Erro ao processar data:', ice.data);
+                        }
+                    }
+                });
+                
+                return {
+                    label: tip,
+                    data: dadosMes,
+                    backgroundColor: cores[index % cores.length],
+                    borderColor: cores[index % cores.length],
+                    borderWidth: 1
+                };
+            });
+            
+            destruirGrafico('tipificacaoPorMes');
+            
+            if (tipificacoes.length === 0) {
+                criarGraficoVazio('chart_tipificacao_por_mes', 'tipificacaoPorMes', 'Sem dados para o ano atual');
+                return;
+            }
+            
+            charts.tipificacaoPorMes = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: meses,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { 
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'top',
+                            labels: { boxWidth: 12 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function atualizarGraficoBcsMes(dados) {
+            console.log('Atualizando gráfico BCs por mês...');
+            const canvas = document.getElementById('chart_bcs_mes');
+            if (!canvas) return;
+            
+            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const bcsPorMes = new Array(12).fill(0);
+            const anoAtual = new Date().getFullYear();
+            
+            dados.forEach(ice => {
+                if (!ice.data) return;
+                try {
+                    const data = new Date(ice.data);
+                    if (data.getFullYear() === anoAtual) {
+                        const mes = data.getMonth();
+                        const bcs = parseInt(ice.quantidade_bcs) || 0;
+                        bcsPorMes[mes] += bcs;
+                    }
+                } catch (error) {
+                    console.warn('Erro ao processar BCs:', error);
+                }
+            });
+            
+            destruirGrafico('bcsMes');
+            
+            charts.bcsMes = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: 'Quantidade de BCs',
+                        data: bcsPorMes,
+                        backgroundColor: '#4a7c59'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function atualizarGraficoGerenciaMes(dados) {
+            console.log('Atualizando gráfico gerência mês atual...');
+            const canvas = document.getElementById('chart_gerencia_mes');
+            if (!canvas) return;
+            
+            const mesAtual = new Date().getMonth();
+            const anoAtual = new Date().getFullYear();
+            
+            const dadosMes = dados.filter(ice => {
+                if (!ice.data) return false;
+                try {
+                    const data = new Date(ice.data);
+                    return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
+                } catch (error) {
+                    return false;
+                }
+            });
+            
+            const contagem = {};
+            dadosMes.forEach(ice => {
+                const ger = ice.ger_jirau || 'Não informado';
+                contagem[ger] = (contagem[ger] || 0) + 1;
+            });
+            
+            const labels = Object.keys(contagem);
+            const values = Object.values(contagem);
+            
+            destruirGrafico('gerenciaMes');
+            
+            if (labels.length === 0) {
+                criarGraficoVazio('chart_gerencia_mes', 'gerenciaMes', 'Sem dados para o mês atual');
+                return;
+            }
+            
+            charts.gerenciaMes = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Quantidade de ICEs',
+                        data: values,
+                        backgroundColor: '#4a7c59'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function atualizarGraficoTipificacaoAnual(dados) {
+            console.log('Atualizando gráfico tipificação anual...');
+            const canvas = document.getElementById('chart_tipificacao_anual');
+            if (!canvas) return;
+            
+            const anoAtual = new Date().getFullYear();
+            const dadosAno = dados.filter(ice => {
+                if (!ice.data) return false;
+                try {
+                    const data = new Date(ice.data);
+                    return data.getFullYear() === anoAtual;
+                } catch (error) {
+                    return false;
+                }
+            });
+            
+            const contagem = {};
+            dadosAno.forEach(ice => {
+                const tip = ice.tipificacao || 'Não informado';
+                contagem[tip] = (contagem[tip] || 0) + 1;
+            });
+            
+            const labels = Object.keys(contagem);
+            const values = Object.values(contagem);
+            
+            destruirGrafico('tipificacaoAnual');
+            
+            if (labels.length === 0) {
+                criarGraficoVazio('chart_tipificacao_anual', 'tipificacaoAnual', 'Sem dados para o ano atual');
+                return;
+            }
+            
+            charts.tipificacaoAnual = new Chart(canvas.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            '#4a7c59', '#6b8e5a', '#8fa85c', '#b3c25e', 
+                            '#d7dc60', '#fbf662', '#f4d03f', '#f7dc6f'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function atualizarGraficoGerenciaAnual(dados) {
+            console.log('Atualizando gráfico gerência anual...');
+            const canvas = document.getElementById('chart_gerencia_anual');
+            if (!canvas) return;
+            
+            const anoAtual = new Date().getFullYear();
+            const dadosAno = dados.filter(ice => {
+                if (!ice.data) return false;
+                try {
+                    const data = new Date(ice.data);
+                    return data.getFullYear() === anoAtual;
+                } catch (error) {
+                    return false;
+                }
+            });
+            
+            const contagem = {};
+            dadosAno.forEach(ice => {
+                const ger = ice.ger_jirau || 'Não informado';
+                contagem[ger] = (contagem[ger] || 0) + 1;
+            });
+            
+            const labels = Object.keys(contagem);
+            const values = Object.values(contagem);
+            
+            destruirGrafico('gerenciaAnual');
+            
+            if (labels.length === 0) {
+                criarGraficoVazio('chart_gerencia_anual', 'gerenciaAnual', 'Sem dados para o ano atual');
+                return;
+            }
+            
+            charts.gerenciaAnual = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Quantidade de ICEs',
+                        data: values,
+                        backgroundColor: '#4a7c59'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function atualizarGraficoBcsComparativo(dados) {
+            console.log('Atualizando gráfico BCs comparativo...');
+            const canvas = document.getElementById('chart_bcs_comparativo');
+            if (!canvas) return;
+            
+            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const bcs2024 = new Array(12).fill(0);
+            const bcs2025 = new Array(12).fill(0);
+            
+            dados.forEach(ice => {
+                if (!ice.data) return;
+                try {
+                    const data = new Date(ice.data);
+                    const ano = data.getFullYear();
+                    const mes = data.getMonth();
+                    const bcs = parseInt(ice.quantidade_bcs) || 0;
+                    
+                    if (ano === 2024) {
+                        bcs2024[mes] += bcs;
+                    } else if (ano === 2025) {
+                        bcs2025[mes] += bcs;
+                    }
+                } catch (error) {
+                    console.warn('Erro ao processar BCs comparativo:', error);
+                }
+            });
+            
+            destruirGrafico('bcsComparativo');
+            
+            charts.bcsComparativo = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: '2024',
+                        data: bcs2024,
+                        backgroundColor: '#4a7c59'
+                    }, {
+                        label: '2025',
+                        data: bcs2025,
+                        backgroundColor: '#2c5530'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function atualizarGraficoEvolucaoMensal(dados) {
+            console.log('Atualizando gráfico evolução mensal...');
+            const canvas = document.getElementById('chart_evolucao_mensal');
+            if (!canvas) return;
+            
+            const dados2025 = dados.filter(ice => {
+                if (!ice.data) return false;
+                try {
+                    const data = new Date(ice.data);
+                    return data.getFullYear() === 2025;
+                } catch (error) {
+                    return false;
+                }
+            });
+            
+            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const icePorMes = new Array(12).fill(0);
+            const acionamentosReais = new Array(12).fill(0);
+            const simulados = new Array(12).fill(0);
+            
+            dados2025.forEach(ice => {
+                try {
+                    const data = new Date(ice.data);
+                    const mes = data.getMonth();
+                    icePorMes[mes]++;
+                    
+                    if (ice.acionamento_real === 'sim') {
+                        acionamentosReais[mes]++;
+                    } else if (ice.acionamento_real === 'simulado') {
+                        simulados[mes]++;
+                    }
+                } catch (error) {
+                    console.warn('Erro ao processar evolução mensal:', error);
+                }
+            });
+            
+            destruirGrafico('evolucaoMensal');
+            
+            charts.evolucaoMensal = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: 'Total ICEs',
+                        data: icePorMes,
+                        borderColor: '#4a7c59',
+                        backgroundColor: 'rgba(74, 124, 89, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }, {
+                        label: 'Acionamentos Reais',
+                        data: acionamentosReais,
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }, {
+                        label: 'Simulados',
+                        data: simulados,
+                        borderColor: '#ffc107',
+                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        }
+
+        function atualizarTodosGraficos() {
+            console.log('=== ATUALIZANDO TODOS OS GRÁFICOS ===');
+            const dadosFiltrados = filtrarDadosPorPeriodo();
+            console.log('Dados filtrados para gráficos:', dadosFiltrados.length);
+            
+            if (dadosFiltrados.length === 0) {
+                console.log('Nenhum dado encontrado, criando gráficos vazios');
+                criarGraficosVazios();
+                return;
+            }
+            
+            try {
+                atualizarGraficoComparativoAnos(dadosFiltrados);
+                atualizarGraficoTipificacaoMes(dadosFiltrados);
+                atualizarGraficoTipificacaoPorMes(dadosFiltrados);
+                atualizarGraficoBcsMes(dadosFiltrados);
+                atualizarGraficoGerenciaMes(dadosFiltrados);
+                atualizarGraficoTipificacaoAnual(dadosFiltrados);
+                atualizarGraficoGerenciaAnual(dadosFiltrados);
+                atualizarGraficoBcsComparativo(dadosFiltrados);
+                atualizarGraficoEvolucaoMensal(dadosFiltrados);
+                console.log('Todos os gráficos foram atualizados com sucesso!');
+            } catch (error) {
+                console.error('Erro ao atualizar gráficos:', error);
+            }
+        }
+
+        // ========== FUNÇÕES DOS KPIs ==========
+        function atualizarKPIs() {
+            console.log('Atualizando KPIs...');
+            const dadosFiltrados = filtrarDadosPorPeriodo();
+            
+            const totalIces = dadosFiltrados.length;
+            const acionamentosReais = dadosFiltrados.filter(ice => ice.acionamento_real === 'sim').length;
+            const simulados = dadosFiltrados.filter(ice => ice.acionamento_real === 'simulado').length;
+            const taxaReal = totalIces > 0 ? ((acionamentosReais / totalIces) * 100).toFixed(1) : 0;
+            
+            const totalBcs = dadosFiltrados.reduce((total, ice) => {
+                const bcs = parseInt(ice.quantidade_bcs) || 0;
+                return total + bcs;
+            }, 0);
+            
+            document.getElementById('total_ices').textContent = totalIces;
+            document.getElementById('acionamentos_reais').textContent = acionamentosReais;
+            document.getElementById('simulados').textContent = simulados;
+            document.getElementById('taxa_real').textContent = taxaReal + '%';
+            document.getElementById('total_bcs').textContent = totalBcs;
+            
+            console.log('KPIs atualizados:', { totalIces, acionamentosReais, simulados, taxaReal, totalBcs });
+        }
+
+        // ========== FUNÇÕES DO DASHBOARD ==========
+        async function carregarDadosDashboard() {
+            console.log('Carregando dados do dashboard...');
+            try {
+                // Mostrar loading nos KPIs
+                document.getElementById('total_ices').textContent = '...';
+                document.getElementById('acionamentos_reais').textContent = '...';
+                document.getElementById('simulados').textContent = '...';
+                document.getElementById('taxa_real').textContent = '...';
+                document.getElementById('total_bcs').textContent = '...';
+
+                // Carregar dados dos ICEs
+                const responseIce = await callAPI('GET', 'listarIce');
+                
+                if (responseIce.status === 'success') {
+                    dadosIce = responseIce.ice || [];
+                    console.log('Dados ICE carregados:', dadosIce.length, 'registros');
+                    
+                    // Atualizar KPIs
+                    atualizarKPIs();
+                    
+                    // Aguardar um pouco antes de atualizar gráficos
+                    setTimeout(() => {
+                        console.log('Iniciando atualização dos gráficos após carregamento...');
+                        atualizarTodosGraficos();
+                    }, 500);
+                } else {
+                    console.error('Erro ao carregar ICEs:', responseIce.message);
+                    dadosIce = [];
+                    atualizarKPIs();
+                    criarGraficosVazios();
+                }
+
+                atualizarListaIceDashboard();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados do dashboard:', error);
+                // Resetar valores em caso de erro
+                document.getElementById('total_ices').textContent = '0';
+                document.getElementById('acionamentos_reais').textContent = '0';
+                document.getElementById('simulados').textContent = '0';
+                document.getElementById('taxa_real').textContent = '0%';
+                document.getElementById('total_bcs').textContent = '0';
+                criarGraficosVazios();
+            }
+        }
+
+        function atualizarDashboard() {
+            console.log('Atualizando dashboard manualmente...');
+            carregarDadosDashboard();
+        }
+
+        // ========== FUNÇÕES DE EXPORTAÇÃO ==========
+        function debugGraficos() {
+            console.log('=== DEBUG GRÁFICOS ===');
+            console.log('Dados ICE:', dadosIce.length, 'registros');
+            console.log('Primeiro ICE:', dadosIce[0]);
+            
+            const dadosFiltrados = filtrarDadosPorPeriodo();
+            console.log('Dados filtrados:', dadosFiltrados.length, 'registros');
+            
+            // Verificar canvas
+            const chartIds = [
+                'chart_comparativo_anos', 'chart_tipificacao_mes', 'chart_tipificacao_por_mes',
+                'chart_bcs_mes', 'chart_gerencia_mes', 'chart_tipificacao_anual', 
+                'chart_gerencia_anual', 'chart_bcs_comparativo', 'chart_evolucao_mensal'
+            ];
+            
+            chartIds.forEach(chartId => {
+                const canvas = document.getElementById(chartId);
+                console.log(`Canvas ${chartId}:`, canvas ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
+            });
+            
+            // Verificar instâncias dos gráficos
+            console.log('Estado dos gráficos:', charts);
+            
+            console.log('Forçando atualização dos gráficos...');
+            atualizarTodosGraficos();
+            
+            alert('Debug executado! Verifique o console do navegador (F12) para detalhes.');
+        }
+
+        function exportarExcel() {
+            try {
+                const dadosFiltrados = filtrarDadosPorPeriodo();
+                
+                if (dadosFiltrados.length === 0) {
+                    alert('Não há dados para exportar no período selecionado.');
+                    return;
+                }
+
+                const dadosExcel = dadosFiltrados.map(ice => ({
+                    'Número ICE': ice.numero,
+                    'Operador': ice.operador,
+                    'Data': ice.data,
+                    'Hora': ice.hora,
+                    'Tipificação': ice.tipificacao,
+                    'Local': ice.local,
+                    'Referência': ice.referencia,
+                    'Gerência Jirau': ice.ger_jirau,
+                    'Gerente': ice.gerente,
+                    'Nome Informante': ice.nome_informante,
+                    'Matrícula Informante': ice.mat_informante,
+                    'Empresa Informante': ice.empresa_informante,
+                    'Gerência Informante': ice.gerencia_informante,
+                    'Data Informação': ice.data_inf,
+                    'Hora Informação': ice.hora_inf,
+                    'Ramal': ice.ramal,
+                    'Nome Vítima 1': ice.nome_vitima1,
+                    'Função Vítima 1': ice.funcao_vitima1,
+                    'Matrícula Vítima 1': ice.mat_vitima1,
+                    'Empresa Vítima 1': ice.empresa_vitima1,
+                    'Nome Vítima 2': ice.nome_vitima2,
+                    'Função Vítima 2': ice.funcao_vitima2,
+                    'Matrícula Vítima 2': ice.mat_vitima2,
+                    'Empresa Vítima 2': ice.empresa_vitima2,
+                    'Nome Acionamento 1': ice.nome_acionamento1,
+                    'Telefone 1': ice.telefone1,
+                    'Área 1': ice.area1,
+                    'Atendeu 1': ice.atendeu1,
+                    'Nome Acionamento 2': ice.nome_acionamento2,
+                    'Telefone 2': ice.telefone2,
+                    'Área 2': ice.area2,
+                    'Atendeu 2': ice.atendeu2,
+                    'Acionaram Polícia': ice.acionaram_policia,
+                    'Polícia Compareceu': ice.policia_compareceu,
+                    'Acionamento Real': ice.acionamento_real,
+                    'Data Lançamento': ice.data_lancamento,
+                    'Hora Lançamento': ice.hora_lancamento,
+                    'Quantidade BCs': ice.quantidade_bcs,
+                    'Descrição': ice.descricao_ocorrencia
+                }));
+
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(dadosExcel);
+
+                // Adicionar formatação
+                const range = XLSX.utils.decode_range(ws['!ref']);
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    const header = XLSX.utils.encode_cell({ r: 0, c: C });
+                    if (!ws[header]) continue;
+                    ws[header].s = {
+                        font: { bold: true },
+                        fill: { fgColor: { rgb: "4a7c59" } }
+                    };
+                }
+
+                XLSX.utils.book_append_sheet(wb, ws, "ICEs");
+
+                const dataAtual = new Date().toISOString().split('T')[0];
+                const nomeArquivo = `Relatorio_ICE_${dataAtual}.xlsx`;
+
+                XLSX.writeFile(wb, nomeArquivo);
+                
+                console.log('Excel exportado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao exportar Excel:', error);
+                alert('Erro ao exportar para Excel: ' + error.message);
+            }
+        }
+
+        function imprimirRelatorio() {
+            const originalContents = document.body.innerHTML;
+            const printContents = document.querySelector('.content-area').innerHTML;
+            
+            document.body.innerHTML = `
+                <div style="font-family: Arial, sans-serif; color: black;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #4a7c59;">RELATÓRIO ICE - ÍNDICE DE CONTROLE DE EMERGÊNCIA</h1>
+                        <p>Relatório gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                    </div>
+                    ${printContents}
+                </div>
+            `;
+            
+            window.print();
+            document.body.innerHTML = originalContents;
+            
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+
+        // ========== FUNÇÕES CRUD ==========
+        async function carregarDadosListas() {
+            try {
+                console.log('Carregando dados das listas...');
+                
+                // Carregar operadores
+                const responseOperadores = await callAPI('GET', 'listarOperadores');
+                if (responseOperadores.status === 'success') {
+                    dadosOperadores = responseOperadores.operadores || [];
+                    preencherSelect('ice_operador', dadosOperadores, 'nome', 'nome');
+                }
+
+                // Carregar tipificações
+                const responseTipificacoes = await callAPI('GET', 'listarTipificacoes');
+                if (responseTipificacoes.status === 'success') {
+                    dadosTipificacoes = responseTipificacoes.tipificacoes || [];
+                    preencherSelect('ice_tipificacao', dadosTipificacoes, 'nome', 'nome');
+                }
+
+                // Carregar gestores
+                const responseGestores = await callAPI('GET', 'listarGestores');
+                if (responseGestores.status === 'success') {
+                    dadosGestores = responseGestores.gestores || [];
+                    preencherSelect('ice_gerente', dadosGestores, 'nome', 'nome');
+                }
+
+                // Carregar gerências
+                const responseGerencias = await callAPI('GET', 'listarGerencias');
+                if (responseGerencias.status === 'success') {
+                    dadosGerencias = responseGerencias.gerencias || [];
+                    preencherSelect('ice_ger_jirau', dadosGerencias, 'nome', 'nome');
+                    preencherSelect('ice_gerencia_informante', dadosGerencias, 'nome', 'nome');
+                }
+
+                // Carregar empresas
+                const responseEmpresas = await callAPI('GET', 'listarEmpresas');
+                if (responseEmpresas.status === 'success') {
+                    dadosEmpresas = (responseEmpresas.empresas || []).filter(emp => emp.status === 'ativo');
+                    preencherSelect('ice_empresa_informante', dadosEmpresas, 'nome', 'nome');
+                    preencherSelect('ice_empresa_vitima1', dadosEmpresas, 'nome', 'nome');
+                    preencherSelect('ice_empresa_vitima2', dadosEmpresas, 'nome', 'nome');
+                }
+
+                console.log('Dados das listas carregados com sucesso!');
+            } catch (error) {
+                console.error('Erro ao carregar dados das listas:', error);
+            }
+        }
+
+        async function obterProximoNumeroICE() {
+            try {
+                const response = await callAPI('GET', 'obterProximoNumeroICE');
+                
+                if (response.status === 'success') {
+                    proximoNumeroICE = response.proximoNumero;
+                    document.getElementById('numeroIceDisplay').textContent = proximoNumeroICE.toString().padStart(3, '0');
+                    document.getElementById('ice_numero').value = proximoNumeroICE;
+                } else {
+                    console.error('Erro ao obter próximo número:', response.message);
+                    document.getElementById('numeroIceDisplay').textContent = 'Erro';
+                }
+            } catch (error) {
+                console.error('Erro ao obter próximo número do ICE:', error);
+                document.getElementById('numeroIceDisplay').textContent = 'Erro';
+            }
+        }
+
+        async function cadastrarIce(event) {
+            event.preventDefault();
+            
+            const dados = {
+                numero: proximoNumeroICE,
+                operador: document.getElementById('ice_operador').value,
+                data: document.getElementById('ice_data').value,
+                hora: document.getElementById('ice_hora').value,
+                tipificacao: document.getElementById('ice_tipificacao').value,
+                local: document.getElementById('ice_local').value.trim(),
+                referencia: document.getElementById('ice_referencia').value.trim(),
+                ger_jirau: document.getElementById('ice_ger_jirau').value,
+                gerente: document.getElementById('ice_gerente').value,
+                nome_informante: document.getElementById('ice_nome_informante').value.trim(),
+                mat_informante: document.getElementById('ice_mat_informante').value.trim(),
+                empresa_informante: document.getElementById('ice_empresa_informante').value,
+                gerencia_informante: document.getElementById('ice_gerencia_informante').value,
+                data_inf: document.getElementById('ice_data_inf').value,
+                hora_inf: document.getElementById('ice_hora_inf').value,
+                ramal: document.getElementById('ice_ramal').value.trim(),
+                nome_vitima1: document.getElementById('ice_nome_vitima1').value.trim(),
+                funcao_vitima1: document.getElementById('ice_funcao_vitima1').value.trim(),
+                mat_vitima1: document.getElementById('ice_mat_vitima1').value.trim(),
+                empresa_vitima1: document.getElementById('ice_empresa_vitima1').value,
+                nome_vitima2: document.getElementById('ice_nome_vitima2').value.trim(),
+                funcao_vitima2: document.getElementById('ice_funcao_vitima2').value.trim(),
+                mat_vitima2: document.getElementById('ice_mat_vitima2').value.trim(),
+                empresa_vitima2: document.getElementById('ice_empresa_vitima2').value,
+                nome_acionamento1: document.getElementById('ice_nome_acionamento1').value.trim(),
+                telefone1: document.getElementById('ice_telefone1').value.trim(),
+                area1: document.getElementById('ice_area1').value.trim(),
+                atendeu1: document.getElementById('ice_atendeu1').value,
+                nome_acionamento2: document.getElementById('ice_nome_acionamento2').value.trim(),
+                telefone2: document.getElementById('ice_telefone2').value.trim(),
+                area2: document.getElementById('ice_area2').value.trim(),
+                atendeu2: document.getElementById('ice_atendeu2').value,
+                acionaram_policia: document.getElementById('ice_acionaram_policia').value,
+                policia_compareceu: document.getElementById('ice_policia_compareceu').value,
+                data_lancamento: document.getElementById('ice_data_lancamento').value,
+                hora_lancamento: document.getElementById('ice_hora_lancamento').value,
+                descricao_ocorrencia: document.getElementById('ice_descricao_ocorrencia').value.trim(),
+                acionamento_real: document.getElementById('ice_acionamento_real').value,
+                quantidade_bcs: document.getElementById('ice_quantidade_bcs').value
+            };
+            
+            if (!dados.operador || !dados.data || !dados.hora || !dados.tipificacao || !dados.local) {
+                alert('Por favor, preencha todos os campos obrigatórios (Operador, Data, Hora, Tipificação, Local)');
+                return;
+            }
+
+            try {
+                const response = await callAPI('POST', 'cadastrarIce', dados);
+                
+                if (response.status === 'success') {
+                    alert(response.message);
+                    document.getElementById('formIce').reset();
+                    preencherDataHoraAtual();
+                    await obterProximoNumeroICE();
+                    await carregarDadosListas();
+                    atualizarListaIce();
+                    carregarDadosDashboard();
+                } else {
+                    alert('Erro: ' + response.message);
+                }
+            } catch (error) {
+                console.error('Erro ao cadastrar ICE:', error);
+                alert('Erro ao cadastrar ICE: ' + error.message);
+            }
+        }
+
+        // Lista de ICEs no Dashboard
+        async function atualizarListaIceDashboard() {
+            try {
+                document.getElementById('listaIceDashboard').innerHTML = '<div class="loading">Carregando...</div>';
+                
+                const data = await callAPI('GET', 'listarIce');
+                
+                if (data.status === 'success') {
+                    const lista = document.getElementById('listaIceDashboard');
+                    if (data.ice.length === 0) {
+                        lista.innerHTML = '<div class="text-muted text-center">Nenhum ICE cadastrado</div>';
+                    } else {
+                        const icesRecentes = data.ice.slice(-20).reverse();
+                        lista.innerHTML = icesRecentes.map(ice => `
+                            <div class="ice-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <strong style="color: #4a7c59;">ICE ${String(ice.numero).padStart(3, '0')}</strong>
+                                            <span class="ice-badge badge ${ice.acionamento_real === 'sim' ? 'bg-danger' : ice.acionamento_real === 'simulado' ? 'bg-warning text-dark' : 'bg-secondary'}">${ice.acionamento_real || 'N/A'}</span>
+                                        </div>
+                                        <div class="row text-sm">
+                                            <div class="col-md-6">
+                                                <small><strong>Operador:</strong> ${ice.operador || 'N/A'}</small><br>
+                                                <small><strong>Data/Hora:</strong> ${ice.data || 'N/A'} ${ice.hora || ''}</small><br>
+                                                <small><strong>Local:</strong> ${ice.local || 'N/A'}</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small><strong>Tipificação:</strong> ${ice.tipificacao || 'N/A'}</small><br>
+                                                <small><strong>Gerência:</strong> ${ice.ger_jirau || 'N/A'}</small><br>
+                                                <small><strong>BCs:</strong> ${ice.quantidade_bcs || '0'}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    document.getElementById('listaIceDashboard').innerHTML = '<div class="error">Erro ao carregar ICEs: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar ICEs no dashboard:', error);
+                document.getElementById('listaIceDashboard').innerHTML = '<div class="error">Erro ao carregar ICEs</div>';
+            }
+        }
+
+        async function atualizarListaIce() {
+            try {
+                document.getElementById('listaIce').innerHTML = '<div class="loading">Carregando...</div>';
+                
+                const data = await callAPI('GET', 'listarIce');
+                
+                if (data.status === 'success') {
+                    const lista = document.getElementById('listaIce');
+                    if (data.ice.length === 0) {
+                        lista.innerHTML = '<div class="text-muted text-center">Nenhum ICE cadastrado</div>';
+                    } else {
+                        lista.innerHTML = data.ice.map(ice => `
+                            <div class="item-lista">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>ICE: ${String(ice.numero).padStart(3, '0')}</strong><br>
+                                        <small>Operador: ${ice.operador}</small><br>
+                                        <small>Data/Hora: ${ice.data} ${ice.hora}</small><br>
+                                        <small>Tipificação: ${ice.tipificacao}</small><br>
+                                        <small>Local: ${ice.local}</small>
+                                    </div>
+                                    <span class="badge ${ice.acionamento_real === 'sim' ? 'bg-danger' : ice.acionamento_real === 'simulado' ? 'bg-warning' : 'bg-secondary'}">${ice.acionamento_real || 'N/A'}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    document.getElementById('listaIce').innerHTML = '<div class="error">Erro ao carregar ICEs: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar ICEs:', error);
+                document.getElementById('listaIce').innerHTML = '<div class="error">Erro ao carregar ICEs</div>';
+            }
+        }
+
+        async function atualizarListaTipificacoes() {
+            try {
+                document.getElementById('listaTipificacoes').innerHTML = '<div class="loading">Carregando...</div>';
+                
+                const data = await callAPI('GET', 'listarTipificacoes');
+                
+                if (data.status === 'success') {
+                    const lista = document.getElementById('listaTipificacoes');
+                    lista.innerHTML = data.tipificacoes.map(tip => `
+                        <div class="item-lista">
+                            <strong>${tip.nome}</strong><br>
+                            <small>ID: ${tip.id}</small>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('listaTipificacoes').innerHTML = '<div class="error">Erro ao carregar tipificações: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar tipificações:', error);
+                document.getElementById('listaTipificacoes').innerHTML = '<div class="error">Erro ao carregar tipificações</div>';
+            }
+        }
+
+        async function cadastrarTipificacao(event) {
+            event.preventDefault();
+            const id = document.getElementById('tipificacao_id').value.trim();
+            const nome = document.getElementById('tipificacao_nome').value.trim();
+            
+            if (!id || !nome) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+
+            try {
+                const response = await callAPI('POST', 'cadastrarTipificacao', { id, nome });
+                
+                alert(response.message);
+                document.getElementById('formTipificacao').reset();
+                atualizarListaTipificacoes();
+                carregarDadosListas();
+            } catch (error) {
+                console.error('Erro ao cadastrar tipificação:', error);
+                alert('Erro ao cadastrar tipificação: ' + error.message);
+            }
+        }
+
+        async function atualizarListaOperadores() {
+            try {
+                document.getElementById('listaOperadores').innerHTML = '<div class="loading">Carregando...</div>';
+                
+                const data = await callAPI('GET', 'listarOperadores');
+                
+                if (data.status === 'success') {
+                    const lista = document.getElementById('listaOperadores');
+                    lista.innerHTML = data.operadores.map(op => `
+                        <div class="item-lista">
+                            <strong>${op.nome}</strong><br>
+                            <small>ID: ${op.id}</small>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('listaOperadores').innerHTML = '<div class="error">Erro ao carregar operadores: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar operadores:', error);
+                document.getElementById('listaOperadores').innerHTML = '<div class="error">Erro ao carregar operadores</div>';
+            }
+        }
+
+        async function cadastrarOperador(event) {
+            event.preventDefault();
+            const id = document.getElementById('operador_id').value.trim();
+            const nome = document.getElementById('operador_nome').value.trim();
+            
+            if (!id || !nome) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+
+            try {
+                const response = await callAPI('POST', 'cadastrarOperador', { id, nome });
+                
+                alert(response.message);
+                document.getElementById('formOperador').reset();
+                atualizarListaOperadores();
+                carregarDadosListas();
+            } catch (error) {
+                console.error('Erro ao cadastrar operador:', error);
+                alert('Erro ao cadastrar operador: ' + error.message);
+            }
+        }
+
+        async function atualizarListaGestores() {
+            try {
+                document.getElementById('listaGestores').innerHTML = '<div class="loading">Carregando...</div>';
+                
+                const data = await callAPI('GET', 'listarGestores');
+                
+                if (data.status === 'success') {
+                    const lista = document.getElementById('listaGestores');
+                    lista.innerHTML = data.gestores.map(gest => `
+                        <div class="item-lista">
+                            <strong>${gest.nome}</strong><br>
+                            <small>ID: ${gest.id}</small>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('listaGestores').innerHTML = '<div class="error">Erro ao carregar gestores: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar gestores:', error);
+                document.getElementById('listaGestores').innerHTML = '<div class="error">Erro ao carregar gestores</div>';
+            }
+        }
+
+        async function cadastrarGestor(event) {
+            event.preventDefault();
+            const id = document.getElementById('gestor_id').value.trim();
+            const nome = document.getElementById('gestor_nome').value.trim();
+            
+            if (!id || !nome) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+
+            try {
+                const response = await callAPI('POST', 'cadastrarGestor', { id, nome });
+                
+                alert(response.message);
+                document.getElementById('formGestor').reset();
+                atualizarListaGestores();
+                carregarDadosListas();
+            } catch (error) {
+                console.error('Erro ao cadastrar gestor:', error);
+                alert('Erro ao cadastrar gestor: ' + error.message);
+            }
+        }
+
+        async function atualizarListaGerencias() {
+            try {
+                document.getElementById('listaGerencias').innerHTML = '<div class="loading">Carregando...</div>';
+                
+                const data = await callAPI('GET', 'listarGerencias');
+                
+                if (data.status === 'success') {
+                    const lista = document.getElementById('listaGerencias');
+                    lista.innerHTML = data.gerencias.map(ger => `
+                        <div class="item-lista">
+                            <strong>${ger.nome}</strong><br>
+                            <small>ID: ${ger.id}</small>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('listaGerencias').innerHTML = '<div class="error">Erro ao carregar gerências: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar gerências:', error);
+                document.getElementById('listaGerencias').innerHTML = '<div class="error">Erro ao carregar gerências</div>';
+            }
+        }
+
+        async function cadastrarGerencia(event) {
+            event.preventDefault();
+            const id = document.getElementById('gerencia_id').value.trim();
+            const nome = document.getElementById('gerencia_nome').value.trim();
+            
+            if (!id || !nome) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+
+            try {
+                const response = await callAPI('POST', 'cadastrarGerencia', { id, nome });
+                
+                alert(response.message);
+                document.getElementById('formGerencia').reset();
+                atualizarListaGerencias();
+                carregarDadosListas();
+            } catch (error) {
+                console.error('Erro ao cadastrar gerência:', error);
+                alert('Erro ao cadastrar gerência: ' + error.message);
+            }
+        }
+
+        async function atualizarListaEmpresas() {
+            try {
+                document.getElementById('listaEmpresas').innerHTML = '<div class="loading">Carregando...</div>';
+                
+                const data = await callAPI('GET', 'listarEmpresas');
+                
+                if (data.status === 'success') {
+                    const lista = document.getElementById('listaEmpresas');
+                    lista.innerHTML = data.empresas.map(emp => `
+                        <div class="item-lista">
+                            <strong>${emp.nome}</strong><br>
+                            <small>ID: ${emp.id} | Status: <span class="badge ${emp.status === 'ativo' ? 'bg-success' : 'bg-secondary'}">${emp.status}</span></small>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('listaEmpresas').innerHTML = '<div class="error">Erro ao carregar empresas: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar empresas:', error);
+                document.getElementById('listaEmpresas').innerHTML = '<div class="error">Erro ao carregar empresas</div>';
+            }
+        }
+
+        async function cadastrarEmpresa(event) {
+            event.preventDefault();
+            const id = document.getElementById('empresa_id').value.trim();
+            const nome = document.getElementById('empresa_nome').value.trim();
+            const status = document.getElementById('empresa_status').value;
+            
+            if (!id || !nome) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+
+            try {
+                const response = await callAPI('POST', 'cadastrarEmpresa', { id, nome, status });
+                
+                alert(response.message);
+                document.getElementById('formEmpresa').reset();
+                atualizarListaEmpresas();
+                carregarDadosListas();
+            } catch (error) {
+                console.error('Erro ao cadastrar empresa:', error);
+                alert('Erro ao cadastrar empresa: ' + error.message);
+            }
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM carregado, configurando event listeners...');
+            
+            // Event listeners para navegação
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    if (target) {
+                        showTab(target);
+                    }
+                });
+            });
+
+            // Event listeners para filtros
+            const filtroPeriodo = document.getElementById('filtro_periodo');
+            if (filtroPeriodo) {
+                filtroPeriodo.addEventListener('change', function() {
+                    const valor = this.value;
+                    const dataInicio = document.getElementById('data_inicio');
+                    const dataFim = document.getElementById('data_fim');
+                    
+                    if (dataInicio && dataFim) {
+                        if (valor === 'personalizado') {
+                            dataInicio.style.display = 'block';
+                            dataFim.style.display = 'block';
+                        } else {
+                            dataInicio.style.display = 'none';
+                            dataFim.style.display = 'none';
+                            // Atualizar automaticamente quando não for personalizado
+                            setTimeout(() => {
+                                if (dadosIce.length > 0) {
+                                    atualizarKPIs();
+                                    atualizarTodosGraficos();
+                                }
+                            }, 100);
+                        }
+                    }
+                });
+            }
+
+            // Event listeners para as datas personalizadas
+            const dataInicio = document.getElementById('data_inicio');
+            const dataFim = document.getElementById('data_fim');
+            
+            if (dataInicio) {
+                dataInicio.addEventListener('change', function() {
+                    if (document.getElementById('filtro_periodo').value === 'personalizado') {
+                        setTimeout(() => {
+                            atualizarKPIs();
+                            atualizarTodosGraficos();
+                        }, 100);
+                    }
+                });
+            }
+
+            if (dataFim) {
+                dataFim.addEventListener('change', function() {
+                    if (document.getElementById('filtro_periodo').value === 'personalizado') {
+                        setTimeout(() => {
+                            atualizarKPIs();
+                            atualizarTodosGraficos();
+                        }, 100);
+                    }
+                });
+            }
+        });
+
+        // ========== INICIALIZAÇÃO DO SISTEMA ==========
+        window.addEventListener('load', function() {
+            console.log('Sistema ICE inicializando...');
+            
+            // Inicializar gráficos vazios primeiro
+            setTimeout(() => {
+                criarGraficosVazios();
+            }, 100);
+            
+            // Preencher data e hora atual
+            preencherDataHoraAtual();
+            
+            // Aguardar e carregar dados
+            setTimeout(async () => {
+                try {
+                    console.log('Iniciando carregamento dos dados...');
+                    
+                    await obterProximoNumeroICE();
+                    await carregarDadosListas();
+                    await carregarDadosDashboard();
+                    
+                    await Promise.all([
+                        atualizarListaIce(),
+                        atualizarListaTipificacoes(),
+                        atualizarListaOperadores(),
+                        atualizarListaGestores(),
+                        atualizarListaGerencias(),
+                        atualizarListaEmpresas()
+                    ]);
+                    
+                    console.log('Sistema ICE inicializado com sucesso!');
+                } catch (error) {
+                    console.error('Erro na inicialização:', error);
+                    alert('Erro ao inicializar o sistema. Verifique a conexão com a API.');
+                }
+            }, 1000);
+        });
+
+        // ========== FUNÇÕES GLOBAIS ==========
+        // Tornar funções disponíveis globalmente para os botões HTML
+        window.atualizarDashboard = atualizarDashboard;
+        window.debugGraficos = debugGraficos;
+        window.exportarExcel = exportarExcel;
+        window.imprimirRelatorio = imprimirRelatorio;
+        window.atualizarListaIceDashboard = atualizarListaIceDashboard;
+        window.atualizarListaIce = atualizarListaIce;
+        window.atualizarListaTipificacoes = atualizarListaTipificacoes;
+        window.atualizarListaOperadores = atualizarListaOperadores;
+        window.atualizarListaGestores = atualizarListaGestores;
+        window.atualizarListaGerencias = atualizarListaGerencias;
+        window.atualizarListaEmpresas = atualizarListaEmpresas;
+        window.cadastrarIce = cadastrarIce;
+        window.cadastrarTipificacao = cadastrarTipificacao;
+        window.cadastrarOperador = cadastrarOperador;
+        window.cadastrarGestor = cadastrarGestor;
+        window.cadastrarGerencia = cadastrarGerencia;
+        window.cadastrarEmpresa = cadastrarEmpresa;
+    </script>
+</body>
+</html>
