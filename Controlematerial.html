@@ -327,6 +327,11 @@
             color: white;
         }
 
+        .btn-info {
+            background: linear-gradient(135deg, var(--info-color), #0369a1);
+            color: white;
+        }
+
         .btn-outline-primary {
             color: var(--primary-color);
             border: 2px solid var(--primary-color);
@@ -680,6 +685,7 @@
                 <button onclick="limparFormularios()" class="btn btn-warning">
                     <i class="fas fa-broom me-2"></i>Limpar Formulários
                 </button>
+                
             </div>
         </div>
 
@@ -864,6 +870,13 @@
 
             <!-- Aba do Dashboard -->
             <div class="tab-pane fade" id="dashboard">
+                <!-- Botão de Impressão no Dashboard -->
+                <div class="mb-3 text-end fade-in-up">
+                    <button onclick="imprimirGraficos()" class="btn btn-info">
+                        <i class="fas fa-print me-2"></i>Imprimir Relatório de Gráficos
+                    </button>
+                </div>
+                
                 <div class="row">
                     <!-- Estatísticas Principais -->
                     <div class="col-12 mb-4">
@@ -1194,6 +1207,293 @@
                 }
             } catch (error) {
                 mostrarToast('Erro ao excluir movimentação: ' + error.message, 'danger');
+            }
+        }
+
+        // Função para imprimir gráficos
+        async function imprimirGraficos() {
+            try {
+                // Verificar se estamos na aba dashboard
+                const dashboardTab = document.getElementById('dashboard');
+                if (!dashboardTab.classList.contains('show')) {
+                    // Trocar para aba dashboard primeiro
+                    document.querySelector('[data-bs-target="#dashboard"]').click();
+                    
+                    // Aguardar a aba carregar
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                
+                // Garantir que o dashboard está atualizado
+                await atualizarDashboard();
+                
+                // Aguardar renderização dos gráficos
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Verificar se os gráficos existem
+                const graficoMov = document.getElementById('graficoMovimentacoes');
+                const graficoArm = document.getElementById('graficoArmarios');
+                const graficoFin = document.getElementById('graficoFinalidades');
+                
+                if (!graficoMov || !graficoArm || !graficoFin) {
+                    throw new Error('Gráficos não encontrados. Certifique-se de estar na aba Dashboard.');
+                }
+                
+                // Criar nova janela para impressão
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                
+                // Obter data atual
+                const dataAtual = new Date().toLocaleDateString('pt-BR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                // Capturar os canvas dos gráficos como imagens
+                const graficoMovImg = graficoMov.toDataURL('image/png', 1.0);
+                const graficoArmImg = graficoArm.toDataURL('image/png', 1.0);
+                const graficoFinImg = graficoFin.toDataURL('image/png', 1.0);
+                
+                // Obter estatísticas atuais
+                const totalMateriais = document.getElementById('totalMateriais').textContent;
+                const totalEntradas = document.getElementById('totalEntradas').textContent;
+                const totalSaidas = document.getElementById('totalSaidas').textContent;
+                const totalMovimentacoes = document.getElementById('totalMovimentacoes').textContent;
+                
+                // HTML para impressão
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="pt-BR">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Relatório de Gráficos - Sistema de Materiais</title>
+                        <style>
+                            * {
+                                margin: 0;
+                                padding: 0;
+                                box-sizing: border-box;
+                            }
+                            
+                            @page {
+                                size: A4;
+                                margin: 1cm;
+                            }
+                            
+                            body {
+                                font-family: 'Arial', sans-serif;
+                                color: #000;
+                                line-height: 1.4;
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            }
+                            
+                            .header {
+                                text-align: center;
+                                margin-bottom: 20px;
+                                padding-bottom: 15px;
+                                border-bottom: 3px solid #2563eb;
+                            }
+                            
+                            .header h1 {
+                                color: #2563eb;
+                                font-size: 24px;
+                                margin-bottom: 5px;
+                                font-weight: bold;
+                            }
+                            
+                            .header .subtitle {
+                                color: #666;
+                                font-size: 14px;
+                                margin-bottom: 10px;
+                            }
+                            
+                            .header .date {
+                                color: #888;
+                                font-size: 12px;
+                            }
+                            
+                            .stats-section {
+                                display: flex;
+                                justify-content: space-around;
+                                margin-bottom: 25px;
+                                padding: 15px;
+                                background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+                                border-radius: 8px;
+                                border: 1px solid #e2e8f0;
+                            }
+                            
+                            .stat-item {
+                                text-align: center;
+                                flex: 1;
+                            }
+                            
+                            .stat-number {
+                                font-size: 28px;
+                                font-weight: bold;
+                                margin-bottom: 5px;
+                            }
+                            
+                            .stat-label {
+                                font-size: 11px;
+                                color: #666;
+                                text-transform: uppercase;
+                                letter-spacing: 0.5px;
+                            }
+                            
+                            .primary { color: #2563eb; }
+                            .success { color: #059669; }
+                            .danger { color: #dc2626; }
+                            .info { color: #0284c7; }
+                            
+                            .chart-section {
+                                margin-bottom: 25px;
+                                page-break-inside: avoid;
+                            }
+                            
+                            .chart-title {
+                                font-size: 16px;
+                                font-weight: bold;
+                                color: #1f2937;
+                                margin-bottom: 10px;
+                                padding: 8px 12px;
+                                background: linear-gradient(135deg, #2563eb, #1e40af);
+                                color: white;
+                                border-radius: 6px;
+                                text-align: center;
+                            }
+                            
+                            .chart-container {
+                                text-align: center;
+                                margin-bottom: 15px;
+                                padding: 10px;
+                                border: 1px solid #e5e7eb;
+                                border-radius: 8px;
+                                background: white;
+                            }
+                            
+                            .chart-container img {
+                                max-width: 100%;
+                                height: auto;
+                                border-radius: 4px;
+                            }
+                            
+                            .two-charts {
+                                display: flex;
+                                gap: 15px;
+                                margin-bottom: 20px;
+                            }
+                            
+                            .chart-half {
+                                flex: 1;
+                            }
+                            
+                            .chart-half .chart-container img {
+                                max-height: 300px;
+                            }
+                            
+                            .footer {
+                                position: fixed;
+                                bottom: 1cm;
+                                left: 1cm;
+                                right: 1cm;
+                                text-align: center;
+                                font-size: 10px;
+                                color: #888;
+                                border-top: 1px solid #ddd;
+                                padding-top: 10px;
+                            }
+                            
+                            @media print {
+                                body {
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                }
+                                
+                                .chart-section {
+                                    page-break-inside: avoid;
+                                }
+                                
+                                .footer {
+                                    position: fixed;
+                                    bottom: 0;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>📊 Sistema de Controle de Materiais</h1>
+                            <div class="subtitle">Relatório de Gráficos e Estatísticas</div>
+                            <div class="date">Gerado em: ${dataAtual}</div>
+                        </div>
+                        
+                        <div class="stats-section">
+                            <div class="stat-item">
+                                <div class="stat-number primary">${totalMateriais}</div>
+                                <div class="stat-label">Total de Materiais</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number success">${totalEntradas}</div>
+                                <div class="stat-label">Entradas (Mês)</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number danger">${totalSaidas}</div>
+                                <div class="stat-label">Saídas (Mês)</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number info">${totalMovimentacoes}</div>
+                                <div class="stat-label">Total Movimentações</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-section">
+                            <div class="chart-title">📈 Movimentações por Mês</div>
+                            <div class="chart-container">
+                                <img src="${graficoMovImg}" alt="Gráfico de Movimentações por Mês">
+                            </div>
+                        </div>
+                        
+                        <div class="two-charts">
+                            <div class="chart-half">
+                                <div class="chart-title">🗂️ Distribuição por Armário</div>
+                                <div class="chart-container">
+                                    <img src="${graficoArmImg}" alt="Gráfico de Distribuição por Armário">
+                                </div>
+                            </div>
+                            <div class="chart-half">
+                                <div class="chart-title">🎯 Movimentações por Finalidade</div>
+                                <div class="chart-container">
+                                    <img src="${graficoFinImg}" alt="Gráfico de Movimentações por Finalidade">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="footer">
+                            Sistema de Controle de Materiais - Relatório gerado automaticamente em ${new Date().toLocaleString('pt-BR')}
+                        </div>
+                    </body>
+                    </html>
+                `);
+                
+                printWindow.document.close();
+                
+                // Aguardar carregar as imagens antes de imprimir
+                setTimeout(() => {
+                    printWindow.focus();
+                    printWindow.print();
+                    
+                    // Fechar a janela após impressão (opcional)
+                    setTimeout(() => {
+                        printWindow.close();
+                    }, 1000);
+                }, 500);
+                
+                mostrarToast('Relatório de gráficos preparado para impressão!', 'success');
+                
+            } catch (error) {
+                console.error('Erro ao preparar impressão:', error);
+                mostrarToast('Erro ao preparar impressão dos gráficos', 'danger');
             }
         }
 
