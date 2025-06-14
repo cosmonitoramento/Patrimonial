@@ -15,6 +15,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden;
             position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #006400 100%);
+            min-height: 100vh;
         }
 
         /* Vídeo de fundo */
@@ -62,13 +64,22 @@
             padding: 0 20px 30px;
             border-bottom: 1px solid rgba(255,255,255,0.2);
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .logo h2 {
-            color: #3498db;
+            color: #DAA520;
             font-size: 24px;
             font-weight: 600;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
         }
 
         .menu-item {
@@ -106,6 +117,23 @@
             font-size: 18px;
         }
 
+        .ice-icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover .ice-icon,
+        .menu-item.active .ice-icon {
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            transform: scale(1.1);
+        }
+
+        .card h3 .icon .ice-icon {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
         .menu-item .text {
             font-size: 14px;
             font-weight: 500;
@@ -116,6 +144,20 @@
             flex: 1;
             padding: 30px;
             position: relative;
+            display: flex;
+            gap: 30px;
+        }
+
+        .content-area {
+            flex: 1;
+            max-width: 800px;
+        }
+
+        .sidebar-right {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
 
         .header {
@@ -146,10 +188,9 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 30px;
-            max-width: 1000px;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1200px) {
             .content-grid {
                 grid-template-columns: 1fr;
             }
@@ -245,6 +286,191 @@
             font-size: 14px;
         }
 
+        /* Seção de Aniversários */
+        .birthday-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .birthday-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .birthday-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ver-mais {
+            color: #00ff88;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .ver-mais:hover {
+            color: #00cc66;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+        }
+
+        .birthday-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            max-height: 400px;
+            padding-right: 10px;
+        }
+
+        .birthday-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .birthday-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .birthday-list::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 136, 0.6);
+            border-radius: 3px;
+        }
+
+        .birthday-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 136, 0.8);
+        }
+
+        .birthday-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .birthday-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .birthday-item.highlight {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+
+        .birthday-item.today {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .birthday-date {
+            background: #00ff88;
+            color: #1a1a1a;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .birthday-date .day {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .birthday-date .month {
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .birthday-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3498db, #00ff88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .birthday-info {
+            flex: 1;
+        }
+
+        .birthday-name {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .birthday-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #00ff88;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 255, 136, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* Seção de Calendário - REMOVIDA */
+
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar-right {
+                width: 100%;
+                order: -1;
+            }
+            
+            .birthday-section {
+                height: 400px;
+            }
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
@@ -258,6 +484,10 @@
             
             .container {
                 flex-direction: column;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -273,7 +503,7 @@
             }
         }
 
-        .card, .stat-card, .header {
+        .card, .stat-card, .header, .birthday-section {
             animation: fadeIn 0.6s ease-out;
         }
 
@@ -282,13 +512,13 @@
         .stat-card:nth-child(1) { animation-delay: 0.3s; }
         .stat-card:nth-child(2) { animation-delay: 0.4s; }
         .stat-card:nth-child(3) { animation-delay: 0.5s; }
+        .birthday-section { animation-delay: 0.6s; }
     </style>
 </head>
 <body>
     <!-- Vídeo de fundo -->
     <video class="video-background" autoplay muted loop>
-        <source src="https://cdn.pixabay.com/video/2019/09/30/27363-363524166_large.mp4" type="video/mp4">
-        <!-- Você pode adicionar mais formatos de vídeo aqui -->
+        <source src="adicionar link de um video" type="video/mp4">
     </video>
     
     <!-- Overlay para melhorar a legibilidade -->
@@ -297,6 +527,21 @@
     <div class="container">
         <nav class="sidebar">
             <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoShieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFD700"/>
+                            <stop offset="50%" style="stop-color:#FFA500"/>
+                            <stop offset="100%" style="stop-color:#FF8C00"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" 
+                          fill="url(#logoShieldGradient)" stroke="#3498db" stroke-width="0.5"/>
+                    <circle cx="12" cy="10" r="3" fill="#2C5282"/>
+                    <path d="M10.5 10L11.5 11L13.5 9" stroke="#FFD700" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    <rect x="9" y="14" width="6" height="1.5" rx="0.75" fill="#2C5282"/>
+                    <rect x="10" y="16" width="4" height="1" rx="0.5" fill="#2C5282"/>
+                </svg>
                 <h2>PATRIMONIAL</h2>
             </div>
             
@@ -306,7 +551,23 @@
             </a>
             
             <a href="ICE.html" class="menu-item">
-                <div class="icon">🧊</div>
+                <div class="icon">
+                    <svg class="ice-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FFD700"/>
+                                <stop offset="50%" style="stop-color:#FFA500"/>
+                                <stop offset="100%" style="stop-color:#FF8C00"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" 
+                              fill="url(#shieldGradient)" stroke="#2C5282" stroke-width="0.5"/>
+                        <circle cx="12" cy="10" r="3" fill="#2C5282"/>
+                        <path d="M10.5 10L11.5 11L13.5 9" stroke="#FFD700" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                        <rect x="9" y="14" width="6" height="1.5" rx="0.75" fill="#2C5282"/>
+                        <rect x="10" y="16" width="4" height="1" rx="0.5" fill="#2C5282"/>
+                    </svg>
+                </div>
                 <div class="text">ICE</div>
             </a>
             
@@ -317,49 +578,216 @@
         </nav>
 
         <main class="main-content">
-            <div class="header">
-                <h1>Página Inicial</h1>
-                <p>Selecione o módulo que deseja acessar</p>
+            <div class="content-area">
+                <div class="header">
+                    <h1>Página Inicial</h1>
+                    <p>Selecione o módulo que deseja acessar</p>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">Módulos Disponíveis</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">Online</div>
+                        <div class="stat-label">Status do Sistema</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">Ativo</div>
+                        <div class="stat-label">Servidor</div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <h3>
+                            <span class="icon">
+                                <svg class="ice-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
+                                    <defs>
+                                        <linearGradient id="shieldGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#FFD700"/>
+                                            <stop offset="50%" style="stop-color:#FFA500"/>
+                                            <stop offset="100%" style="stop-color:#FF8C00"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" 
+                                          fill="url(#shieldGradient2)" stroke="#2C5282" stroke-width="0.5"/>
+                                    <circle cx="12" cy="10" r="3" fill="#2C5282"/>
+                                    <path d="M10.5 10L11.5 11L13.5 9" stroke="#FFD700" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                    <rect x="9" y="14" width="6" height="1.5" rx="0.75" fill="#2C5282"/>
+                                    <rect x="10" y="16" width="4" height="1" rx="0.5" fill="#2C5282"/>
+                                </svg>
+                            </span>
+                            Sistema ICE
+                        </h3>
+                        <p>Módulo ICE para Gerenciamento e Controle de Índice de Controle de Emergência.</p>
+                        <a href="ICE.html" class="btn">Acessar ICE</a>
+                    </div>
+
+                    <div class="card">
+                        <h3>
+                            <span class="icon">⚡</span>
+                            Controle de Materiais Eletrônicos
+                        </h3>
+                        <p>Gerencie inventário, estoque e movimentação de componentes e materiais eletrônicos de forma centralizada e eficiente.</p>
+                        <a href="Controlematerial.html" class="btn">Acessar Controle</a>
+                    </div>
+                </div>
             </div>
 
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-number">2</div>
-                    <div class="stat-label">Módulos Disponíveis</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">Online</div>
-                    <div class="stat-label">Status do Sistema</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">Ativo</div>
-                    <div class="stat-label">Servidor</div>
-                </div>
-            </div>
-
-            <div class="content-grid">
-                <div class="card">
-                    <h3>
-                        <span class="icon">🧊</span>
-                        Sistema ICE
-                    </h3>
-                    <p>Módulo ICE para Gerenciamento e Controle de Índice de Controle de Emergência.</p>
-                    <a href="ICE.html" class="btn">Acessar ICE</a>
-                </div>
-
-                <div class="card">
-                    <h3>
-                        <span class="icon">⚡</span>
-                        Controle de Materiais Eletrônicos
-                    </h3>
-                    <p>Gerencie inventário, estoque e movimentação de componentes e materiais eletrônicos de forma centralizada e eficiente.</p>
-                    <a href="Controlematerial.html" class="btn">Acessar Controle</a>
+            <!-- Sidebar Direita -->
+            <div class="sidebar-right">
+                <!-- Seção de Aniversários -->
+                <div class="birthday-section">
+                    <div class="birthday-header">
+                        <h3>
+                            🎂 PRÓXIMOS ANIVERSARIANTES
+                        </h3>
+                        <a href="#" class="ver-mais">VER +</a>
+                    </div>
+                    
+                    <div class="birthday-list" id="birthdayList">
+                        <!-- Os aniversários serão carregados dinamicamente pelo JavaScript -->
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
+        // Lista completa de aniversariantes
+        const birthdays = [
+            { name: "MANOEL JUNIOR", date: "02/01" },
+            { name: "DANIELE FROTA", date: "18/01" },
+            { name: "JAIRO GOMES", date: "11/02" },
+            { name: "ANDEILSSON AMARAL", date: "07/03" },
+            { name: "LUCAS CORTES", date: "13/03" },
+            { name: "FAGNER GONÇALVES", date: "14/03" },
+            { name: "WASHINGTON", date: "27/03" },
+            { name: "MARLUCIA", date: "20/03" },
+            { name: "SIDNEI MELO", date: "18/04" },
+            { name: "CLEMERSON SANTOS", date: "21/04" },
+            { name: "INGRID VERONICA", date: "22/04" },
+            { name: "ERICA BATISTA", date: "23/04" },
+            { name: "BRUNO ARAUJO", date: "02/05" },
+            { name: "IVAR ARAUJO", date: "05/05" },
+            { name: "ERICLES DOUGRAS", date: "20/05" },
+            { name: "MARCELO AUGUSTO", date: "23/05" },
+            { name: "LUAN CELESTINO", date: "25/05" },
+            { name: "MARILZA SILVA", date: "29/05" },
+            { name: "SAVIO ROGERIO", date: "07/06" },
+            { name: "JANAINA ALEXANDRE", date: "22/06" },
+            { name: "SUELEN DAINE", date: "26/06" },
+            { name: "KAIQUE LOPES", date: "28/06" },
+            { name: "JOSILENE DOS SANTOS", date: "12/07" },
+            { name: "MARIA DE FATIMA", date: "30/07" },
+            { name: "INGRIDI LORRAINE", date: "01/09" },
+            { name: "JEOZADAQUE DA SILVA", date: "05/09" },
+            { name: "ALINE ALVES", date: "13/09" },
+            { name: "KENNEDY CILFARNEY", date: "16/09" },
+            { name: "RONIELSON SANTOS", date: "17/09" },
+            { name: "CRISTIANO DE LIMA", date: "23/09" },
+            { name: "VITOR OLIVEIRA", date: "24/09" },
+            { name: "LARISSA MENDES", date: "02/10" },
+            { name: "MARIA JARLENE", date: "17/10" },
+            { name: "FLAVIO PARRALEIGO", date: "24/10" },
+            { name: "EULINA ELEUTERIO", date: "30/10" },
+            { name: "LUCICLEI RAMOS", date: "02/11" },
+            { name: "VITORIA MARIA", date: "17/11" },
+            { name: "FRANCISCO NUNES", date: "27/11" },
+            { name: "QUEZIA NEVES", date: "19/12" },
+            { name: "IURE COSTA", date: "31/12" }
+        ];
+
+        function getInitials(name) {
+            return name.split(' ')
+                      .map(word => word.charAt(0))
+                      .join('')
+                      .substring(0, 2);
+        }
+
+        function getMonthName(month) {
+            const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
+                           'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+            return months[month - 1];
+        }
+
+        function getDaysUntilBirthday(birthdayDate) {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            
+            const [day, month] = birthdayDate.split('/').map(Number);
+            let birthdayThisYear = new Date(currentYear, month - 1, day);
+            
+            // Se o aniversário já passou este ano, calcular para o próximo ano
+            if (birthdayThisYear < today) {
+                birthdayThisYear = new Date(currentYear + 1, month - 1, day);
+            }
+            
+            const diffTime = birthdayThisYear - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return diffDays;
+        }
+
+        function isToday(birthdayDate) {
+            const today = new Date();
+            const [day, month] = birthdayDate.split('/').map(Number);
+            
+            return today.getDate() === day && (today.getMonth() + 1) === month;
+        }
+
+        function sortBirthdaysByProximity() {
+            return birthdays.map(birthday => ({
+                ...birthday,
+                daysUntil: getDaysUntilBirthday(birthday.date),
+                isToday: isToday(birthday.date)
+            })).sort((a, b) => a.daysUntil - b.daysUntil);
+        }
+
+        function renderBirthdays() {
+            const birthdayList = document.getElementById('birthdayList');
+            const sortedBirthdays = sortBirthdaysByProximity();
+            
+            birthdayList.innerHTML = '';
+            
+            sortedBirthdays.forEach(birthday => {
+                const [day, month] = birthday.date.split('/');
+                const monthName = getMonthName(parseInt(month));
+                const initials = getInitials(birthday.name);
+                
+                // Determinar classe de destaque
+                let highlightClass = '';
+                if (birthday.isToday) {
+                    highlightClass = 'today';
+                } else if (birthday.daysUntil <= 30) {
+                    highlightClass = 'highlight';
+                }
+                
+                const birthdayHTML = `
+                    <div class="birthday-item ${highlightClass}">
+                        <div class="birthday-date">
+                            <div class="day">${day}</div>
+                            <div class="month">${monthName}</div>
+                        </div>
+                        <div class="birthday-photo">${initials}</div>
+                        <div class="birthday-info">
+                            <div class="birthday-name">${birthday.name}</div>
+                            ${birthday.isToday ? '<div style="color: #FFD700; font-size: 12px; font-weight: bold;">🎉 HOJE!</div>' : 
+                              birthday.daysUntil <= 7 ? `<div style="color: #00ff88; font-size: 12px;">Em ${birthday.daysUntil} dia(s)</div>` : ''}
+                        </div>
+                        <div class="birthday-actions">
+                            <button class="action-btn">💬</button>
+                            <button class="action-btn">📧</button>
+                        </div>
+                    </div>
+                `;
+                
+                birthdayList.innerHTML += birthdayHTML;
+            });
+        }
+
         // Adicionar interatividade aos itens do menu
         const menuItems = document.querySelectorAll('.menu-item');
         
@@ -379,6 +807,9 @@
             setTimeout(() => {
                 document.body.style.transition = 'opacity 0.5s ease';
                 document.body.style.opacity = '1';
+                
+                // Carregar aniversários após o load
+                renderBirthdays();
             }, 100);
         });
 
@@ -396,6 +827,29 @@
 
         // Reduzir velocidade do vídeo para efeito mais suave
         video.playbackRate = 0.8;
+
+        // Adicionar interatividade aos botões de ação dos aniversários (delegação de eventos)
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('action-btn')) {
+                e.preventDefault();
+                const action = e.target.textContent;
+                const birthdayItem = e.target.closest('.birthday-item');
+                const name = birthdayItem.querySelector('.birthday-name').textContent;
+                
+                if (action === '💬') {
+                    console.log(`Abrir chat com ${name}`);
+                    // Aqui você pode adicionar a lógica para abrir o chat
+                } else if (action === '📧') {
+                    console.log(`Enviar email para ${name}`);
+                    // Aqui você pode adicionar a lógica para enviar email
+                }
+            }
+        });
+
+        // Atualizar a lista de aniversários a cada dia (opcional)
+        setInterval(() => {
+            renderBirthdays();
+        }, 24 * 60 * 60 * 1000); // A cada 24 horas
     </script>
 </body>
 </html>
