@@ -11,7 +11,7 @@
     <style>
         body {
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-                        url('https://cdn.pixabay.com/video/2019/09/30/27363-363524166_large.mp4') no-repeat center center fixed;
+                        url('https://raw.githubusercontent.com/cosmonitoramento/imagem_ice/refs/heads/main/Imagem1.png') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
             min-height: 100vh;
@@ -329,6 +329,16 @@
             margin-bottom: 20px;
         }
         
+        .filtro-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
         /* Responsividade */
         @media (max-width: 768px) {
             .main-container {
@@ -510,6 +520,11 @@
                                     </button>
                                 </div>
                             </div>
+                        </div>
+                        
+                        <!-- Info do filtro ativo -->
+                        <div id="filtro_info" class="filtro-info" style="display: none;">
+                            <i class="fas fa-info-circle"></i> <span id="filtro_texto">Filtro ativo</span>
                         </div>
                     </div>
 
@@ -1251,6 +1266,67 @@
             evolucaoMensal: null
         };
 
+        // ========== FUNÇÕES DE UTILITÁRIOS DE DATA ==========
+        function parseDate(dateString) {
+            if (!dateString) return null;
+            
+            // Tentar diferentes formatos de data
+            let date = null;
+            
+            // Formato ISO: YYYY-MM-DD
+            if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                date = new Date(dateString + 'T00:00:00');
+            }
+            // Formato brasileiro: DD/MM/YYYY
+            else if (dateString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                const [day, month, year] = dateString.split('/');
+                date = new Date(year, month - 1, day);
+            }
+            // Formato americano: MM/DD/YYYY
+            else if (dateString.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+                date = new Date(dateString);
+            }
+            // Outros formatos
+            else {
+                date = new Date(dateString);
+            }
+            
+            // Verificar se a data é válida
+            if (isNaN(date.getTime())) {
+                console.warn('Data inválida:', dateString);
+                return null;
+            }
+            
+            return date;
+        }
+
+        function isDateInRange(dateString, startDate, endDate) {
+            const date = parseDate(dateString);
+            if (!date) return false;
+            
+            // Normalizar horários para comparação apenas da data
+            const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            const normalizedStart = startDate ? new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) : null;
+            const normalizedEnd = endDate ? new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) : null;
+            
+            if (normalizedStart && normalizedDate < normalizedStart) return false;
+            if (normalizedEnd && normalizedDate > normalizedEnd) return false;
+            
+            return true;
+        }
+
+        function getDateInfo(dateString) {
+            const date = parseDate(dateString);
+            if (!date) return null;
+            
+            return {
+                year: date.getFullYear(),
+                month: date.getMonth(),
+                date: date.getDate(),
+                fullDate: date
+            };
+        }
+
         // ========== CONTROLE DE NAVEGAÇÃO ==========
         function showTab(tabName) {
             console.log('Mudando para aba:', tabName);
@@ -1326,58 +1402,95 @@
             }
         }
 
-        // ========== FUNÇÕES DE FILTRO E UTILITÁRIOS ==========
+        // ========== FUNÇÃO DE FILTRO CORRIGIDA ==========
         function filtrarDadosPorPeriodo() {
             const periodo = document.getElementById('filtro_periodo').value;
             const dataInicio = document.getElementById('data_inicio').value;
             const dataFim = document.getElementById('data_fim').value;
             
-            let dadosFiltrados = [...dadosIce];
+            console.log('Filtrando dados por período:', periodo, 'Início:', dataInicio, 'Fim:', dataFim);
+            console.log('Total de ICEs antes do filtro:', dadosIce.length);
             
-            if (periodo !== 'todos' && dadosIce.length > 0) {
+            let dadosFiltrados = [...dadosIce];
+            let textoFiltro = '';
+            
+            if (periodo === 'todos') {
+                textoFiltro = 'Exibindo todos os períodos';
+            } else {
                 const hoje = new Date();
-                let dataLimite;
+                hoje.setHours(23, 59, 59, 999); // Fim do dia atual
+                let dataLimite = null;
                 
                 switch (periodo) {
                     case 'hoje':
-                        dataLimite = new Date(hoje);
-                        dataLimite.setHours(0, 0, 0, 0);
+                        dataLimite = new Date();
+                        dataLimite.setHours(0, 0, 0, 0); // Início do dia atual
+                        dadosFiltrados = dadosIce.filter(ice => {
+                            return isDateInRange(ice.data, dataLimite, hoje);
+                        });
+                        textoFiltro = `Filtro: Hoje (${dataLimite.toLocaleDateString('pt-BR')})`;
                         break;
+                        
                     case '7dias':
-                        dataLimite = new Date(hoje);
+                        dataLimite = new Date();
                         dataLimite.setDate(hoje.getDate() - 7);
+                        dataLimite.setHours(0, 0, 0, 0);
+                        dadosFiltrados = dadosIce.filter(ice => {
+                            return isDateInRange(ice.data, dataLimite, hoje);
+                        });
+                        textoFiltro = `Filtro: Últimos 7 dias (${dataLimite.toLocaleDateString('pt-BR')} - ${hoje.toLocaleDateString('pt-BR')})`;
                         break;
+                        
                     case '30dias':
-                        dataLimite = new Date(hoje);
+                        dataLimite = new Date();
                         dataLimite.setDate(hoje.getDate() - 30);
+                        dataLimite.setHours(0, 0, 0, 0);
+                        dadosFiltrados = dadosIce.filter(ice => {
+                            return isDateInRange(ice.data, dataLimite, hoje);
+                        });
+                        textoFiltro = `Filtro: Últimos 30 dias (${dataLimite.toLocaleDateString('pt-BR')} - ${hoje.toLocaleDateString('pt-BR')})`;
                         break;
+                        
                     case '90dias':
-                        dataLimite = new Date(hoje);
+                        dataLimite = new Date();
                         dataLimite.setDate(hoje.getDate() - 90);
+                        dataLimite.setHours(0, 0, 0, 0);
+                        dadosFiltrados = dadosIce.filter(ice => {
+                            return isDateInRange(ice.data, dataLimite, hoje);
+                        });
+                        textoFiltro = `Filtro: Últimos 90 dias (${dataLimite.toLocaleDateString('pt-BR')} - ${hoje.toLocaleDateString('pt-BR')})`;
                         break;
+                        
                     case 'personalizado':
                         if (dataInicio && dataFim) {
                             const inicio = new Date(dataInicio);
                             const fim = new Date(dataFim);
                             fim.setHours(23, 59, 59, 999);
                             
-                            dadosFiltrados = dadosFiltrados.filter(ice => {
-                                if (!ice.data) return false;
-                                const dataIce = new Date(ice.data);
-                                return dataIce >= inicio && dataIce <= fim;
+                            dadosFiltrados = dadosIce.filter(ice => {
+                                return isDateInRange(ice.data, inicio, fim);
                             });
+                            textoFiltro = `Filtro: ${inicio.toLocaleDateString('pt-BR')} - ${fim.toLocaleDateString('pt-BR')}`;
+                        } else {
+                            textoFiltro = 'Filtro personalizado: Selecione as datas';
                         }
-                        return dadosFiltrados;
-                }
-                
-                if (dataLimite) {
-                    dadosFiltrados = dadosFiltrados.filter(ice => {
-                        if (!ice.data) return false;
-                        const dataIce = new Date(ice.data);
-                        return dataIce >= dataLimite;
-                    });
+                        break;
                 }
             }
+            
+            // Atualizar info do filtro
+            const filtroInfo = document.getElementById('filtro_info');
+            const filtroTexto = document.getElementById('filtro_texto');
+            
+            if (periodo === 'todos') {
+                filtroInfo.style.display = 'none';
+            } else {
+                filtroInfo.style.display = 'block';
+                filtroTexto.textContent = `${textoFiltro} - ${dadosFiltrados.length} registros encontrados`;
+            }
+            
+            console.log('Dados filtrados:', dadosFiltrados.length, 'registros');
+            console.log('Filtro aplicado:', textoFiltro);
             
             return dadosFiltrados;
         }
@@ -1409,7 +1522,7 @@
             });
         }
 
-        // ========== FUNÇÕES DOS GRÁFICOS ==========
+        // ========== FUNÇÕES DOS GRÁFICOS CORRIGIDAS ==========
         function destruirGrafico(chartKey) {
             if (charts[chartKey]) {
                 try {
@@ -1485,19 +1598,15 @@
             const dados2025 = new Array(12).fill(0);
             
             dados.forEach(ice => {
-                if (!ice.data) return;
-                try {
-                    const data = new Date(ice.data);
-                    const ano = data.getFullYear();
-                    const mes = data.getMonth();
-                    
-                    if (ano === 2024) {
-                        dados2024[mes]++;
-                    } else if (ano === 2025) {
-                        dados2025[mes]++;
-                    }
-                } catch (error) {
-                    console.warn('Erro ao processar data do ICE:', ice.data);
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return;
+                
+                const { year, month } = dateInfo;
+                
+                if (year === 2024) {
+                    dados2024[month]++;
+                } else if (year === 2025) {
+                    dados2025[month]++;
                 }
             });
             
@@ -1544,17 +1653,14 @@
             const canvas = document.getElementById('chart_tipificacao_mes');
             if (!canvas) return;
             
-            const mesAtual = new Date().getMonth();
-            const anoAtual = new Date().getFullYear();
+            const agora = new Date();
+            const mesAtual = agora.getMonth();
+            const anoAtual = agora.getFullYear();
             
             const dadosMes = dados.filter(ice => {
-                if (!ice.data) return false;
-                try {
-                    const data = new Date(ice.data);
-                    return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
-                } catch (error) {
-                    return false;
-                }
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return false;
+                return dateInfo.month === mesAtual && dateInfo.year === anoAtual;
             });
             
             const contagem = {};
@@ -1603,15 +1709,11 @@
             const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
             const anoAtual = new Date().getFullYear();
             
-            // Filtrar dados do ano atual
+            // Filtrar dados do ano atual que estejam dentro do período filtrado
             const dadosAno = dados.filter(ice => {
-                if (!ice.data) return false;
-                try {
-                    const data = new Date(ice.data);
-                    return data.getFullYear() === anoAtual;
-                } catch (error) {
-                    return false;
-                }
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return false;
+                return dateInfo.year === anoAtual;
             });
             
             // Obter todas as tipificações
@@ -1630,12 +1732,9 @@
                 
                 dadosAno.forEach(ice => {
                     if ((ice.tipificacao || 'Não informado') === tip) {
-                        try {
-                            const data = new Date(ice.data);
-                            const mes = data.getMonth();
-                            dadosMes[mes]++;
-                        } catch (error) {
-                            console.warn('Erro ao processar data:', ice.data);
+                        const dateInfo = getDateInfo(ice.data);
+                        if (dateInfo) {
+                            dadosMes[dateInfo.month]++;
                         }
                     }
                 });
@@ -1693,16 +1792,12 @@
             const anoAtual = new Date().getFullYear();
             
             dados.forEach(ice => {
-                if (!ice.data) return;
-                try {
-                    const data = new Date(ice.data);
-                    if (data.getFullYear() === anoAtual) {
-                        const mes = data.getMonth();
-                        const bcs = parseInt(ice.quantidade_bcs) || 0;
-                        bcsPorMes[mes] += bcs;
-                    }
-                } catch (error) {
-                    console.warn('Erro ao processar BCs:', error);
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return;
+                
+                if (dateInfo.year === anoAtual) {
+                    const bcs = parseInt(ice.quantidade_bcs) || 0;
+                    bcsPorMes[dateInfo.month] += bcs;
                 }
             });
             
@@ -1736,17 +1831,14 @@
             const canvas = document.getElementById('chart_gerencia_mes');
             if (!canvas) return;
             
-            const mesAtual = new Date().getMonth();
-            const anoAtual = new Date().getFullYear();
+            const agora = new Date();
+            const mesAtual = agora.getMonth();
+            const anoAtual = agora.getFullYear();
             
             const dadosMes = dados.filter(ice => {
-                if (!ice.data) return false;
-                try {
-                    const data = new Date(ice.data);
-                    return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
-                } catch (error) {
-                    return false;
-                }
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return false;
+                return dateInfo.month === mesAtual && dateInfo.year === anoAtual;
             });
             
             const contagem = {};
@@ -1796,13 +1888,9 @@
             
             const anoAtual = new Date().getFullYear();
             const dadosAno = dados.filter(ice => {
-                if (!ice.data) return false;
-                try {
-                    const data = new Date(ice.data);
-                    return data.getFullYear() === anoAtual;
-                } catch (error) {
-                    return false;
-                }
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return false;
+                return dateInfo.year === anoAtual;
             });
             
             const contagem = {};
@@ -1850,13 +1938,9 @@
             
             const anoAtual = new Date().getFullYear();
             const dadosAno = dados.filter(ice => {
-                if (!ice.data) return false;
-                try {
-                    const data = new Date(ice.data);
-                    return data.getFullYear() === anoAtual;
-                } catch (error) {
-                    return false;
-                }
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return false;
+                return dateInfo.year === anoAtual;
             });
             
             const contagem = {};
@@ -1909,20 +1993,15 @@
             const bcs2025 = new Array(12).fill(0);
             
             dados.forEach(ice => {
-                if (!ice.data) return;
-                try {
-                    const data = new Date(ice.data);
-                    const ano = data.getFullYear();
-                    const mes = data.getMonth();
-                    const bcs = parseInt(ice.quantidade_bcs) || 0;
-                    
-                    if (ano === 2024) {
-                        bcs2024[mes] += bcs;
-                    } else if (ano === 2025) {
-                        bcs2025[mes] += bcs;
-                    }
-                } catch (error) {
-                    console.warn('Erro ao processar BCs comparativo:', error);
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return;
+                
+                const bcs = parseInt(ice.quantidade_bcs) || 0;
+                
+                if (dateInfo.year === 2024) {
+                    bcs2024[dateInfo.month] += bcs;
+                } else if (dateInfo.year === 2025) {
+                    bcs2025[dateInfo.month] += bcs;
                 }
             });
             
@@ -1961,13 +2040,9 @@
             if (!canvas) return;
             
             const dados2025 = dados.filter(ice => {
-                if (!ice.data) return false;
-                try {
-                    const data = new Date(ice.data);
-                    return data.getFullYear() === 2025;
-                } catch (error) {
-                    return false;
-                }
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return false;
+                return dateInfo.year === 2025;
             });
             
             const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -1976,18 +2051,16 @@
             const simulados = new Array(12).fill(0);
             
             dados2025.forEach(ice => {
-                try {
-                    const data = new Date(ice.data);
-                    const mes = data.getMonth();
-                    icePorMes[mes]++;
-                    
-                    if (ice.acionamento_real === 'sim') {
-                        acionamentosReais[mes]++;
-                    } else if (ice.acionamento_real === 'simulado') {
-                        simulados[mes]++;
-                    }
-                } catch (error) {
-                    console.warn('Erro ao processar evolução mensal:', error);
+                const dateInfo = getDateInfo(ice.data);
+                if (!dateInfo) return;
+                
+                const mes = dateInfo.month;
+                icePorMes[mes]++;
+                
+                if (ice.acionamento_real === 'sim') {
+                    acionamentosReais[mes]++;
+                } else if (ice.acionamento_real === 'simulado') {
+                    simulados[mes]++;
                 }
             });
             
@@ -2162,6 +2235,13 @@
             
             // Verificar instâncias dos gráficos
             console.log('Estado dos gráficos:', charts);
+            
+            // Testar processamento de datas
+            console.log('=== TESTE DE DATAS ===');
+            dadosIce.slice(0, 5).forEach(ice => {
+                const dateInfo = getDateInfo(ice.data);
+                console.log(`Data original: ${ice.data}, Processada:`, dateInfo);
+            });
             
             console.log('Forçando atualização dos gráficos...');
             atualizarTodosGraficos();
@@ -2412,41 +2492,37 @@
             try {
                 document.getElementById('listaIceDashboard').innerHTML = '<div class="loading">Carregando...</div>';
                 
-                const data = await callAPI('GET', 'listarIce');
+                const dadosFiltrados = filtrarDadosPorPeriodo();
                 
-                if (data.status === 'success') {
-                    const lista = document.getElementById('listaIceDashboard');
-                    if (data.ice.length === 0) {
-                        lista.innerHTML = '<div class="text-muted text-center">Nenhum ICE cadastrado</div>';
-                    } else {
-                        const icesRecentes = data.ice.slice(-20).reverse();
-                        lista.innerHTML = icesRecentes.map(ice => `
-                            <div class="ice-item">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <strong style="color: #4a7c59;">ICE ${String(ice.numero).padStart(3, '0')}</strong>
-                                            <span class="ice-badge badge ${ice.acionamento_real === 'sim' ? 'bg-danger' : ice.acionamento_real === 'simulado' ? 'bg-warning text-dark' : 'bg-secondary'}">${ice.acionamento_real || 'N/A'}</span>
+                const lista = document.getElementById('listaIceDashboard');
+                if (dadosFiltrados.length === 0) {
+                    lista.innerHTML = '<div class="text-muted text-center">Nenhum ICE encontrado no período selecionado</div>';
+                } else {
+                    const icesRecentes = dadosFiltrados.slice(-20).reverse();
+                    lista.innerHTML = icesRecentes.map(ice => `
+                        <div class="ice-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong style="color: #4a7c59;">ICE ${String(ice.numero).padStart(3, '0')}</strong>
+                                        <span class="ice-badge badge ${ice.acionamento_real === 'sim' ? 'bg-danger' : ice.acionamento_real === 'simulado' ? 'bg-warning text-dark' : 'bg-secondary'}">${ice.acionamento_real || 'N/A'}</span>
+                                    </div>
+                                    <div class="row text-sm">
+                                        <div class="col-md-6">
+                                            <small><strong>Operador:</strong> ${ice.operador || 'N/A'}</small><br>
+                                            <small><strong>Data/Hora:</strong> ${ice.data || 'N/A'} ${ice.hora || ''}</small><br>
+                                            <small><strong>Local:</strong> ${ice.local || 'N/A'}</small>
                                         </div>
-                                        <div class="row text-sm">
-                                            <div class="col-md-6">
-                                                <small><strong>Operador:</strong> ${ice.operador || 'N/A'}</small><br>
-                                                <small><strong>Data/Hora:</strong> ${ice.data || 'N/A'} ${ice.hora || ''}</small><br>
-                                                <small><strong>Local:</strong> ${ice.local || 'N/A'}</small>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <small><strong>Tipificação:</strong> ${ice.tipificacao || 'N/A'}</small><br>
-                                                <small><strong>Gerência:</strong> ${ice.ger_jirau || 'N/A'}</small><br>
-                                                <small><strong>BCs:</strong> ${ice.quantidade_bcs || '0'}</small>
-                                            </div>
+                                        <div class="col-md-6">
+                                            <small><strong>Tipificação:</strong> ${ice.tipificacao || 'N/A'}</small><br>
+                                            <small><strong>Gerência:</strong> ${ice.ger_jirau || 'N/A'}</small><br>
+                                            <small><strong>BCs:</strong> ${ice.quantidade_bcs || '0'}</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        `).join('');
-                    }
-                } else {
-                    document.getElementById('listaIceDashboard').innerHTML = '<div class="error">Erro ao carregar ICEs: ' + data.message + '</div>';
+                        </div>
+                    `).join('');
                 }
             } catch (error) {
                 console.error('Erro ao carregar ICEs no dashboard:', error);
@@ -2755,6 +2831,7 @@
                                 if (dadosIce.length > 0) {
                                     atualizarKPIs();
                                     atualizarTodosGraficos();
+                                    atualizarListaIceDashboard();
                                 }
                             }, 100);
                         }
@@ -2772,6 +2849,7 @@
                         setTimeout(() => {
                             atualizarKPIs();
                             atualizarTodosGraficos();
+                            atualizarListaIceDashboard();
                         }, 100);
                     }
                 });
@@ -2783,6 +2861,7 @@
                         setTimeout(() => {
                             atualizarKPIs();
                             atualizarTodosGraficos();
+                            atualizarListaIceDashboard();
                         }, 100);
                     }
                 });
