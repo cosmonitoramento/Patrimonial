@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -2489,6 +2490,7 @@
         }
 
         // Lista de ICEs no Dashboard
+  // Lista de ICEs no Dashboard
         async function atualizarListaIceDashboard() {
             try {
                 document.getElementById('listaIceDashboard').innerHTML = '<div class="loading">Carregando...</div>';
@@ -2520,6 +2522,12 @@
                                             <small><strong>BCs:</strong> ${ice.quantidade_bcs || '0'}</small>
                                         </div>
                                     </div>
+                                    ${ice.descricao_ocorrencia ? `
+                                        <div class="descricao-ocorrencia">
+                                            <strong style="color: #4a7c59;">Descrição da Ocorrência:</strong><br>
+                                            ${ice.descricao_ocorrencia}
+                                        </div>
+                                    ` : ''}
                                 </div>
                             </div>
                         </div>
