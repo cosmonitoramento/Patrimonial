@@ -1749,6 +1749,7 @@
             customModules.slice(0, 5).forEach((module) => { // Mostrar apenas 5 primeiros
                 const moduleItem = document.createElement('a');
                 moduleItem.href = module.link;
+                moduleItem.target = '_blank'; // Abrir em nova guia
                 moduleItem.className = 'sidebar-dynamic-item';
                 moduleItem.innerHTML = `
                     <div class="icon">${module.icon}</div>
@@ -1912,7 +1913,7 @@
                     </div>
                     <p style="margin-bottom: 20px;">${module.description || 'Módulo personalizado criado pelo usuário.'}</p>
                     <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
-                        <a href="${module.link}" class="btn" style="flex: 1;">Acessar ${module.name}</a>
+                        <a href="${module.link}" target="_blank" class="btn" style="flex: 1;">Acessar ${module.name}</a>
                         <button class="btn btn-danger" onclick="removeCustomModule(${index})" style="padding: 12px;" title="Remover módulo">
                             🗑️
                         </button>
