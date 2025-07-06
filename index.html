@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Patrimonial</title>
+    <title>Cos Monitoramento</title>
     <style>
         * {
             margin: 0;
@@ -600,7 +600,7 @@
             background: white;
             border-radius: 20px;
             width: 90%;
-            max-width: 900px;
+            max-width: 1000px;
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -706,6 +706,105 @@
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
 
+        /* Seletor de Ícones */
+        .icon-selector {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            background: #f8fafc;
+            margin-bottom: 15px;
+        }
+
+        .icon-selector-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: block;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .icon-option {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .icon-option:hover {
+            background: #e2e8f0;
+            border-color: #1e40af;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.2);
+        }
+
+        .icon-option.selected {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-color: #1e40af;
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+        }
+
+        .icon-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #10b981;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .selected-icon-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .selected-icon-preview .icon {
+            font-size: 28px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
         /* Lista de Módulos */
         .modules-grid {
             display: grid;
@@ -731,15 +830,15 @@
         }
 
         .module-icon {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             background: linear-gradient(135deg, #1e40af, #3b82f6);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 20px;
+            font-size: 22px;
         }
 
         .module-info {
@@ -791,6 +890,18 @@
             color: #1d4ed8;
         }
 
+        .alert-error {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #dc2626;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            border-color: #f59e0b;
+            color: #d97706;
+        }
+
         /* Status Indicators */
         .status-online {
             color: #22c55e;
@@ -800,6 +911,37 @@
         .status-active {
             color: #3b82f6;
             font-weight: 700;
+        }
+
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar,
+        .birthday-list::-webkit-scrollbar,
+        .config-content::-webkit-scrollbar,
+        .icon-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track,
+        .birthday-list::-webkit-scrollbar-track,
+        .config-content::-webkit-scrollbar-track,
+        .icon-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb,
+        .birthday-list::-webkit-scrollbar-thumb,
+        .config-content::-webkit-scrollbar-thumb,
+        .icon-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover,
+        .birthday-list::-webkit-scrollbar-thumb:hover,
+        .config-content::-webkit-scrollbar-thumb:hover,
+        .icon-grid::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
 
         /* Responsive */
@@ -848,6 +990,17 @@
                 width: 95%;
                 max-height: 90vh;
             }
+            
+            .icon-grid {
+                grid-template-columns: repeat(8, 1fr);
+                gap: 6px;
+            }
+            
+            .icon-option {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+            }
         }
 
         /* Animations */
@@ -873,30 +1026,10 @@
         .card:nth-child(5) { animation-delay: 0.5s; }
         .card:nth-child(6) { animation-delay: 0.6s; }
 
-        /* Custom Scrollbar */
-        .sidebar::-webkit-scrollbar,
-        .birthday-list::-webkit-scrollbar,
-        .config-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar::-webkit-scrollbar-track,
-        .birthday-list::-webkit-scrollbar-track,
-        .config-content::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar::-webkit-scrollbar-thumb,
-        .birthday-list::-webkit-scrollbar-thumb,
-        .config-content::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb:hover,
-        .birthday-list::-webkit-scrollbar-thumb:hover,
-        .config-content::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
+        /* Loading Spinner */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -986,7 +1119,7 @@
                 <div class="header-content">
                     <h1>
                         <div class="header-icon">🏢</div>
-                        Sistema de Gestão Patrimonial
+                        Sistema Cos Monitoramento
                     </h1>
                     <p>Painel de controle integrado para gestão completa de recursos e processos</p>
                 </div>
@@ -1119,6 +1252,24 @@
                             <button type="submit" class="btn btn-success" style="height: 48px;">
                                 💾 Salvar
                             </button>
+                        </div>
+                        
+                        <!-- Seletor de Ícones -->
+                        <div class="icon-selector">
+                            <label class="icon-selector-label">
+                                Escolha um ícone para o módulo: 
+                                <span style="color: #10b981; font-weight: 700;">(100+ opções disponíveis)</span>
+                            </label>
+                            <div class="icon-grid" id="iconGrid">
+                                <!-- Ícones serão carregados aqui -->
+                            </div>
+                            <div class="selected-icon-preview" id="iconPreview">
+                                <div class="icon" id="previewIcon">🎯</div>
+                                <div>
+                                    <strong>Ícone Selecionado</strong><br>
+                                    <small style="color: #64748b;">Este ícone aparecerá no seu módulo personalizado</small>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -1317,15 +1468,100 @@
         }
 
         // ==========================================
-        // SISTEMA DE MÓDULOS - APENAS GOOGLE SHEETS
+        // 🎨 SISTEMA COMPLETO DE SELEÇÃO DE ÍCONES
         // ==========================================
         
         // Sistema de módulos personalizados - APENAS GOOGLE SHEETS
         let customModules = [];
-        const defaultIcons = ['🎯', '📱', '💰', '🛒', '📈', '🌐', '📊', '🔧', '📦', '🎨', '🔍', '📝', '🏆', '⭐', '🚀'];
-        let iconCounter = 0;
+        const availableIcons = [
+            // Categoria: Escritório & Documentos
+            '🏠', '📊', '📈', '💰', '🛒', '📱', '💻', '🖥️', '⌨️', '🖱️',
+            '📞', '📧', '💬', '🔗', '🌐', '🔍', '📝', '📄', '📋', '📁',
+            '📂', '🗂️', '📅', '⏰', '⏱️', '⏲️', '🔔', '🔕', '📢', '📣',
+            
+            // Categoria: Ferramentas & Configurações
+            '⚙️', '🔧', '🔨', '🛠️', '⚡', '🔋', '🔌', '💡', '🔦', '🏷️',
+            '📦', '📮', '📪', '📬', '📭', '📯', '🎯', '🚀', '⭐', '🏆',
+            
+            // Categoria: Design & Arte
+            '🎨', '🖼️', '🎭', '🎪', '🖌️', '✏️', '✒️', '🖊️', '🖋️', '📐',
+            '📏', '📊', '📉', '📈', '💹', '🎲', '🃏', '🎮', '🕹️', '🎸',
+            
+            // Categoria: Pessoas & Recursos Humanos
+            '👥', '👤', '👨‍💼', '👩‍💼', '👨‍🔧', '👩‍🔧', '👨‍💻', '👩‍💻', '👨‍🏭', '👩‍🏭',
+            '👨‍🎓', '👩‍🎓', '👨‍⚕️', '👩‍⚕️', '👨‍🚀', '👩‍🚀', '👮‍♂️', '👮‍♀️', '🕵️‍♂️', '🕵️‍♀️',
+            
+            // Categoria: Empresarial & Prédios
+            '🏢', '🏭', '🏗️', '🏪', '🏬', '🏦', '🏛️', '🏨', '🏤', '🏣',
+            '🏰', '🗼', '🏙️', '🌆', '🌃', '🌇', '🌉', '🗽', '⛩️', '🕌',
+            
+            // Categoria: Transporte & Logística
+            '🚗', '🚙', '🚐', '🚛', '🚚', '🚌', '🚍', '🚎', '🏍️', '🛵',
+            '🚲', '🛴', '🚁', '✈️', '🚀', '🛸', '⛵', '🚤', '⛴️', '🚢',
+            
+            // Categoria: Tecnologia & Digital
+            '💾', '💿', '📀', '💽', '🖲️', '📺', '📻', '🎙️', '📷', '📹',
+            '📼', '💴', '💵', '💶', '💷', '💸', '💳', '💎', '⚖️', '🔬',
+            
+            // Categoria: Segurança & Proteção
+            '🔒', '🔓', '🔑', '🗝️', '🔐', '🛡️', '🚨', '🚥', '⚠️', '☢️',
+            '☣️', '⭕', '🚫', '❌', '✅', '☑️', '✔️', '❎', '➕', '➖'
+        ];
+        
+        let selectedIcon = '🎯'; // Ícone padrão selecionado
         let isLoading = false;
         let isConnected = false;
+
+        // ==========================================
+        // 🎨 FUNÇÕES DO SELETOR DE ÍCONES
+        // ==========================================
+
+        function initializeIconSelector() {
+            const iconGrid = document.getElementById('iconGrid');
+            iconGrid.innerHTML = '';
+            
+            availableIcons.forEach(icon => {
+                const iconOption = document.createElement('div');
+                iconOption.className = 'icon-option';
+                iconOption.textContent = icon;
+                iconOption.title = `Selecionar ${icon}`;
+                
+                if (icon === selectedIcon) {
+                    iconOption.classList.add('selected');
+                }
+                
+                iconOption.addEventListener('click', () => {
+                    // Remove seleção anterior
+                    document.querySelectorAll('.icon-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Adiciona seleção atual
+                    iconOption.classList.add('selected');
+                    selectedIcon = icon;
+                    
+                    // Atualiza preview
+                    updateIconPreview();
+                    
+                    // Feedback visual
+                    iconOption.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        iconOption.style.transform = '';
+                    }, 200);
+                });
+                
+                iconGrid.appendChild(iconOption);
+            });
+            
+            updateIconPreview();
+        }
+
+        function updateIconPreview() {
+            const previewIcon = document.getElementById('previewIcon');
+            if (previewIcon) {
+                previewIcon.textContent = selectedIcon;
+            }
+        }
 
         // ==========================================
         // FUNÇÕES DE INTEGRAÇÃO COM GOOGLE SHEETS
@@ -1457,12 +1693,12 @@
             if (sheetsResult.success) {
                 customModules = sheetsResult.modulos;
                 renderCustomModules();
-                renderSidebarModules(); // Nova função para sidebar
+                renderSidebarModules();
                 isConnected = true;
             } else {
                 customModules = [];
                 renderCustomModules();
-                renderSidebarModules(); // Nova função para sidebar
+                renderSidebarModules();
                 isConnected = false;
             }
         }
@@ -1495,7 +1731,7 @@
         }
 
         // ==========================================
-        // 🚀 NOVA FUNÇÃO: RENDERIZAR MÓDULOS NA SIDEBAR LATERAL
+        // 🚀 RENDERIZAÇÃO DE MÓDULOS NA SIDEBAR LATERAL
         // ==========================================
 
         function renderSidebarModules() {
@@ -1571,19 +1807,6 @@
                     <div style="color: #64748b; font-size: 14px; margin-top: 10px;">Conectando com Google Sheets...</div>
                 </div>
             `;
-            
-            // Adicionar animação de spin se não existir
-            if (!document.querySelector('#spinAnimation')) {
-                const style = document.createElement('style');
-                style.id = 'spinAnimation';
-                style.textContent = `
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
             
             document.body.appendChild(loading);
         }
@@ -1795,7 +2018,7 @@
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
             alertDiv.innerHTML = `
-                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span>
                 <span>${message}</span>
             `;
             
@@ -1828,6 +2051,7 @@
         function openConfigModal() {
             document.getElementById('configModal').classList.add('show');
             renderModulesList();
+            initializeIconSelector(); // Inicializar seletor de ícones
             document.body.style.overflow = 'hidden';
         }
 
@@ -1907,13 +2131,10 @@
                 return;
             }
 
-            const selectedIcon = defaultIcons[iconCounter % defaultIcons.length];
-            iconCounter++;
-
             const dadosModulo = {
                 name: moduleName,
                 link: moduleLink,
-                icon: selectedIcon,
+                icon: selectedIcon, // Usar o ícone selecionado pelo usuário
                 created: new Date().toLocaleDateString('pt-BR')
             };
 
@@ -1922,6 +2143,8 @@
             if (sucesso) {
                 showAlert('✅ Módulo salvo no Google Sheets com sucesso!', 'success');
                 this.reset();
+                selectedIcon = '🎯'; // Resetar para ícone padrão
+                initializeIconSelector(); // Reinicializar seletor
                 renderModulesList();
             } else {
                 showAlert('❌ Erro ao salvar módulo no Google Sheets.', 'error');
@@ -1949,17 +2172,25 @@
         window.deleteModule = deleteModule;
         window.sendMessage = sendMessage;
         window.sendEmail = sendEmail;
+        window.initializeIconSelector = initializeIconSelector;
+        window.updateIconPreview = updateIconPreview;
 
         // ==========================================
         // 🚀 INICIALIZAÇÃO DO SISTEMA COMPLETO
         // ==========================================
 
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Sistema Patrimonial iniciado');
+            console.log('🚀 Sistema Cos Monitoramento iniciado');
             
             // 🎂 Inicializar sistema de aniversários dinâmico
             renderBirthdays();
             console.log('🎂 Sistema de aniversários dinâmico carregado');
+            
+            // 🎨 Inicializar seletor de ícones se modal estiver aberto
+            if (document.getElementById('iconGrid')) {
+                initializeIconSelector();
+                console.log('🎨 Seletor de ícones inicializado');
+            }
             
             // ⚙️ Verificar configuração Google Sheets antes de carregar módulos
             if (!GOOGLE_SCRIPT_URL.includes('script.google.com')) {
@@ -1971,7 +2202,6 @@
             
             // 📋 Garantir que sidebar de aniversários inicia escondida
             const sidebarRight = document.getElementById('sidebarRight');
-            const toggleBtn = document.getElementById('toggleSidebar');
             sidebarRight.classList.remove('visible');
             toggleIcon.textContent = '📋';
             toggleText.textContent = 'Mostrar Aniversários';
@@ -1999,7 +2229,7 @@
             }, 24 * 60 * 60 * 1000);
         }, tempoAteMeiaNoite);
 
-        console.log('✅ Sistema Patrimonial totalmente carregado e funcional!');
+        console.log('✅ Sistema Cos Monitoramento totalmente carregado e funcional!');
     </script>
 </body>
 </html>
