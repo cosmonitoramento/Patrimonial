@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Área de Trabalho</title>
+    <title>Sistema Patrimonial</title>
     <style>
         * {
             margin: 0;
@@ -12,102 +13,81 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-            position: relative;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-
-        /* Vídeo de fundo */
-        .video-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            object-fit: cover;
-        }
-
-        /* Overlay para melhorar legibilidade */
-        .video-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: -1;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
         }
 
         .container {
             display: flex;
-            height: 100vh;
-            position: relative;
+            min-height: 100vh;
         }
 
+        /* Sidebar */
         .sidebar {
             width: 280px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            color: #333;
-            padding: 20px 0;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            padding: 0;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
-            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
 
         .logo {
-            padding: 0 20px 30px;
-            border-bottom: 1px solid rgba(74, 124, 89, 0.2);
-            margin-bottom: 20px;
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
         .logo h2 {
-            color: #4a7c59;
+            color: #fbbf24;
             font-size: 24px;
-            font-weight: 600;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .logo-icon {
-            width: 32px;
-            height: 32px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            width: 36px;
+            height: 36px;
+        }
+
+        .menu-section {
+            padding: 20px 0;
         }
 
         .menu-item {
             display: flex;
             align-items: center;
-            padding: 15px 20px;
+            padding: 16px 20px;
             text-decoration: none;
-            color: #333;
+            color: rgba(255, 255, 255, 0.9);
             transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-            position: relative;
-            border-radius: 0 10px 10px 0;
-            margin-right: 15px;
+            border-left: 4px solid transparent;
+            margin: 2px 0;
             font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
         }
 
         .menu-item:hover {
-            background: linear-gradient(45deg, #4a7c59, #2c5530);
-            border-left-color: #4a7c59;
+            background: rgba(255, 255, 255, 0.1);
             color: white;
-            transform: translateX(5px);
+            border-left-color: #fbbf24;
+            transform: translateX(8px);
         }
 
         .menu-item.active {
-            background: linear-gradient(45deg, #4a7c59, #2c5530);
-            border-left-color: #4a7c59;
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.05));
+            border-left-color: #fbbf24;
             color: white;
-            box-shadow: 0 4px 15px rgba(74, 124, 89, 0.3);
+            font-weight: 600;
         }
 
         .menu-item .icon {
@@ -124,142 +104,91 @@
             width: 24px;
             height: 24px;
             fill: currentColor;
-            transition: all 0.3s ease;
         }
 
-        .menu-item:hover .ice-icon,
-        .menu-item.active .ice-icon {
-            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
-            transform: scale(1.1);
-        }
-
-        .card h3 .icon .ice-icon {
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-
-        .menu-item .text {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
+        /* Main Content */
         .main-content {
             margin-left: 280px;
+            margin-right: 320px;
             flex: 1;
             padding: 30px;
-            position: relative;
-            display: flex;
-            gap: 30px;
+            background: #f8fafc;
+            min-height: 100vh;
+            transition: margin-right 0.3s ease;
         }
 
-        .content-area {
-            flex: 1;
-            max-width: 800px;
-        }
-
-        .sidebar-right {
-            width: 350px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
+        .main-content.sidebar-hidden {
+            margin-right: 0;
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 25px 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        .header h1 {
-            color: #4a7c59;
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .header p {
-            color: #666;
-            font-size: 16px;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-        }
-
-        @media (max-width: 1200px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: white;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            color: #333;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-            background: rgba(255, 255, 255, 0.98);
-        }
-
-        .card h3 {
-            color: #4a7c59;
-            font-size: 20px;
-            margin-bottom: 15px;
+        .header-content h1 {
+            color: #1e40af;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            font-weight: 600;
+            gap: 15px;
         }
 
-        .card h3 .icon {
-            margin-right: 12px;
-            font-size: 24px;
-            color: #4a7c59;
-        }
-
-        .card p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            background: linear-gradient(45deg, #4a7c59, #2c5530);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(74, 124, 89, 0.3);
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            display: inline-block;
+            font-size: 20px;
+        }
+
+        .header-content p {
+            color: #64748b;
+            font-size: 16px;
             font-weight: 500;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
 
-        .btn:hover {
-            background: linear-gradient(45deg, #3b6249, #1f3b20);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 124, 89, 0.4);
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
             color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
         }
 
+        .toggle-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4);
+        }
+
+        /* Stats Cards */
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -268,139 +197,243 @@
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             text-align: center;
-            color: #333;
+            border: 1px solid #e2e8f0;
             transition: all 0.3s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
 
         .stat-number {
-            font-size: 32px;
-            font-weight: 700;
-            color: #4a7c59;
+            font-size: 36px;
+            font-weight: 800;
+            color: #1e40af;
             margin-bottom: 8px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .stat-label {
-            color: #666;
+            color: #64748b;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* Seção de Aniversários */
-        .birthday-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            height: 500px;
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h3 {
+            color: #1e40af;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+        }
+
+        .card h3 .icon {
+            margin-right: 12px;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .card p {
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4);
+            color: white;
+        }
+
+        .btn::after {
+            content: '→';
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover::after {
+            transform: translateX(4px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669, #10b981);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #047857, #059669);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+        }
+
+        /* Sidebar Right */
+        .sidebar-right {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: white;
+            border-left: 1px solid #e2e8f0;
+            padding: 30px;
+            overflow-y: auto;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .sidebar-right.hidden {
+            transform: translateX(100%);
+        }
+
+        .birthday-section {
+            background: white;
+            border-radius: 16px;
+            border: 2px solid #f1f5f9;
+            overflow: hidden;
         }
 
         .birthday-header {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            color: #333;
         }
 
         .birthday-header h3 {
             font-size: 16px;
-            font-weight: 600;
-            color: #4a7c59;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .ver-mais {
-            color: #00ff88;
+            color: #fbbf24;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease;
         }
 
         .ver-mais:hover {
-            color: #00cc66;
-            text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+            color: #f59e0b;
         }
 
         .birthday-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            overflow-y: auto;
+            padding: 20px;
             max-height: 400px;
-            padding-right: 10px;
-        }
-
-        .birthday-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .birthday-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        .birthday-list::-webkit-scrollbar-thumb {
-            background: rgba(0, 255, 136, 0.6);
-            border-radius: 3px;
-        }
-
-        .birthday-list::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 255, 136, 0.8);
+            overflow-y: auto;
         }
 
         .birthday-item {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 12px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
             transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
         }
 
         .birthday-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            transform: translateX(4px);
         }
 
         .birthday-item.highlight {
-            background: rgba(0, 255, 136, 0.15);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+            background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+            border-color: #22c55e;
         }
 
         .birthday-item.today {
-            background: rgba(255, 215, 0, 0.2);
-            border: 1px solid rgba(255, 215, 0, 0.5);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            background: linear-gradient(135deg, #fef3c7, #fef7cd);
+            border-color: #fbbf24;
         }
 
         .birthday-date {
-            background: #00ff88;
-            color: #1a1a1a;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            border-radius: 12px;
+            width: 50px;
+            height: 50px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -417,18 +450,20 @@
         .birthday-date .month {
             font-size: 10px;
             text-transform: uppercase;
+            opacity: 0.9;
         }
 
         .birthday-photo {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #3498db, #00ff88);
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 14px;
         }
 
         .birthday-info {
@@ -436,10 +471,10 @@
         }
 
         .birthday-name {
-            color: #333;
+            color: #1e293b;
             font-weight: 600;
             font-size: 14px;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .birthday-actions {
@@ -448,39 +483,264 @@
         }
 
         .action-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            background: rgba(74, 124, 89, 0.1);
-            border: 1px solid rgba(74, 124, 89, 0.2);
-            color: #4a7c59;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            font-size: 14px;
         }
 
         .action-btn:hover {
-            background: rgba(74, 124, 89, 0.2);
-            border-color: #4a7c59;
+            background: #1e40af;
+            border-color: #1e40af;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Modal de Configurações */
+        .config-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .config-modal.show {
+            display: flex;
+        }
+
+        .config-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .config-header {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .config-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
             transform: scale(1.1);
         }
 
-        /* Seção de Calendário - REMOVIDA */
+        .config-body {
+            padding: 30px;
+        }
 
-        @media (max-width: 1024px) {
-            .main-content {
-                flex-direction: column;
-            }
-            
+        .config-section {
+            margin-bottom: 40px;
+        }
+
+        .config-section h3 {
+            color: #1e40af;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Formulário */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        /* Lista de Módulos */
+        .modules-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .module-item {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .module-item:hover {
+            border-color: #1e40af;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .module-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .module-info {
+            flex: 1;
+        }
+
+        .module-info h4 {
+            color: #1e40af;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .module-info p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .module-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .module-actions .btn {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border-color: #22c55e;
+            color: #15803d;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+
+        /* Status Indicators */
+        .status-online {
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+        .status-active {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
             .sidebar-right {
+                position: static;
                 width: 100%;
-                order: -1;
+                height: auto;
+                order: 2;
             }
             
-            .birthday-section {
-                height: 400px;
+            .main-content {
+                margin-left: 280px;
+                margin-right: 0;
             }
         }
 
@@ -502,13 +762,26 @@
             .content-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .sidebar-right {
+                display: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .config-content {
+                width: 95%;
+                max-height: 90vh;
+            }
         }
 
-        /* Animações */
-        @keyframes fadeIn {
+        /* Animations */
+        @keyframes slideInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -516,159 +789,280 @@
             }
         }
 
-        .card, .stat-card, .header, .birthday-section {
-            animation: fadeIn 0.6s ease-out;
+        .card, .stat-card, .header {
+            animation: slideInUp 0.6s ease-out forwards;
         }
 
         .card:nth-child(1) { animation-delay: 0.1s; }
         .card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(1) { animation-delay: 0.3s; }
-        .stat-card:nth-child(2) { animation-delay: 0.4s; }
-        .stat-card:nth-child(3) { animation-delay: 0.5s; }
-        .birthday-section { animation-delay: 0.6s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar,
+        .birthday-list::-webkit-scrollbar,
+        .config-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track,
+        .birthday-list::-webkit-scrollbar-track,
+        .config-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb,
+        .birthday-list::-webkit-scrollbar-thumb,
+        .config-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover,
+        .birthday-list::-webkit-scrollbar-thumb:hover,
+        .config-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body>
-    <!-- Vídeo de fundo -->
-    <video class="video-background" autoplay muted loop>
-        <source src="https://cdn.pixabay.com/video/2022/08/02/126412-736345083_large.mp4" type="video/mp4">
-    </video>
-    
-    <!-- Overlay para melhorar a legibilidade -->
-    <div class="video-overlay"></div>
-
     <div class="container">
         <nav class="sidebar">
             <div class="logo">
                 <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="logoShieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#FFD700"/>
-                            <stop offset="50%" style="stop-color:#FFA500"/>
-                            <stop offset="100%" style="stop-color:#FF8C00"/>
+                            <stop offset="0%" style="stop-color:#fbbf24"/>
+                            <stop offset="50%" style="stop-color:#f59e0b"/>
+                            <stop offset="100%" style="stop-color:#d97706"/>
                         </linearGradient>
                     </defs>
                     <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" 
-                          fill="url(#logoShieldGradient)" stroke="#4a7c59" stroke-width="0.5"/>
-                    <circle cx="12" cy="10" r="3" fill="#2C5530"/>
-                    <path d="M10.5 10L11.5 11L13.5 9" stroke="#FFD700" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                    <rect x="9" y="14" width="6" height="1.5" rx="0.75" fill="#2C5530"/>
-                    <rect x="10" y="16" width="4" height="1" rx="0.5" fill="#2C5530"/>
+                          fill="url(#logoShieldGradient)" stroke="#1e40af" stroke-width="0.5"/>
+                    <circle cx="12" cy="10" r="3" fill="#1e40af"/>
+                    <path d="M10.5 10L11.5 11L13.5 9" stroke="#fbbf24" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    <rect x="9" y="14" width="6" height="1.5" rx="0.75" fill="#1e40af"/>
+                    <rect x="10" y="16" width="4" height="1" rx="0.5" fill="#1e40af"/>
                 </svg>
                 <h2>PATRIMONIAL</h2>
             </div>
             
-            <a href="#" class="menu-item active">
-                <div class="icon">🏠</div>
-                <div class="text">Página Inicial</div>
-            </a>
-            
-            <a href="ICE.html" class="menu-item">
-                <div class="icon">
-                    <svg class="ice-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#FFD700"/>
-                                <stop offset="50%" style="stop-color:#FFA500"/>
-                                <stop offset="100%" style="stop-color:#FF8C00"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" 
-                              fill="url(#shieldGradient)" stroke="#4a7c59" stroke-width="0.5"/>
-                        <circle cx="12" cy="10" r="3" fill="#2C5530"/>
-                        <path d="M10.5 10L11.5 11L13.5 9" stroke="#FFD700" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        <rect x="9" y="14" width="6" height="1.5" rx="0.75" fill="#2C5530"/>
-                        <rect x="10" y="16" width="4" height="1" rx="0.5" fill="#2C5530"/>
-                    </svg>
-                </div>
-                <div class="text">ICE</div>
-            </a>
-            
-            <a href="Controlematerial.html" class="menu-item">
-                <div class="icon">⚡</div>
-                <div class="text">Controle de Materiais Eletrônicos</div>
-            </a>
+            <div class="menu-section">
+                <a href="#" class="menu-item active" data-page="home">
+                    <div class="icon">🏠</div>
+                    <div class="text">Página Inicial</div>
+                </a>
+                
+                <a href="#" class="menu-item" data-page="ice">
+                    <div class="icon">
+                        <svg class="ice-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" 
+                                  fill="currentColor"/>
+                            <circle cx="12" cy="10" r="2" fill="#1e40af"/>
+                            <path d="M10.5 10L11.5 11L13.5 9" stroke="#fbbf24" stroke-width="1" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="text">Sistema ICE</div>
+                </a>
+                
+                <a href="#" class="menu-item" data-page="materiais">
+                    <div class="icon">⚡</div>
+                    <div class="text">Controle de Materiais</div>
+                </a>
+                
+                <a href="#" class="menu-item" data-page="relatorios">
+                    <div class="icon">📊</div>
+                    <div class="text">Relatórios</div>
+                </a>
+                
+                <a href="#" class="menu-item" data-page="usuarios">
+                    <div class="icon">👥</div>
+                    <div class="text">Gestão de Usuários</div>
+                </a>
+                
+                <a href="#" class="menu-item" data-page="config" id="configMenuItem">
+                    <div class="icon">⚙️</div>
+                    <div class="text">Configurações</div>
+                    <div style="margin-left: auto; background: #10b981; color: white; font-size: 10px; padding: 2px 6px; border-radius: 8px; font-weight: 700;">
+                        +
+                    </div>
+                </a>
+                
+                <a href="#" class="menu-item" data-page="backup">
+                    <div class="icon">💾</div>
+                    <div class="text">Backup & Restore</div>
+                </a>
+            </div>
         </nav>
 
         <main class="main-content">
-            <div class="content-area">
-                <div class="header">
-                    <h1>Página Inicial</h1>
-                    <p>Selecione o módulo que deseja acessar</p>
+            <div class="header">
+                <div class="header-content">
+                    <h1>
+                        <div class="header-icon">🏢</div>
+                        Sistema de Gestão Patrimonial
+                    </h1>
+                    <p>Painel de controle integrado para gestão completa de recursos e processos</p>
                 </div>
-
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-number">2</div>
-                        <div class="stat-label">Módulos Disponíveis</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">Online</div>
-                        <div class="stat-label">Status do Sistema</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">Ativo</div>
-                        <div class="stat-label">Servidor</div>
-                    </div>
-                </div>
-
-                <div class="content-grid">
-                    <div class="card">
-                        <h3>
-                            <span class="icon">
-                                <svg class="ice-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
-                                    <defs>
-                                        <linearGradient id="shieldGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" style="stop-color:#FFD700"/>
-                                            <stop offset="50%" style="stop-color:#FFA500"/>
-                                            <stop offset="100%" style="stop-color:#FF8C00"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" 
-                                          fill="url(#shieldGradient2)" stroke="#4a7c59" stroke-width="0.5"/>
-                                    <circle cx="12" cy="10" r="3" fill="#2C5530"/>
-                                    <path d="M10.5 10L11.5 11L13.5 9" stroke="#FFD700" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                                    <rect x="9" y="14" width="6" height="1.5" rx="0.75" fill="#2C5530"/>
-                                    <rect x="10" y="16" width="4" height="1" rx="0.5" fill="#2C5530"/>
-                                </svg>
-                            </span>
-                            Sistema ICE
-                        </h3>
-                        <p>Módulo ICE para Gerenciamento e Controle de Índice de Controle de Emergência.</p>
-                        <a href="ICE.html" class="btn">Acessar ICE</a>
-                    </div>
-
-                    <div class="card">
-                        <h3>
-                            <span class="icon">⚡</span>
-                            Controle de Materiais Eletrônicos
-                        </h3>
-                        <p>Gerencie inventário, estoque e movimentação de componentes e materiais eletrônicos de forma centralizada e eficiente.</p>
-                        <a href="Controlematerial.html" class="btn">Acessar Controle</a>
-                    </div>
+                <div class="header-controls">
+                    <button class="toggle-btn" id="toggleSidebar">
+                        <span id="toggleIcon">📌</span>
+                        <span id="toggleText">Fixar Aniversários</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Sidebar Direita -->
-            <div class="sidebar-right">
-                <!-- Seção de Aniversários -->
-                <div class="birthday-section">
-                    <div class="birthday-header">
-                        <h3>
-                            🎂 PRÓXIMOS ANIVERSARIANTES
-                        </h3>
-                        <a href="#" class="ver-mais">VER +</a>
-                    </div>
-                    
-                    <div class="birthday-list" id="birthdayList">
-                        <!-- Os aniversários serão carregados dinamicamente pelo JavaScript -->
-                    </div>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Módulos Ativos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number status-online">Online</div>
+                    <div class="stat-label">Status Sistema</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number status-active">Ativo</div>
+                    <div class="stat-label">Servidor Principal</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">99.8%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="card">
+                    <h3>
+                        <span class="icon">🛡️</span>
+                        Sistema ICE
+                    </h3>
+                    <p>Módulo ICE para Gerenciamento e Controle de Índice de Controle de Emergência. Sistema completo para monitoramento de situações críticas.</p>
+                    <a href="ICE.html" class="btn">Acessar ICE</a>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">⚡</span>
+                        Controle de Materiais
+                    </h3>
+                    <p>Gerencie inventário, estoque e movimentação de componentes e materiais eletrônicos de forma centralizada e eficiente.</p>
+                    <a href="Controlematerial.html" class="btn">Acessar Controle</a>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">📊</span>
+                        Relatórios
+                    </h3>
+                    <p>Central de relatórios gerenciais com dashboards interativos, análises de performance e exportação de dados em múltiplos formatos.</p>
+                    <a href="relatorios.html" class="btn">Ver Relatórios</a>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">👥</span>
+                        Gestão de Usuários
+                    </h3>
+                    <p>Administração completa de usuários, perfis de acesso, permissões e controle de autenticação do sistema.</p>
+                    <a href="usuarios.html" class="btn">Gerenciar Usuários</a>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">⚙️</span>
+                        Configurações
+                    </h3>
+                    <p>Centro de configurações do sistema, personalização de interface e <strong>criação de módulos personalizados</strong> que ficam salvos permanentemente.</p>
+                    <button class="btn" onclick="openConfigModal()">Configurar Sistema</button>
+                </div>
+
+                <div class="card">
+                    <h3>
+                        <span class="icon">💾</span>
+                        Backup & Restore
+                    </h3>
+                    <p>Sistema de backup automatizado, restauração de dados, versionamento e proteção contra perda de informações críticas.</p>
+                    <a href="backup.html" class="btn">Gerenciar Backups</a>
                 </div>
             </div>
         </main>
+
+        <!-- Sidebar Direita -->
+        <div class="sidebar-right">
+            <div class="birthday-section">
+                <div class="birthday-header">
+                    <h3>🎂 Aniversariantes</h3>
+                    <a href="#" class="ver-mais">VER TODOS</a>
+                </div>
+                
+                <div class="birthday-list" id="birthdayList">
+                    <!-- Os aniversários serão carregados dinamicamente pelo JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Configurações -->
+    <div class="config-modal" id="configModal">
+        <div class="config-content">
+            <div class="config-header">
+                <h2>⚙️ Configurações do Sistema</h2>
+                <button class="close-btn" onclick="closeConfigModal()">×</button>
+            </div>
+            <div class="config-body">
+                <!-- Alerta Info -->
+                <div class="alert alert-info">
+                    <span>💡</span>
+                    <span>Adicione novos módulos que aparecerão automaticamente na página inicial.</span>
+                </div>
+
+                <!-- Formulário para Adicionar Módulo -->
+                <div class="config-section">
+                    <h3>➕ Adicionar Novo Módulo</h3>
+                    <form id="moduleForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="moduleName">Nome do Módulo</label>
+                                <input type="text" id="moduleName" name="moduleName" placeholder="Ex: Sistema de Vendas" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="moduleLink">Link/URL</label>
+                                <input type="text" id="moduleLink" name="moduleLink" placeholder="vendas.html ou https://exemplo.com" required>
+                            </div>
+                            <button type="submit" class="btn btn-success" style="height: 48px;">
+                                💾 Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Lista de Módulos Personalizados -->
+                <div class="config-section">
+                    <h3>📋 Módulos Personalizados</h3>
+                    <div id="modulesList" class="modules-grid">
+                        <!-- Módulos serão carregados aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
+        // ==========================================
+        // 🔧 CONFIGURAÇÃO GOOGLE SHEETS OBRIGATÓRIA
+        // ==========================================
+        
+        // ⚠️ ESTE SISTEMA USA APENAS GOOGLE SHEETS
+        // 👇 COLE SUA URL DO GOOGLE APPS SCRIPT AQUI:
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDWEfSg_GDpI8wJ17RLvxX_5ZdsAKG2Z7dx6sjLjUMXMhdnzau83fAX-JdJp9zMvC-/exec';
+        
+        // ==========================================
+        // SISTEMA DE MÓDULOS - APENAS GOOGLE SHEETS
+        // ==========================================
+        
         // Lista completa de aniversariantes
         const birthdays = [
             { name: "MANOEL JUNIOR", date: "02/01" },
@@ -713,6 +1107,302 @@
             { name: "IURE COSTA", date: "31/12" }
         ];
 
+        // Sistema de módulos personalizados - APENAS GOOGLE SHEETS
+        let customModules = [];
+        const defaultIcons = ['🎯', '📱', '💰', '🛒', '📈', '🌐', '📊', '🔧', '📦', '🎨', '🔍', '📝', '🏆', '⭐', '🚀'];
+        let iconCounter = 0;
+        let isLoading = false;
+        let isConnected = false;
+
+        // ==========================================
+        // FUNÇÕES DE INTEGRAÇÃO COM GOOGLE SHEETS
+        // ==========================================
+
+        async function carregarModulosDoSheets() {
+            if (!GOOGLE_SCRIPT_URL.includes('script.google.com')) {
+                showConnectionError('🔧 Configure a URL do Google Apps Script primeiro!');
+                return { success: false, modulos: [] };
+            }
+
+            try {
+                showLoading('Carregando módulos do Google Sheets...');
+                
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=listarModulos`, {
+                    method: 'GET',
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    console.log('✅ Módulos carregados do Google Sheets:', data.modulos.length);
+                    isConnected = true;
+                    showConnectionStatus('🟢 Conectado ao Google Sheets', 'success');
+                    return { success: true, modulos: data.modulos };
+                } else {
+                    console.error('❌ Erro ao carregar do Sheets:', data.message);
+                    showConnectionError('❌ Erro no Google Sheets: ' + data.message);
+                    return { success: false, modulos: [] };
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro na conexão com Google Sheets:', error);
+                showConnectionError('❌ Falha na conexão com Google Sheets. Verifique a URL.');
+                return { success: false, modulos: [] };
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function salvarModuloNoSheets(modulo) {
+            if (!GOOGLE_SCRIPT_URL.includes('script.google.com')) {
+                showConnectionError('🔧 Configure a URL do Google Apps Script primeiro!');
+                return { success: false };
+            }
+
+            try {
+                showLoading('Salvando módulo no Google Sheets...');
+                
+                const formData = new FormData();
+                formData.append('action', 'adicionarModulo');
+                formData.append('name', modulo.name);
+                formData.append('link', modulo.link);
+                formData.append('icon', modulo.icon);
+                formData.append('created', modulo.created);
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    console.log('✅ Módulo salvo no Google Sheets:', data.message);
+                    showConnectionStatus('✅ Módulo salvo no Google Sheets!', 'success');
+                    return { success: true, modulo: data.modulo };
+                } else {
+                    console.error('❌ Erro ao salvar no Sheets:', data.message);
+                    showConnectionError('❌ Erro ao salvar: ' + data.message);
+                    return { success: false, error: data.message };
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro na conexão para salvar:', error);
+                showConnectionError('❌ Falha na conexão ao salvar módulo.');
+                return { success: false, error: error.message };
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function excluirModuloDoSheets(id) {
+            if (!GOOGLE_SCRIPT_URL.includes('script.google.com')) {
+                showConnectionError('🔧 Configure a URL do Google Apps Script primeiro!');
+                return { success: false };
+            }
+
+            try {
+                showLoading('Excluindo módulo do Google Sheets...');
+                
+                const formData = new FormData();
+                formData.append('action', 'excluirModulo');
+                formData.append('id', id);
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    console.log('✅ Módulo excluído do Google Sheets:', data.message);
+                    showConnectionStatus('🗑️ Módulo excluído com sucesso!', 'success');
+                    return { success: true };
+                } else {
+                    console.error('❌ Erro ao excluir do Sheets:', data.message);
+                    showConnectionError('❌ Erro ao excluir: ' + data.message);
+                    return { success: false, error: data.message };
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro na conexão para excluir:', error);
+                showConnectionError('❌ Falha na conexão ao excluir módulo.');
+                return { success: false, error: error.message };
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ==========================================
+        // GERENCIAMENTO DE MÓDULOS
+        // ==========================================
+
+        async function loadCustomModules() {
+            const sheetsResult = await carregarModulosDoSheets();
+            
+            if (sheetsResult.success) {
+                customModules = sheetsResult.modulos;
+                renderCustomModules();
+                isConnected = true;
+            } else {
+                customModules = [];
+                renderCustomModules();
+                isConnected = false;
+            }
+        }
+
+        async function adicionarNovoModulo(dadosModulo) {
+            const sheetsResult = await salvarModuloNoSheets(dadosModulo);
+            
+            if (sheetsResult.success) {
+                // Recarregar módulos do Sheets para obter dados atualizados
+                await loadCustomModules();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        async function removerModulo(index) {
+            const modulo = customModules[index];
+            
+            if (!modulo.id) {
+                showAlert('❌ Erro: Módulo sem ID válido.', 'error');
+                return;
+            }
+            
+            const sheetsResult = await excluirModuloDoSheets(modulo.id);
+            
+            if (sheetsResult.success) {
+                await loadCustomModules(); // Recarregar dados
+            }
+        }
+
+        // ==========================================
+        // FUNÇÕES DE INTERFACE E LOADING
+        // ==========================================
+
+        function showLoading(message = 'Carregando...') {
+            if (isLoading) return;
+            isLoading = true;
+            
+            const loading = document.createElement('div');
+            loading.id = 'loadingOverlay';
+            loading.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10002;
+                backdrop-filter: blur(5px);
+            `;
+            
+            loading.innerHTML = `
+                <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; min-width: 300px;">
+                    <div style="width: 50px; height: 50px; border: 5px solid #1e40af; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                    <div style="color: #1e40af; font-weight: 700; font-size: 16px;">${message}</div>
+                    <div style="color: #64748b; font-size: 14px; margin-top: 10px;">Conectando com Google Sheets...</div>
+                </div>
+            `;
+            
+            // Adicionar animação de spin se não existir
+            if (!document.querySelector('#spinAnimation')) {
+                const style = document.createElement('style');
+                style.id = 'spinAnimation';
+                style.textContent = `
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(loading);
+        }
+
+        function hideLoading() {
+            isLoading = false;
+            const loading = document.getElementById('loadingOverlay');
+            if (loading) {
+                loading.remove();
+            }
+        }
+
+        function showConnectionStatus(message, type) {
+            const existing = document.getElementById('connectionStatus');
+            if (existing) existing.remove();
+            
+            const status = document.createElement('div');
+            status.id = 'connectionStatus';
+            status.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'warning' ? '#f59e0b' : '#ef4444'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                z-index: 10001;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                max-width: 350px;
+            `;
+            status.textContent = message;
+            
+            document.body.appendChild(status);
+            
+            setTimeout(() => {
+                if (status.parentElement) {
+                    status.remove();
+                }
+            }, 4000);
+        }
+
+        function showConnectionError(message) {
+            const existing = document.getElementById('connectionError');
+            if (existing) existing.remove();
+            
+            const error = document.createElement('div');
+            error.id = 'connectionError';
+            error.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                border: 3px solid #ef4444;
+                border-radius: 16px;
+                padding: 30px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                z-index: 10003;
+                max-width: 500px;
+                text-align: center;
+            `;
+            
+            error.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+                <h3 style="color: #ef4444; margin-bottom: 15px; font-size: 20px;">Erro de Conexão</h3>
+                <p style="color: #64748b; margin-bottom: 20px; line-height: 1.6;">${message}</p>
+                <button onclick="this.parentElement.remove()" style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    Fechar
+                </button>
+            `;
+            
+            document.body.appendChild(error);
+        }
+
+        // ==========================================
+        // FUNÇÕES DE ANIVERSÁRIOS
+        // ==========================================
+
         function getInitials(name) {
             return name.split(' ')
                       .map(word => word.charAt(0))
@@ -733,7 +1423,6 @@
             const [day, month] = birthdayDate.split('/').map(Number);
             let birthdayThisYear = new Date(currentYear, month - 1, day);
             
-            // Se o aniversário já passou este ano, calcular para o próximo ano
             if (birthdayThisYear < today) {
                 birthdayThisYear = new Date(currentYear + 1, month - 1, day);
             }
@@ -761,7 +1450,7 @@
 
         function renderBirthdays() {
             const birthdayList = document.getElementById('birthdayList');
-            const sortedBirthdays = sortBirthdaysByProximity();
+            const sortedBirthdays = sortBirthdaysByProximity().slice(0, 8);
             
             birthdayList.innerHTML = '';
             
@@ -770,7 +1459,6 @@
                 const monthName = getMonthName(parseInt(month));
                 const initials = getInitials(birthday.name);
                 
-                // Determinar classe de destaque
                 let highlightClass = '';
                 if (birthday.isToday) {
                     highlightClass = 'today';
@@ -787,12 +1475,12 @@
                         <div class="birthday-photo">${initials}</div>
                         <div class="birthday-info">
                             <div class="birthday-name">${birthday.name}</div>
-                            ${birthday.isToday ? '<div style="color: #FFD700; font-size: 12px; font-weight: bold;">🎉 HOJE!</div>' : 
-                              birthday.daysUntil <= 7 ? `<div style="color: #00ff88; font-size: 12px;">Em ${birthday.daysUntil} dia(s)</div>` : ''}
+                            ${birthday.isToday ? '<div style="color: #fbbf24; font-size: 12px; font-weight: bold;">🎉 HOJE!</div>' : 
+                              birthday.daysUntil <= 7 ? `<div style="color: #22c55e; font-size: 12px; font-weight: 600;">Em ${birthday.daysUntil} dia(s)</div>` : ''}
                         </div>
                         <div class="birthday-actions">
-                            <button class="action-btn">💬</button>
-                            <button class="action-btn">📧</button>
+                            <button class="action-btn" title="Enviar mensagem">💬</button>
+                            <button class="action-btn" title="Enviar email">📧</button>
                         </div>
                     </div>
                 `;
@@ -801,47 +1489,268 @@
             });
         }
 
-        // Adicionar interatividade aos itens do menu
+        // ==========================================
+        // RENDERIZAÇÃO DE MÓDULOS
+        // ==========================================
+
+        function renderCustomModules() {
+            const contentGrid = document.querySelector('.content-grid');
+            
+            const existingCustomModules = contentGrid.querySelectorAll('.custom-module');
+            existingCustomModules.forEach(module => module.remove());
+
+            customModules.forEach((module, index) => {
+                const moduleCard = document.createElement('div');
+                moduleCard.className = 'card custom-module';
+                moduleCard.style.borderTop = '4px solid #10b981';
+                moduleCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <h3 style="margin-bottom: 0;">
+                            <span class="icon">${module.icon}</span>
+                            ${module.name}
+                        </h3>
+                        <div style="display: flex; gap: 5px;">
+                            <span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                                Personalizado
+                            </span>
+                            <span style="background: #1e40af; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700;">SHEETS</span>
+                        </div>
+                    </div>
+                    <p style="margin-bottom: 20px;">${module.description || 'Módulo personalizado criado pelo usuário.'}</p>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                        <a href="${module.link}" class="btn" style="flex: 1;">Acessar ${module.name}</a>
+                        <button class="btn btn-danger" onclick="removeCustomModule(${index})" style="padding: 12px;" title="Remover módulo">
+                            🗑️
+                        </button>
+                    </div>
+                    <div style="font-size: 12px; color: #64748b; display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #f1f5f9;">
+                        <small>📅 Criado: ${module.created || 'N/A'}</small>
+                        <small>🆔 ID: ${module.id}</small>
+                    </div>
+                `;
+                contentGrid.appendChild(moduleCard);
+            });
+
+            updateModuleCount();
+        }
+
+        function renderModulesList() {
+            const modulesList = document.getElementById('modulesList');
+            
+            if (!isConnected) {
+                modulesList.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #64748b;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+                        <h4 style="margin-bottom: 10px; color: #ef4444;">Não conectado ao Google Sheets</h4>
+                        <p>Configure a URL do Google Apps Script para usar este sistema.</p>
+                        <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; color: #92400e;">
+                            <strong>📝 Passos para configurar:</strong><br>
+                            1. Configure o Google Apps Script<br>
+                            2. Faça o deploy do script<br>
+                            3. Cole a URL no código JavaScript
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (customModules.length === 0) {
+                modulesList.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #64748b;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">📊</div>
+                        <h4 style="margin-bottom: 10px; color: #1e40af;">Conectado ao Google Sheets!</h4>
+                        <p>Adicione seu primeiro módulo usando o formulário acima.</p>
+                        <div style="margin-top: 15px; padding: 10px; background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; font-size: 14px; color: #15803d;">
+                            ✅ Módulos serão salvos permanentemente no Google Sheets
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            modulesList.innerHTML = '';
+            customModules.forEach((module, index) => {
+                const moduleItem = document.createElement('div');
+                moduleItem.className = 'module-item';
+                moduleItem.innerHTML = `
+                    <div class="module-icon">${module.icon}</div>
+                    <div class="module-info">
+                        <h4>${module.name} <span style="color: #10b981; font-size: 12px;">📊 Google Sheets</span></h4>
+                        <p>Link: ${module.link}</p>
+                        <p style="font-size: 12px; color: #64748b;">ID: ${module.id} | Criado: ${module.created}</p>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-danger" onclick="deleteModule(${index})">
+                            🗑️ Excluir
+                        </button>
+                    </div>
+                `;
+                modulesList.appendChild(moduleItem);
+            });
+        }
+
+        function updateModuleCount() {
+            const statCards = document.querySelectorAll('.stat-card');
+            if (statCards.length > 0) {
+                const totalModules = 6 + customModules.length;
+                statCards[0].querySelector('.stat-number').textContent = totalModules;
+                
+                if (customModules.length > 0) {
+                    const label = statCards[0].querySelector('.stat-label');
+                    label.innerHTML = `Módulos Disponíveis<br><small style="color: #10b981; font-weight: 700;">(+${customModules.length} no Sheets)</small>`;
+                } else {
+                    const label = statCards[0].querySelector('.stat-label');
+                    label.textContent = 'Módulos Disponíveis';
+                }
+            }
+        }
+
+        async function removeCustomModule(index) {
+            if (confirm('Deseja realmente remover este módulo do Google Sheets?')) {
+                await removerModulo(index);
+                renderModulesList();
+            }
+        }
+
+        async function deleteModule(index) {
+            if (confirm('Tem certeza que deseja excluir este módulo do Google Sheets?')) {
+                await removerModulo(index);
+                renderModulesList();
+                showAlert('🗑️ Módulo excluído do Google Sheets!', 'success');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `
+                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span>${message}</span>
+            `;
+            
+            const configBody = document.querySelector('.config-body');
+            configBody.insertBefore(alertDiv, configBody.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // ==========================================
+        // MODAL E INTERFACE
+        // ==========================================
+
+        function openConfigModal() {
+            document.getElementById('configModal').classList.add('show');
+            renderModulesList();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeConfigModal() {
+            document.getElementById('configModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Toggle Sidebar Aniversários
+        let sidebarVisible = true;
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const toggleText = document.getElementById('toggleText');
+        const sidebarRight = document.querySelector('.sidebar-right');
+        const mainContent = document.querySelector('.main-content');
+
+        toggleBtn.addEventListener('click', function() {
+            sidebarVisible = !sidebarVisible;
+            
+            if (sidebarVisible) {
+                sidebarRight.classList.remove('hidden');
+                mainContent.classList.remove('sidebar-hidden');
+                toggleIcon.textContent = '📌';
+                toggleText.textContent = 'Fixar Aniversários';
+            } else {
+                sidebarRight.classList.add('hidden');
+                mainContent.classList.add('sidebar-hidden');
+                toggleIcon.textContent = '📋';
+                toggleText.textContent = 'Mostrar Aniversários';
+            }
+        });
+
+        // Interatividade do menu
         const menuItems = document.querySelectorAll('.menu-item');
         
         menuItems.forEach(item => {
             item.addEventListener('click', function(e) {
-                // Remove active class from all items
-                menuItems.forEach(mi => mi.classList.remove('active'));
+                e.preventDefault();
                 
-                // Add active class to clicked item
+                if (this.dataset.page === 'config') {
+                    openConfigModal();
+                    return;
+                }
+                
+                menuItems.forEach(mi => mi.classList.remove('active'));
                 this.classList.add('active');
             });
         });
 
-        // Efeito de loading suave
-        window.addEventListener('load', function() {
-            document.body.style.opacity = '0';
-            setTimeout(() => {
-                document.body.style.transition = 'opacity 0.5s ease';
-                document.body.style.opacity = '1';
-                
-                // Carregar aniversários após o load
-                renderBirthdays();
-            }, 100);
-        });
+        // Formulário
+        document.getElementById('moduleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!isConnected) {
+                showAlert('❌ Não é possível salvar: configure primeiro a conexão com Google Sheets.', 'error');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const moduleName = formData.get('moduleName').trim();
+            const moduleLink = formData.get('moduleLink').trim();
 
-        // Controlar o vídeo de fundo
-        const video = document.querySelector('.video-background');
-        
-        // Pausar/reproduzir vídeo ao clicar (opcional)
-        video.addEventListener('click', function() {
-            if (this.paused) {
-                this.play();
+            if (!moduleName || !moduleLink) {
+                showAlert('⚠️ Por favor, preencha todos os campos.', 'warning');
+                return;
+            }
+
+            if (customModules.some(module => module.name.toLowerCase() === moduleName.toLowerCase())) {
+                showAlert('⚠️ Já existe um módulo com este nome no Google Sheets.', 'warning');
+                return;
+            }
+
+            const selectedIcon = defaultIcons[iconCounter % defaultIcons.length];
+            iconCounter++;
+
+            const dadosModulo = {
+                name: moduleName,
+                link: moduleLink,
+                icon: selectedIcon,
+                created: new Date().toLocaleDateString('pt-BR')
+            };
+
+            const sucesso = await adicionarNovoModulo(dadosModulo);
+            
+            if (sucesso) {
+                showAlert('✅ Módulo salvo no Google Sheets com sucesso!', 'success');
+                this.reset();
+                renderModulesList();
             } else {
-                this.pause();
+                showAlert('❌ Erro ao salvar módulo no Google Sheets.', 'error');
             }
         });
 
-        // Reduzir velocidade do vídeo para efeito mais suave
-        video.playbackRate = 0.8;
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeConfigModal();
+            }
+        });
 
-        // Adicionar interatividade aos botões de ação dos aniversários (delegação de eventos)
+        // Fechar modal clicando fora
+        document.getElementById('configModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConfigModal();
+            }
+        });
+
+        // Eventos dos botões de ação dos aniversários
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('action-btn')) {
                 e.preventDefault();
@@ -850,19 +1759,37 @@
                 const name = birthdayItem.querySelector('.birthday-name').textContent;
                 
                 if (action === '💬') {
-                    console.log(`Abrir chat com ${name}`);
-                    // Aqui você pode adicionar a lógica para abrir o chat
+                    alert(`Abrindo chat com ${name}`);
                 } else if (action === '📧') {
-                    console.log(`Enviar email para ${name}`);
-                    // Aqui você pode adicionar a lógica para enviar email
+                    alert(`Enviando email para ${name}`);
                 }
             }
         });
 
-        // Atualizar a lista de aniversários a cada dia (opcional)
-        setInterval(() => {
+        // Tornar funções globais
+        window.openConfigModal = openConfigModal;
+        window.closeConfigModal = closeConfigModal;
+        window.removeCustomModule = removeCustomModule;
+        window.deleteModule = deleteModule;
+
+        // ==========================================
+        // INICIALIZAÇÃO DO SISTEMA
+        // ==========================================
+
+        document.addEventListener('DOMContentLoaded', async function() {
             renderBirthdays();
-        }, 24 * 60 * 60 * 1000); // A cada 24 horas
+            
+            // Verificar configuração antes de carregar
+            if (!GOOGLE_SCRIPT_URL.includes('script.google.com')) {
+                showConnectionError('🔧 Configure a URL do Google Apps Script para usar o sistema de módulos.');
+                isConnected = false;
+            } else {
+                await loadCustomModules();
+            }
+        });
+
+        // Atualizar lista diariamente
+        setInterval(renderBirthdays, 24 * 60 * 60 * 1000);
     </script>
 </body>
 </html>
