@@ -1,135 +1,117 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tela de Login</title>
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tela de Login</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #2c3e50, #34495e);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      color: #fff;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
     }
     .login-container {
-      background: #fff;
-      color: #333;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      width: 320px;
-      text-align: center;
+        background: #fff;
+        padding: 25px;
+        border-radius: 10px;
+        width: 320px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
     h2 {
-      margin-bottom: 20px;
-      color: #2c3e50;
+        margin-bottom: 20px;
+        color: #2c3e50;
     }
     .input-group {
-      text-align: left;
-      margin-bottom: 15px;
+        margin-bottom: 15px;
+        text-align: left;
     }
     .input-group label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 5px;
+        font-size: 14px;
+        margin-bottom: 5px;
+        display: block;
     }
     .input-group input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
     }
     .btn {
-      width: 100%;
-      padding: 12px;
-      background-color: #27ae60;
-      border: none;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
+        width: 100%;
+        padding: 12px;
+        background: #27ae60;
+        color: white;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
     }
     .btn:hover {
-      background-color: #219150;
+        background: #219150;
     }
-    .error-message {
-      color: red;
-      font-size: 14px;
-      margin-top: 10px;
-      display: none;
-    }
-  </style>
+</style>
 </head>
 <body>
-  <div class="login-container">
+<div class="login-container">
     <h2>Login</h2>
     <form id="loginForm">
-      <div class="input-group">
-        <label for="username">Usuário</label>
-        <input type="text" id="username" required />
-      </div>
-      <div class="input-group">
-        <label for="password">Senha</label>
-        <input type="password" id="password" required />
-      </div>
-      <button type="submit" class="btn">Entrar</button>
-      <p id="error" class="error-message"></p>
+        <div class="input-group">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" required>
+        </div>
+        <div class="input-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" required>
+        </div>
+        <button type="submit" class="btn">Entrar</button>
     </form>
-  </div>
+</div>
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbw2B584v6DaOvBCJDbO2BFKJRIhcwtv6lHL94WZd3t04-EvW4EGKyezkPyc0cBkgoQx/exec";
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzUbo1fuBzJBrqrSD9ram3aIq5yLHz3KAfdHcBhRJDSnh03uk0yEwNHy_GcB9T6NIxh/exec"; // coloque a URL do Apps Script
 
-    const errorMsg = document.getElementById("error");
-    const form = document.getElementById("loginForm");
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (!username || !password) {
-        errorMsg.style.display = "block";
-        errorMsg.textContent = "Preencha todos os campos!";
+    if (!username || !password) {
+        Swal.fire("Atenção", "Preencha todos os campos!", "warning");
         return;
-      }
+    }
 
-      try {
+    try {
         const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Erro ao acessar servidor.");
-
         const users = await response.json();
-
         const userFound = users.find(u => u.usuario === username && u.senha === password);
 
         if (userFound) {
-          errorMsg.style.display = "none";
-          alert("Login realizado com sucesso!");
-
-          if (userFound.usuario === "COS-JIRAU") {
-            window.location.href = "controleMateriais.html";
-          } else if (userFound.usuario === "JIRAU-COS") {
-            window.location.href = "ICE.html";
-          } else {
-            window.location.href = "paginaPadrao.html";
-          }
+            // Salva no localStorage
+            localStorage.setItem("usuarioLogado", username);
+            Swal.fire({
+                icon: "success",
+                title: "Login realizado!",
+                text: "Redirecionando...",
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = userFound.pagina;
+            });
         } else {
-          errorMsg.style.display = "block";
-          errorMsg.textContent = "Usuário ou senha inválidos!";
+            Swal.fire("Erro", "Usuário ou senha inválidos!", "error");
         }
-      } catch (error) {
-        console.error(error);
-        errorMsg.style.display = "block";
-        errorMsg.textContent = "Erro ao validar login.";
-      }
-    });
-  </script>
+    } catch (error) {
+        Swal.fire("Erro", "Falha ao validar login.", "error");
+    }
+});
+</script>
 </body>
 </html>
