@@ -108,12 +108,8 @@
             }
 
             try {
-                const response = await fetch(API_URL, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
+                // ✅ Correção: GET sem headers e sem body
+                const response = await fetch(API_URL);
 
                 if (!response.ok) {
                     throw new Error("Erro ao acessar o servidor.");
@@ -134,7 +130,7 @@
             } catch (error) {
                 console.error(error);
                 errorMsg.style.display = "block";
-                errorMsg.textContent = "Erro ao validar login. Verifique o console.";
+                errorMsg.textContent = "Erro ao validar login. Tente novamente.";
             }
         });
     </script>
