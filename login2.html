@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tela de Login Segura</title>
+    <title>Login Seguro</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,8 +13,8 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            color: #fff;
         }
+
         .login-container {
             background: #fff;
             color: #333;
@@ -24,19 +24,23 @@
             width: 320px;
             text-align: center;
         }
+
         h2 {
             margin-bottom: 20px;
             color: #2c3e50;
         }
+
         .input-group {
             text-align: left;
             margin-bottom: 15px;
         }
+
         .input-group label {
             display: block;
             font-size: 14px;
             margin-bottom: 5px;
         }
+
         .input-group input {
             width: 100%;
             padding: 10px;
@@ -44,6 +48,7 @@
             border-radius: 6px;
             font-size: 14px;
         }
+
         .btn {
             width: 100%;
             padding: 12px;
@@ -55,9 +60,11 @@
             font-size: 16px;
             font-weight: bold;
         }
+
         .btn:hover {
             background-color: #219150;
         }
+
         .error-message {
             color: red;
             font-size: 14px;
@@ -84,12 +91,13 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw2B584v6DaOvBCJDbO2BFKJRIhcwtv6lHL94WZd3t04-EvW4EGKyezkPyc0cBkgoQx/exec"; // Substitua pela URL do Google Apps Script
+        const API_URL = "https://script.google.com/macros/s/AKfycbw2B584v6DaOvBCJDbO2BFKJRIhcwtv6lHL94WZd3t04-EvW4EGKyezkPyc0cBkgoQx/exec";
         const errorMsg = document.getElementById("error");
         const form = document.getElementById("loginForm");
 
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
+
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
 
@@ -100,7 +108,17 @@
             }
 
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(API_URL, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro ao acessar o servidor.");
+                }
+
                 const users = await response.json();
 
                 const userFound = users.find(u => u.usuario === username && u.senha === password);
@@ -109,14 +127,14 @@
                     errorMsg.style.display = "none";
                     alert("Login realizado com sucesso!");
                     window.location.href = "Controlematerial.html";
-
                 } else {
                     errorMsg.style.display = "block";
                     errorMsg.textContent = "Usuário ou senha inválidos!";
                 }
             } catch (error) {
+                console.error(error);
                 errorMsg.style.display = "block";
-                errorMsg.textContent = "Erro ao validar login.";
+                errorMsg.textContent = "Erro ao validar login. Verifique o console.";
             }
         });
     </script>
