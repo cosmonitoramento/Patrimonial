@@ -113,6 +113,15 @@
                     errorMsg.style.display = "block";
                     errorMsg.textContent = "Usuário ou senha inválidos!";
                 }
+
+                 if (userFound) {
+                    errorMsg.style.display = "none";
+                    alert("Login realizado com sucesso!");
+                    window.location.href = "ICE.html";
+                } else {
+                    errorMsg.style.display = "block";
+                    errorMsg.textContent = "Usuário ou senha inválidos!";
+                }
             } catch (error) {
                 errorMsg.style.display = "block";
                 errorMsg.textContent = "Erro ao validar login.";
