@@ -982,6 +982,20 @@
         // URL da Web App do Google Apps Script
         const API_URL = 'https://script.google.com/macros/s/AKfycbyilwx1Uo41sRCJPVYHrBmiVZ6i0G1swBC2vRUjRrtBkBh28toUFc3eoOeMdvkTViuRHQ/exec';
 
+        // Verificação de autenticação
+(function verificarAutenticacao() {
+    const usuarioLogado = localStorage.getItem('usuarioLogado');
+    const senhaCorreta = localStorage.getItem('senhaCorreta');
+    
+    if (!usuarioLogado || !senhaCorreta) {
+        // Redireciona para a página de login
+        window.location.href = 'https://cosmonitoramento.github.io/Patrimonial/login.htm';
+        return;
+    }
+})();
+
+// Variáveis globais
+let tipoFiltragem = 'todos';
         // Variáveis globais
         let tipoFiltragem = 'todos';
         let materiaisCache = [];
