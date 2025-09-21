@@ -473,6 +473,19 @@
             .header-actions, .control-panel { display: none; }
             .chart-card { break-inside: avoid; }
         }
+
+.chart-body {
+    background: #ffffff !important;
+}
+
+.chart-container {
+    background: #ffffff !important;
+}
+
+canvas {
+    background: #ffffff !important;
+}
+
     </style>
 </head>
 <body>
@@ -760,7 +773,8 @@
     // Global Variables
     let dadosIce = [];
     const charts = {};
-
+    
+Chart.defaults.backgroundColor = '#ffffff';
     // Professional color schemes
     const colorSchemes = {
         primary: ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'],
