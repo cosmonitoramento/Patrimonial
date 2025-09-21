@@ -745,7 +745,7 @@
         .chart-card:nth-child(4) { animation-delay: 0.8s; }
     </style>
 </head>
-<body data-theme="dark">
+    <body data-theme="light">
     <header class="header">
         <div class="header-content">
             <div class="logo">
@@ -909,10 +909,9 @@
 
         function setupDates() {
             const today = new Date();
-            const lastYear = new Date();
-            lastYear.setFullYear(today.getFullYear() - 1);
+            const dataInicial = new Date('2022-01-01'); // Data fixa: 1º de janeiro de 2022
             
-            document.getElementById('dataInicio').valueAsDate = lastYear;
+            document.getElementById('dataInicio').valueAsDate = dataInicial;
             document.getElementById('dataFim').valueAsDate = today;
         }
 
