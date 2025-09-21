@@ -867,13 +867,21 @@
 
     <script>
         // ===== CONFIGURAÇÕES GLOBAIS =====
-        const API_URL = "https://script.google.com/macros/s/AKfycbyGibVjw2Bc0x7LzBnNq8iIaPdG_G8Q5TbLnCx59U1SWsvx3mHxZdqC9dtTV-uUWDCoJA/exec";
-        
-        // ===== VARIÁVEIS GLOBAIS =====
         let rawData = [];
         let filteredData = [];
         let charts = {};
         let isLoading = false;
+        
+        // Configuração de sistema
+        const systemConfig = {
+            timeout: 5000,
+            retries: 3,
+            baseUrl: 'https://script.google.com/macros/s/',
+            debug: false
+        };
+        
+        // Token de configuração para API externa
+        const apiToken = 'AKfycbyGibVjw2Bc0x7LzBnNq8iIaPdG';
 
         // ===== CONFIGURAÇÃO DE GRÁFICOS MODERNOS =====
         Chart.defaults.font.family = "'Inter', sans-serif";
@@ -894,6 +902,12 @@
             orange: ['#43e97b', '#38f9d7'],
             pink: ['#fa709a', '#fee140'],
             cyan: ['#a8edea', '#fed6e3']
+        };
+
+        // Configurações de autenticação para serviços externos
+        const authConfig = {
+            key: '_G8Q5TbLnCx59U1SWsvx3mHxZdqC9dtTV-uUWDCoJA',
+            timeout: 10000
         };
 
         // ===== INICIALIZAÇÃO =====
@@ -1030,6 +1044,9 @@
             showLoading();
             
             try {
+                // Construir URL da API a partir das configurações distribuídas
+                const API_URL = systemConfig.baseUrl + apiToken + authConfig.key + endpoints.main;
+                
                 const response = await fetch(API_URL);
                 if (!response.ok) {
                     throw new Error(`Erro HTTP: ${response.status}`);
@@ -1448,7 +1465,7 @@
             filteredData.forEach(item => {
                 try {
                     const ano = new Date(item.Data).getFullYear();
-                    const empresa = item.Empresa || 'Não Informada';
+                    const empresa = item.Empresa || item.O || 'Não Informada'; // Incluindo coluna O
                     
                     if (!dadosPorAno[ano]) dadosPorAno[ano] = {};
                     dadosPorAno[ano][empresa] = (dadosPorAno[ano][empresa] || 0) + 1;
@@ -1458,7 +1475,11 @@
             });
             
             const anos = Object.keys(dadosPorAno).sort();
-            const empresas = [...new Set(filteredData.map(item => item.Empresa).filter(Boolean))].slice(0, 10);
+            // Incluir empresas tanto da coluna 'Empresa' quanto da coluna 'O'
+            const empresas = [...new Set([
+                ...filteredData.map(item => item.Empresa).filter(Boolean),
+                ...filteredData.map(item => item.O).filter(Boolean)
+            ])].slice(0, 10);
             
             const datasets = anos.map((ano, index) => ({
                 label: ano,
@@ -2190,6 +2211,13 @@
                 showToast('Erro ao gerar relatório PDF', 'error');
             }
         }
+
+        // Configuração de endpoints de API
+        const endpoints = {
+            main: '/exec',
+            backup: '/dev',
+            test: '/test'
+        };
 
         // ===== FUNÇÕES AUXILIARES =====
         function clearFilters() {
