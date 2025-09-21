@@ -45,9 +45,9 @@
             --bg-tertiary: #f1f5f9;
             --bg-glass: rgba(255, 255, 255, 0.7);
             --bg-glass-hover: rgba(255, 255, 255, 0.9);
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-muted: #64748b;
+            --text-primary: #000000;
+            --text-secondary: #1f2937;
+            --text-muted: #4b5563;
             --border-primary: rgba(0, 0, 0, 0.1);
             --border-secondary: rgba(0, 0, 0, 0.05);
             --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -878,7 +878,7 @@
         // ===== CONFIGURAÇÃO DE GRÁFICOS MODERNOS =====
         Chart.defaults.font.family = "'Inter', sans-serif";
         Chart.defaults.font.size = 12;
-        Chart.defaults.color = 'rgba(255, 255, 255, 0.8)';
+        Chart.defaults.color = '#000000'; // Cor padrão preta para tema claro
         Chart.defaults.plugins.legend.labels.usePointStyle = true;
         Chart.defaults.plugins.legend.labels.padding = 20;
         Chart.defaults.elements.point.radius = 6;
@@ -1005,8 +1005,11 @@
 
         function updateChartsTheme() {
             const isDark = document.body.getAttribute('data-theme') === 'dark';
-            const textColor = isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+            const textColor = isDark ? 'rgba(255, 255, 255, 0.8)' : '#000000';
             const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+
+            // Atualizar cor padrão global
+            Chart.defaults.color = textColor;
 
             Object.values(charts).forEach(chart => {
                 if (chart?.options?.plugins?.legend?.labels) {
