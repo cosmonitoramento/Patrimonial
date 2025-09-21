@@ -233,15 +233,16 @@
         }
 
         .kpi-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
+    background: var(--card-bg); /* Manter branco */
+    /* background: linear-gradient(135deg, var(--dark-bg), #1e293b); - REMOVER esta linha */
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
 
         .kpi-card:hover {
             transform: translateY(-4px);
@@ -270,14 +271,15 @@
             margin-bottom: 1rem;
         }
 
-        .kpi-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 0;
-        }
+       .kpi-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary); /* Texto escuro */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
 
         .kpi-icon {
             width: 48px;
@@ -296,22 +298,24 @@
         .kpi-card.warning .kpi-icon { background: #fffbeb; color: var(--warning-color); }
         .kpi-card.info .kpi-icon { background: #f0f9ff; color: var(--accent-color); }
 
-        .kpi-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-            line-height: 1;
-            font-variant-numeric: tabular-nums;
-        }
+       .kpi-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary); /* Texto escuro */
+    margin-bottom: 0.5rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
 
-        .kpi-trend {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
+
+      .kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary); /* Texto escuro */
+}
 
         .trend-up { color: var(--success-color); }
         .trend-down { color: var(--danger-color); }
@@ -773,7 +777,7 @@ canvas {
     // Global Variables
     let dadosIce = [];
     const charts = {};
-    
+
 Chart.defaults.backgroundColor = '#ffffff';
     // Professional color schemes
     const colorSchemes = {
