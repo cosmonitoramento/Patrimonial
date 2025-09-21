@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -753,75 +752,66 @@
             </div>
         </section>
     </main>
-    <!-- Scripts modernizados (mantendo a lógica original) -->
 
-    // --- Configurações e Variáveis Globais ---
-<script>  
+   <script>
+    // API Configuration
     const API_URL = 'https://script.google.com/macros/s/AKfycbwlmRP4hZwVhPt36QtLs2MJ2ow76Xx3kTvMm6O4Pkf0R_rNCgMsVXQtu0UuEMaHK0zpNw/exec';
+    
+    // Global Variables
     let dadosIce = [];
     const charts = {};
-    const chartIds = [
-        'chart_comparativo_anos', 'chart_tipificacao_mes', 'chart_tipificacao_por_mes',
-        'chart_bcs_mes', 'chart_gerencia_mes', 'chart_tipificacao_anual',
-        'chart_gerencia_anual', 'chart_bcs_comparativo', 'chart_evolucao_mensal'
-    ];
-    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    
-    // --- Funções da API e Utilitários ---
+
+    // Professional color schemes
+    const colorSchemes = {
+        primary: ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'],
+        success: ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
+        warning: ['#d97706', '#f59e0b', '#fbbf24', '#fcd34d', '#fde68a'],
+        danger: ['#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca'],
+        neutral: ['#374151', '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb']
+    };
+
+    // API Call Function
     async function callAPI(method, action, data = null) {
-        document.querySelectorAll('.shimmer').forEach(el => el.classList.add('shimmer'));
         try {
-            console.log(`Chamando API: ${method} ${action}`);
+            console.log(`Calling API: ${method} ${action}`);
             const url = new URL(API_URL);
-            let response;
+            
             if (method === 'GET') {
                 url.searchParams.append('action', action);
                 if (data) {
                     Object.keys(data).forEach(key => url.searchParams.append(key, data[key]));
                 }
-                response = await fetch(url);
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                return result;
             } else {
                 data = data || {};
                 data.action = action;
-                response = await fetch(url, {
+                
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: new URLSearchParams(data)
                 });
+                const result = await response.json();
+                return result;
             }
-
-            if (!response.ok) {
-                throw new Error(`Erro na rede: ${response.statusText}`);
-            }
-
-            const result = await response.json();
-            document.querySelectorAll('.shimmer').forEach(el => el.classList.remove('shimmer'));
-            return result;
         } catch (error) {
-            console.error('Erro na API:', error);
-            document.querySelectorAll('.shimmer').forEach(el => el.classList.remove('shimmer'));
-            mostrarErro('Erro de conexão ou dados inválidos: ' + error.message);
-            return { status: 'error', message: 'Erro de conexão ou dados inválidos: ' + error.message };
+            console.error('API Error:', error);
+            return {
+                status: 'error',
+                message: 'Connection error: ' + error.message
+            };
         }
     }
 
-    function mostrarErro(mensagem) {
-        let errorMsg = document.querySelector('.error-message');
-        if (errorMsg) errorMsg.remove();
-        errorMsg = document.createElement('div');
-        errorMsg.className = 'error-message fade-in';
-        errorMsg.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${mensagem}`;
-        const header = document.querySelector('.header');
-        header.parentNode.insertBefore(errorMsg, header.nextSibling);
-        setTimeout(() => {
-            errorMsg.style.opacity = '0';
-            setTimeout(() => errorMsg.remove(), 300);
-        }, 5000);
-    }
-
+    // Date Utility Functions
     function parseDate(dateString) {
         if (!dateString) return null;
+        
         let date = null;
+        
         if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
             date = new Date(dateString + 'T00:00:00');
         } else if (dateString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
@@ -830,39 +820,49 @@
         } else {
             date = new Date(dateString);
         }
+        
         if (isNaN(date.getTime())) {
-            console.warn('Data inválida:', dateString);
+            console.warn('Invalid date:', dateString);
             return null;
         }
+        
         return date;
     }
 
     function isDateInRange(dateString, startDate, endDate) {
         const date = parseDate(dateString);
         if (!date) return false;
+        
         const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         const normalizedStart = startDate ? new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) : null;
         const normalizedEnd = endDate ? new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) : null;
+        
         if (normalizedStart && normalizedDate < normalizedStart) return false;
         if (normalizedEnd && normalizedDate > normalizedEnd) return false;
+        
         return true;
     }
 
     function getDateInfo(dateString) {
         const date = parseDate(dateString);
         if (!date) return null;
+        
         return {
             year: date.getFullYear(),
             month: date.getMonth(),
+            date: date.getDate(),
             fullDate: date
         };
     }
 
-    // --- Lógica de Filtros ---
+    // Filter Functions
     function filtrarDadosPorPeriodo() {
         const periodo = document.getElementById('filtro_periodo').value;
         const dataInicio = document.getElementById('data_inicio').value;
         const dataFim = document.getElementById('data_fim').value;
+        
+        console.log('Filtering data by period:', periodo);
+        
         let dadosFiltrados = [...dadosIce];
         let textoFiltro = '';
         
@@ -877,41 +877,52 @@
                 case 'hoje':
                     dataLimite = new Date();
                     dataLimite.setHours(0, 0, 0, 0);
-                    dadosFiltrados = dadosIce.filter(ice => isDateInRange(ice.data, dataLimite, hoje));
+                    dadosFiltrados = dadosIce.filter(ice => {
+                        return isDateInRange(ice.data, dataLimite, hoje);
+                    });
                     textoFiltro = `Filtro: Hoje (${dataLimite.toLocaleDateString('pt-BR')})`;
                     break;
+                    
                 case '7dias':
                     dataLimite = new Date();
                     dataLimite.setDate(hoje.getDate() - 7);
                     dataLimite.setHours(0, 0, 0, 0);
-                    dadosFiltrados = dadosIce.filter(ice => isDateInRange(ice.data, dataLimite, hoje));
+                    dadosFiltrados = dadosIce.filter(ice => {
+                        return isDateInRange(ice.data, dataLimite, hoje);
+                    });
                     textoFiltro = `Filtro: Últimos 7 dias`;
                     break;
+                    
                 case '30dias':
                     dataLimite = new Date();
                     dataLimite.setDate(hoje.getDate() - 30);
                     dataLimite.setHours(0, 0, 0, 0);
-                    dadosFiltrados = dadosIce.filter(ice => isDateInRange(ice.data, dataLimite, hoje));
+                    dadosFiltrados = dadosIce.filter(ice => {
+                        return isDateInRange(ice.data, dataLimite, hoje);
+                    });
                     textoFiltro = `Filtro: Últimos 30 dias`;
                     break;
+                    
                 case '90dias':
                     dataLimite = new Date();
                     dataLimite.setDate(hoje.getDate() - 90);
                     dataLimite.setHours(0, 0, 0, 0);
-                    dadosFiltrados = dadosIce.filter(ice => isDateInRange(ice.data, dataLimite, hoje));
+                    dadosFiltrados = dadosIce.filter(ice => {
+                        return isDateInRange(ice.data, dataLimite, hoje);
+                    });
                     textoFiltro = `Filtro: Últimos 90 dias`;
                     break;
+                    
                 case 'personalizado':
                     if (dataInicio && dataFim) {
-                        const inicio = parseDate(dataInicio);
-                        const fim = parseDate(dataFim);
-                        if (inicio && fim) {
-                            fim.setHours(23, 59, 59, 999);
-                            dadosFiltrados = dadosIce.filter(ice => isDateInRange(ice.data, inicio, fim));
-                            textoFiltro = `Filtro: ${inicio.toLocaleDateString('pt-BR')} - ${fim.toLocaleDateString('pt-BR')}`;
-                        } else {
-                            textoFiltro = 'Filtro personalizado: Selecione datas válidas';
-                        }
+                        const inicio = new Date(dataInicio);
+                        const fim = new Date(dataFim);
+                        fim.setHours(23, 59, 59, 999);
+                        
+                        dadosFiltrados = dadosIce.filter(ice => {
+                            return isDateInRange(ice.data, inicio, fim);
+                        });
+                        textoFiltro = `Filtro: ${inicio.toLocaleDateString('pt-BR')} - ${fim.toLocaleDateString('pt-BR')}`;
                     } else {
                         textoFiltro = 'Filtro personalizado: Selecione as datas';
                     }
@@ -919,29 +930,28 @@
             }
         }
         
+        // Update filter info
         const filtroInfo = document.getElementById('filtro_info');
         const filtroTexto = document.getElementById('filtro_texto');
         
-        if (filtroInfo && filtroTexto) {
-            if (periodo === 'todos') {
-                filtroInfo.style.display = 'none';
-            } else {
-                filtroInfo.style.display = 'block';
-                filtroTexto.textContent = `${textoFiltro} - ${dadosFiltrados.length} registros encontrados`;
-            }
+        if (periodo === 'todos') {
+            filtroInfo.style.display = 'none';
+        } else {
+            filtroInfo.style.display = 'block';
+            filtroTexto.textContent = `${textoFiltro} - ${dadosFiltrados.length} registros encontrados`;
         }
-
+        
         return dadosFiltrados;
     }
 
-    // --- Funções de Gráficos ---
+    // Chart Functions
     function destruirGrafico(chartKey) {
         if (charts[chartKey]) {
             try {
                 charts[chartKey].destroy();
                 charts[chartKey] = null;
             } catch (error) {
-                console.warn(`Erro ao destruir gráfico ${chartKey}:`, error);
+                console.warn(`Error destroying chart ${chartKey}:`, error);
             }
         }
     }
@@ -949,339 +959,407 @@
     function criarGraficoVazio(canvasId, chartKey, title = 'Sem dados') {
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
+
         destruirGrafico(chartKey);
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        charts[chartKey] = new Chart(ctx, {
+
+        charts[chartKey] = new Chart(canvas.getContext('2d'), {
             type: 'bar',
-            data: { labels: ['Sem dados'], datasets: [{ label: title, data: [0], backgroundColor: '#E5E5E5' }] },
+            data: {
+                labels: ['Sem dados'],
+                datasets: [{
+                    label: title,
+                    data: [0],
+                    backgroundColor: '#e5e7eb'
+                }]
+            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: { y: { beginAtZero: true } },
-                plugins: { legend: { display: false }, title: { display: true, text: title } }
+                plugins: { 
+                    legend: { display: false },
+                    title: { display: true, text: title }
+                }
             }
-        });
-    }
-
-    function criarTodosGraficosVazios() {
-        chartIds.forEach(id => {
-            const chartKey = id.replace('chart_', '');
-            criarGraficoVazio(id, chartKey, 'Sem dados disponíveis');
         });
     }
 
     function atualizarGraficoComparativoAnos(dados) {
         const canvas = document.getElementById('chart_comparativo_anos');
-        if (!canvas) {
-            console.error('Canvas "chart_comparativo_anos" não encontrado.');
-            return;
-        }
-
+        if (!canvas) return;
+        
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         const dados2024 = new Array(12).fill(0);
         const dados2025 = new Array(12).fill(0);
         
         dados.forEach(ice => {
             const dateInfo = getDateInfo(ice.data);
             if (!dateInfo) return;
+            
             const { year, month } = dateInfo;
-            if (year === 2024) dados2024[month]++;
-            else if (year === 2025) dados2025[month]++;
+            
+            if (year === 2024) {
+                dados2024[month]++;
+            } else if (year === 2025) {
+                dados2025[month]++;
+            }
         });
         
-        const chartKey = 'comparativoAnos';
-        destruirGrafico(chartKey);
-
-        charts[chartKey] = new Chart(canvas.getContext('2d'), {
+        destruirGrafico('comparativoAnos');
+        
+        charts.comparativoAnos = new Chart(canvas.getContext('2d'), {
             type: 'line',
             data: {
-                labels: months,
-                datasets: [
-                    { label: '2024', data: dados2024, borderColor: 'rgba(74, 124, 89, 1)', backgroundColor: 'rgba(74, 124, 89, 0.1)', tension: 0.4, fill: true, borderWidth: 3, pointBackgroundColor: 'rgba(74, 124, 89, 1)', pointRadius: 4, pointHoverRadius: 6 },
-                    { label: '2025', data: dados2025, borderColor: 'rgba(44, 85, 48, 1)', backgroundColor: 'rgba(44, 85, 48, 0.1)', tension: 0.4, fill: true, borderWidth: 3, pointBackgroundColor: 'rgba(44, 85, 48, 1)', pointRadius: 4, pointHoverRadius: 6 }
-                ]
+                labels: meses,
+                datasets: [{
+                    label: '2024',
+                    data: dados2024,
+                    borderColor: colorSchemes.primary[0],
+                    backgroundColor: colorSchemes.primary[0] + '20',
+                    tension: 0.4,
+                    fill: false,
+                    borderWidth: 3,
+                    pointBackgroundColor: colorSchemes.primary[0],
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }, {
+                    label: '2025',
+                    data: dados2025,
+                    borderColor: colorSchemes.success[0],
+                    backgroundColor: colorSchemes.success[0] + '20',
+                    tension: 0.4,
+                    fill: false,
+                    borderWidth: 3,
+                    pointBackgroundColor: colorSchemes.success[0],
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11, weight: '500' } }, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
-                    x: { ticks: { font: { size: 11, weight: '500' } }, grid: { color: 'rgba(0, 0, 0, 0.05)' } }
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 },
-                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: { size: 11, weight: '600' } } } },
-                interaction: { mode: 'index', intersect: false },
-                animation: { duration: 1000, easing: 'easeOutQuart' }
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            font: { family: 'Inter, sans-serif' }
+                        },
+                        grid: { color: '#e2e8f0' }
+                    },
+                    x: {
+                        grid: { color: '#e2e8f0' },
+                        ticks: { font: { family: 'Inter, sans-serif' } }
+                    }
+                },
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        labels: { 
+                            usePointStyle: true,
+                            font: { family: 'Inter, sans-serif', weight: '600' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Inter, sans-serif' },
+                        bodyFont: { family: 'Inter, sans-serif' }
+                    }
+                }
             }
         });
     }
 
     function atualizarGraficoTipificacaoMes(dados) {
         const canvas = document.getElementById('chart_tipificacao_mes');
-        if (!canvas) {
-            console.error('Canvas "chart_tipificacao_mes" não encontrado.');
-            return;
-        }
-
+        if (!canvas) return;
+        
         const agora = new Date();
         const mesAtual = agora.getMonth();
         const anoAtual = agora.getFullYear();
+        
         const dadosMes = dados.filter(ice => {
             const dateInfo = getDateInfo(ice.data);
             if (!dateInfo) return false;
             return dateInfo.month === mesAtual && dateInfo.year === anoAtual;
         });
-
+        
         const contagem = {};
         dadosMes.forEach(ice => {
             const tip = ice.tipificacao || 'Não informado';
             contagem[tip] = (contagem[tip] || 0) + 1;
         });
-
+        
         const labels = Object.keys(contagem);
         const values = Object.values(contagem);
-
-        const chartKey = 'tipificacaoMes';
-        destruirGrafico(chartKey);
-
+        
+        destruirGrafico('tipificacaoMes');
+        
         if (labels.length === 0) {
-            criarGraficoVazio('chart_tipificacao_mes', chartKey, 'Sem dados para o mês atual');
+            criarGraficoVazio('chart_tipificacao_mes', 'tipificacaoMes', 'Sem dados para o mês atual');
             return;
         }
-
-        charts[chartKey] = new Chart(canvas.getContext('2d'), {
+        
+        charts.tipificacaoMes = new Chart(canvas.getContext('2d'), {
             type: 'doughnut',
             data: {
                 labels: labels,
                 datasets: [{
                     data: values,
-                    backgroundColor: ['#4a7c59', '#6b8e5a', '#8fa85c', '#b3c25e', '#d7dc60', '#fbf662', '#f4d03f', '#f7dc6f'],
-                    borderWidth: 2, borderColor: '#fff'
+                    backgroundColor: colorSchemes.primary,
+                    borderWidth: 3,
+                    borderColor: '#fff',
+                    hoverBorderWidth: 5
                 }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { padding: 20, font: { size: 11, weight: '500' } } } },
-                animation: { animateRotate: true, animateScale: true, duration: 1000, easing: 'easeOutQuart' },
-                cutout: '60%'
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: { 
+                        position: 'bottom',
+                        labels: { 
+                            padding: 20,
+                            font: { family: 'Inter, sans-serif', weight: '500' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Inter, sans-serif' },
+                        bodyFont: { family: 'Inter, sans-serif' }
+                    }
+                }
             }
         });
     }
 
     function atualizarGraficoTipificacaoPorMes(dados) {
         const canvas = document.getElementById('chart_tipificacao_por_mes');
-        if (!canvas) {
-            console.error('Canvas "chart_tipificacao_por_mes" não encontrado.');
-            return;
-        }
+        if (!canvas) return;
         
-        const contagem = {};
-        dados.forEach(ice => {
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const anoAtual = new Date().getFullYear();
+        
+        const dadosAno = dados.filter(ice => {
             const dateInfo = getDateInfo(ice.data);
-            if (!dateInfo) return;
-            const mesAno = `${months[dateInfo.month]}/${dateInfo.year}`;
-            const tip = ice.tipificacao || 'Não informado';
-            if (!contagem[mesAno]) contagem[mesAno] = {};
-            contagem[mesAno][tip] = (contagem[mesAno][tip] || 0) + 1;
+            if (!dateInfo) return false;
+            return dateInfo.year === anoAtual;
         });
         
-        const labels = Object.keys(contagem).sort((a, b) => {
-            const [mesA, anoA] = a.split('/');
-            const [mesB, anoB] = b.split('/');
-            const dateA = new Date(`${anoA}-${months.indexOf(mesA) + 1}-01`);
-            const dateB = new Date(`${anoB}-${months.indexOf(mesB) + 1}-01`);
-            return dateA - dateB;
-        });
+        const tipificacoes = [...new Set(dadosAno.map(ice => ice.tipificacao || 'Não informado'))];
         
-        const allTipificacoes = [...new Set(dados.map(ice => ice.tipificacao).filter(Boolean))].sort();
-        
-        const datasets = allTipificacoes.map((tip, index) => {
-            const color = `hsl(${(index * 50) % 360}, 70%, 50%)`;
+        const datasets = tipificacoes.map((tip, index) => {
+            const dadosMes = new Array(12).fill(0);
+            
+            dadosAno.forEach(ice => {
+                if ((ice.tipificacao || 'Não informado') === tip) {
+                    const dateInfo = getDateInfo(ice.data);
+                    if (dateInfo) {
+                        dadosMes[dateInfo.month]++;
+                    }
+                }
+            });
+            
+            const colorIndex = index % colorSchemes.primary.length;
+            
             return {
                 label: tip,
-                data: labels.map(mesAno => contagem[mesAno][tip] || 0),
-                backgroundColor: color,
+                data: dadosMes,
+                backgroundColor: colorSchemes.primary[colorIndex],
+                borderColor: colorSchemes.primary[colorIndex],
+                borderWidth: 1,
+                borderRadius: 4
             };
         });
-
-        const chartKey = 'tipificacaoPorMes';
-        destruirGrafico(chartKey);
-
-        if (labels.length === 0) {
-            criarGraficoVazio('chart_tipificacao_por_mes', chartKey, 'Sem dados para o período');
+        
+        destruirGrafico('tipificacaoPorMes');
+        
+        if (tipificacoes.length === 0) {
+            criarGraficoVazio('chart_tipificacao_por_mes', 'tipificacaoPorMes', 'Sem dados para o ano atual');
             return;
         }
-
-        charts[chartKey] = new Chart(canvas.getContext('2d'), {
+        
+        charts.tipificacaoPorMes = new Chart(canvas.getContext('2d'), {
             type: 'bar',
-            data: { labels, datasets },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: {
-                    x: { stacked: true },
-                    y: { stacked: true, beginAtZero: true }
-                },
-                plugins: { legend: { position: 'top' }, title: { display: true, text: 'Tipificação por Mês' } }
-            }
-        });
-    }
-
-    function atualizarGraficoEvolucaoMensal(dados) {
-        const canvas = document.getElementById('chart_evolucao_mensal');
-        if (!canvas) {
-            console.error('Canvas "chart_evolucao_mensal" não encontrado.');
-            return;
-        }
-
-        const contagem = {};
-        dados.forEach(ice => {
-            const dateInfo = getDateInfo(ice.data);
-            if (!dateInfo) return;
-            const mesAno = `${months[dateInfo.month]}/${dateInfo.year}`;
-            contagem[mesAno] = (contagem[mesAno] || 0) + 1;
-        });
-        
-        const labels = Object.keys(contagem).sort((a, b) => {
-            const [mesA, anoA] = a.split('/');
-            const [mesB, anoB] = b.split('/');
-            const dateA = new Date(`${anoA}-${months.indexOf(mesA) + 1}-01`);
-            const dateB = new Date(`${anoB}-${months.indexOf(mesB) + 1}-01`);
-            return dateA - dateB;
-        });
-        const values = labels.map(mesAno => contagem[mesAno]);
-        
-        const chartKey = 'evolucaoMensal';
-        destruirGrafico(chartKey);
-
-        if (labels.length === 0) {
-            criarGraficoVazio('chart_evolucao_mensal', chartKey, 'Sem dados para o período');
-            return;
-        }
-
-        charts[chartKey] = new Chart(canvas.getContext('2d'), {
-            type: 'line',
             data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Número de ICEs',
-                    data: values,
-                    borderColor: '#4a7c59',
-                    backgroundColor: 'rgba(74, 124, 89, 0.2)',
-                    fill: true,
-                    tension: 0.4
-                }]
+                labels: meses,
+                datasets: datasets
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-                plugins: { title: { display: true, text: 'Evolução Mensal de ICEs' } }
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { 
+                        stacked: true,
+                        grid: { color: '#e2e8f0' },
+                        ticks: { font: { family: 'Inter, sans-serif' } }
+                    },
+                    y: { 
+                        stacked: true,
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            font: { family: 'Inter, sans-serif' }
+                        },
+                        grid: { color: '#e2e8f0' }
+                    }
+                },
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        labels: { 
+                            boxWidth: 12,
+                            font: { family: 'Inter, sans-serif', weight: '500' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Inter, sans-serif' },
+                        bodyFont: { family: 'Inter, sans-serif' }
+                    }
+                }
             }
         });
     }
 
     function atualizarGraficoBcsMes(dados) {
         const canvas = document.getElementById('chart_bcs_mes');
-        if (!canvas) {
-            console.error('Canvas "chart_bcs_mes" não encontrado.');
-            return;
-        }
-
-        const agora = new Date();
-        const mesAtual = agora.getMonth();
-        const anoAtual = agora.getFullYear();
-        const dadosMes = dados.filter(ice => {
+        if (!canvas) return;
+        
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const bcsPorMes = new Array(12).fill(0);
+        const anoAtual = new Date().getFullYear();
+        
+        dados.forEach(ice => {
             const dateInfo = getDateInfo(ice.data);
-            if (!dateInfo) return false;
-            return dateInfo.month === mesAtual && dateInfo.year === anoAtual;
+            if (!dateInfo) return;
+            
+            if (dateInfo.year === anoAtual) {
+                const bcs = parseInt(ice.quantidade_bcs) || 0;
+                bcsPorMes[dateInfo.month] += bcs;
+            }
         });
-
-        const contagem = {};
-        dadosMes.forEach(ice => {
-            const tip = ice.tipificacao || 'Não informado';
-            contagem[tip] = (contagem[tip] || 0) + (parseInt(ice.quantidade_bcs) || 0);
-        });
-
-        const labels = Object.keys(contagem);
-        const values = Object.values(contagem);
-
-        const chartKey = 'bcsMes';
-        destruirGrafico(chartKey);
-
-        if (labels.length === 0) {
-            criarGraficoVazio('chart_bcs_mes', chartKey, 'Sem dados para o mês atual');
-            return;
-        }
-
-        charts[chartKey] = new Chart(canvas.getContext('2d'), {
+        
+        destruirGrafico('bcsMes');
+        
+        charts.bcsMes = new Chart(canvas.getContext('2d'), {
             type: 'bar',
             data: {
-                labels: labels,
+                labels: meses,
                 datasets: [{
-                    label: 'Total de BCS',
-                    data: values,
-                    backgroundColor: '#007bff',
-                    borderColor: '#007bff',
-                    borderWidth: 1
+                    label: 'Quantidade de BCs',
+                    data: bcsPorMes,
+                    backgroundColor: colorSchemes.warning[0],
+                    borderColor: colorSchemes.warning[1],
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    borderSkipped: false
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            font: { family: 'Inter, sans-serif' }
+                        },
+                        grid: { color: '#e2e8f0' }
+                    },
+                    x: {
+                        grid: { color: '#e2e8f0' },
+                        ticks: { font: { family: 'Inter, sans-serif' } }
+                    }
                 },
                 plugins: {
                     legend: { display: false },
-                    title: { display: true, text: 'BCS por Mês' }
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Inter, sans-serif' },
+                        bodyFont: { family: 'Inter, sans-serif' }
+                    }
                 }
             }
         });
     }
-    
-    // Adicione as novas funções para os gráficos que faltam
+
     function atualizarGraficoGerenciaMes(dados) {
         const canvas = document.getElementById('chart_gerencia_mes');
         if (!canvas) return;
-
+        
         const agora = new Date();
         const mesAtual = agora.getMonth();
         const anoAtual = agora.getFullYear();
+        
         const dadosMes = dados.filter(ice => {
             const dateInfo = getDateInfo(ice.data);
-            return dateInfo && dateInfo.month === mesAtual && dateInfo.year === anoAtual;
+            if (!dateInfo) return false;
+            return dateInfo.month === mesAtual && dateInfo.year === anoAtual;
         });
         
         const contagem = {};
         dadosMes.forEach(ice => {
-            const gerencia = ice.gerencia || 'Não informado';
-            contagem[gerencia] = (contagem[gerencia] || 0) + 1;
+            const ger = ice.ger_jirau || 'Não informado';
+            contagem[ger] = (contagem[ger] || 0) + 1;
         });
-
+        
         const labels = Object.keys(contagem);
         const values = Object.values(contagem);
-        const chartKey = 'gerenciaMes';
         
-        destruirGrafico(chartKey);
+        destruirGrafico('gerenciaMes');
         
         if (labels.length === 0) {
-            criarGraficoVazio('chart_gerencia_mes', chartKey, 'Sem dados de gerência para o mês atual');
+            criarGraficoVazio('chart_gerencia_mes', 'gerenciaMes', 'Sem dados para o mês atual');
             return;
         }
         
-        charts[chartKey] = new Chart(canvas.getContext('2d'), {
-            type: 'pie',
+        charts.gerenciaMes = new Chart(canvas.getContext('2d'), {
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
+                    label: 'Quantidade de ICEs',
                     data: values,
-                    backgroundColor: ['#4a7c59', '#6b8e5a', '#8fa85c', '#b3c25e', '#d7dc60', '#fbf662', '#f4d03f', '#f7dc6f'],
-                    borderWidth: 2, borderColor: '#fff'
+                    backgroundColor: colorSchemes.success[0],
+                    borderColor: colorSchemes.success[1],
+                    borderWidth: 1,
+                    borderRadius: 6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            font: { family: 'Inter, sans-serif' }
+                        },
+                        grid: { color: '#e2e8f0' }
+                    },
+                    y: {
+                        grid: { color: '#e2e8f0' },
+                        ticks: { font: { family: 'Inter, sans-serif' } }
+                    }
+                },
                 plugins: {
-                    legend: { position: 'right' },
-                    title: { display: true, text: 'Gerência por Mês' }
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Inter, sans-serif' },
+                        bodyFont: { family: 'Inter, sans-serif' }
+                    }
                 }
             }
         });
@@ -1290,43 +1368,58 @@
     function atualizarGraficoTipificacaoAnual(dados) {
         const canvas = document.getElementById('chart_tipificacao_anual');
         if (!canvas) return;
-
+        
+        const anoAtual = new Date().getFullYear();
+        const dadosAno = dados.filter(ice => {
+            const dateInfo = getDateInfo(ice.data);
+            if (!dateInfo) return false;
+            return dateInfo.year === anoAtual;
+        });
+        
         const contagem = {};
-        dados.forEach(ice => {
+        dadosAno.forEach(ice => {
             const tip = ice.tipificacao || 'Não informado';
             contagem[tip] = (contagem[tip] || 0) + 1;
         });
-
+        
         const labels = Object.keys(contagem);
         const values = Object.values(contagem);
-        const chartKey = 'tipificacaoAnual';
         
-        destruirGrafico(chartKey);
-
+        destruirGrafico('tipificacaoAnual');
+        
         if (labels.length === 0) {
-            criarGraficoVazio('chart_tipificacao_anual', chartKey, 'Sem dados de tipificação para o ano');
+            criarGraficoVazio('chart_tipificacao_anual', 'tipificacaoAnual', 'Sem dados para o ano atual');
             return;
         }
-
-        charts[chartKey] = new Chart(canvas.getContext('2d'), {
-            type: 'bar',
+        
+        charts.tipificacaoAnual = new Chart(canvas.getContext('2d'), {
+            type: 'pie',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Contagem Anual',
                     data: values,
-                    backgroundColor: '#4a7c59',
+                    backgroundColor: colorSchemes.primary,
+                    borderWidth: 3,
+                    borderColor: '#fff',
+                    hoverBorderWidth: 5
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true }
-                },
                 plugins: {
-                    legend: { display: false },
-                    title: { display: true, text: 'Tipificação Anual' }
+                    legend: { 
+                        position: 'bottom',
+                        labels: { 
+                            padding: 20,
+                            font: { family: 'Inter, sans-serif', weight: '500' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Inter, sans-serif' },
+                        bodyFont: { family: 'Inter, sans-serif' }
+                    }
                 }
             }
         });
@@ -1335,43 +1428,68 @@
     function atualizarGraficoGerenciaAnual(dados) {
         const canvas = document.getElementById('chart_gerencia_anual');
         if (!canvas) return;
-
-        const contagem = {};
-        dados.forEach(ice => {
-            const gerencia = ice.gerencia || 'Não informado';
-            contagem[gerencia] = (contagem[gerencia] || 0) + 1;
+        
+        const anoAtual = new Date().getFullYear();
+        const dadosAno = dados.filter(ice => {
+            const dateInfo = getDateInfo(ice.data);
+            if (!dateInfo) return false;
+            return dateInfo.year === anoAtual;
         });
-
+        
+        const contagem = {};
+        dadosAno.forEach(ice => {
+            const ger = ice.ger_jirau || 'Não informado';
+            contagem[ger] = (contagem[ger] || 0) + 1;
+        });
+        
         const labels = Object.keys(contagem);
         const values = Object.values(contagem);
-        const chartKey = 'gerenciaAnual';
         
-        destruirGrafico(chartKey);
-
+        destruirGrafico('gerenciaAnual');
+        
         if (labels.length === 0) {
-            criarGraficoVazio('chart_gerencia_anual', chartKey, 'Sem dados de gerência para o ano');
+            criarGraficoVazio('chart_gerencia_anual', 'gerenciaAnual', 'Sem dados para o ano atual');
             return;
         }
-
-        charts[chartKey] = new Chart(canvas.getContext('2d'), {
+        
+        charts.gerenciaAnual = new Chart(canvas.getContext('2d'), {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Contagem Anual',
+                    label: 'Quantidade de ICEs',
                     data: values,
-                    backgroundColor: '#6b8e5a',
+                    backgroundColor: colorSchemes.neutral[0],
+                    borderColor: colorSchemes.neutral[1],
+                    borderWidth: 1,
+                    borderRadius: 6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                indexAxis: 'y',
                 scales: {
-                    y: { beginAtZero: true }
+                    x: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            font: { family: 'Inter, sans-serif' }
+                        },
+                        grid: { color: '#e2e8f0' }
+                    },
+                    y: {
+                        grid: { color: '#e2e8f0' },
+                        ticks: { font: { family: 'Inter, sans-serif' } }
+                    }
                 },
                 plugins: {
                     legend: { display: false },
-                    title: { display: true, text: 'Gerência Anual' }
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Inter, sans-serif' },
+                        bodyFont: { family: 'Inter, sans-serif' }
+                    }
                 }
             }
         });
@@ -1381,107 +1499,236 @@
         const canvas = document.getElementById('chart_bcs_comparativo');
         if (!canvas) return;
         
-        const contagem = {};
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const bcs2024 = new Array(12).fill(0);
+        const bcs2025 = new Array(12).fill(0);
+        
         dados.forEach(ice => {
             const dateInfo = getDateInfo(ice.data);
             if (!dateInfo) return;
-            const ano = dateInfo.year;
+            
             const bcs = parseInt(ice.quantidade_bcs) || 0;
-            contagem[ano] = (contagem[ano] || 0) + bcs;
+            
+            if (dateInfo.year === 2024) {
+                bcs2024[dateInfo.month] += bcs;
+            } else if (dateInfo.year === 2025) {
+                bcs2025[dateInfo.month] += bcs;
+            }
         });
-
-        const labels = Object.keys(contagem).sort();
-        const values = labels.map(ano => contagem[ano]);
-        const chartKey = 'bcsComparativo';
         
-        destruirGrafico(chartKey);
+        destruirGrafico('bcsComparativo');
         
-        if (labels.length === 0) {
-            criarGraficoVazio('chart_bcs_comparativo', chartKey, 'Sem dados de BCS');
-            return;
-        }
-
-        charts[chartKey] = new Chart(canvas.getContext('2d'), {
-            type: 'line',
+        charts.bcsComparativo = new Chart(canvas.getContext('2d'), {
+            type: 'bar',
             data: {
-                labels: labels,
+                labels: meses,
                 datasets: [{
-                    label: 'Total de BCS',
-                    data: values,
-                    borderColor: '#f7dc6f',
-                    backgroundColor: 'rgba(247, 220, 111, 0.2)',
-                    fill: true,
-                    tension: 0.4
+                    label: '2024',
+                    data: bcs2024,
+                    backgroundColor: colorSchemes.warning[0],
+                    borderColor: colorSchemes.warning[1],
+                    borderWidth: 1,
+                    borderRadius: 6
+                }, {
+                    label: '2025',
+                    data: bcs2025,
+                    backgroundColor: colorSchemes.danger[0],
+                    borderColor: colorSchemes.danger[1],
+                    borderWidth: 1,
+                    borderRadius: 6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    y: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            font: { family: 'Inter, sans-serif' }
+                        },
+                        grid: { color: '#e2e8f0' }
+                    },
+                    x: {
+                        grid: { color: '#e2e8f0' },
+                        ticks: { font: { family: 'Inter, sans-serif' } }
+                    }
                 },
                 plugins: {
-                    title: { display: true, text: 'BCS Comparativo Anual' }
+                    legend: { 
+                        position: 'top',
+                        labels: { 
+                            font: { family: 'Inter, sans-serif', weight: '600' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Inter, sans-serif' },
+                        bodyFont: { family: 'Inter, sans-serif' }
+                    }
                 }
             }
         });
     }
-    
+
+   function atualizarGraficoEvolucaoMensal(dados) {
+        const canvas = document.getElementById('chart_evolucao_mensal');
+        if (!canvas) return;
+        
+        const dados2025 = dados.filter(ice => {
+            const dateInfo = getDateInfo(ice.data);
+            if (!dateInfo) return false;
+            return dateInfo.year === 2025;
+        });
+        
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const icePorMes = new Array(12).fill(0);
+        const acionamentosReais = new Array(12).fill(0);
+        const simulados = new Array(12).fill(0);
+        
+        dados2025.forEach(ice => {
+            const dateInfo = getDateInfo(ice.data);
+            if (!dateInfo) return;
+            
+            const mes = dateInfo.month;
+            icePorMes[mes]++;
+            
+            if (ice.acionamento_real === 'sim') {
+                acionamentosReais[mes]++;
+            } else if (ice.acionamento_real === 'simulado') {
+                simulados[mes]++;
+            }
+        });
+        
+        destruirGrafico('evolucaoMensal');
+        
+        charts.evolucaoMensal = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Total ICEs',
+                    data: icePorMes,
+                    borderColor: colorSchemes.primary[0],
+                    backgroundColor: colorSchemes.primary[0] + '20',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 4,
+                    pointBackgroundColor: colorSchemes.primary[0],
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 3,
+                    pointRadius: 8
+                }, {
+                    label: 'Acionamentos Reais',
+                    data: acionamentosReais,
+                    borderColor: colorSchemes.danger[0],
+                    backgroundColor: colorSchemes.danger[0] + '20',
+                    tension: 0.4,
+                    fill: false,
+                    borderWidth: 4,
+                    pointBackgroundColor: colorSchemes.danger[0],
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 3,
+                    pointRadius: 8
+                }, {
+                    label: 'Simulados',
+                    data: simulados,
+                    borderColor: colorSchemes.warning[0],
+                    backgroundColor: colorSchemes.warning[0] + '20',
+                    tension: 0.4,
+                    fill: false,
+                    borderWidth: 4,
+                    pointBackgroundColor: colorSchemes.warning[0],
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 3,
+                    pointRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            font: { family: 'Inter, sans-serif' }
+                        },
+                        grid: { color: '#e2e8f0' }
+                    },
+                    x: {
+                        grid: { color: '#e2e8f0' },
+                        ticks: { font: { family: 'Inter, sans-serif' } }
+                    }
+                },
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        labels: { 
+                            usePointStyle: true,
+                            font: { family: 'Inter, sans-serif', weight: '600' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Inter, sans-serif' },
+                        bodyFont: { family: 'Inter, sans-serif' }
+                    }
+                }
+            }
+        });
+    }
+
     function atualizarTodosGraficos() {
         console.log('=== ATUALIZANDO TODOS OS GRÁFICOS ===');
         const dadosFiltrados = filtrarDadosPorPeriodo();
+        console.log('Dados filtrados para gráficos:', dadosFiltrados.length);
         
-        const agora = new Date();
-        const ultimaAtualizacao = document.getElementById('ultima_atualizacao');
-        if (ultimaAtualizacao) {
-            ultimaAtualizacao.textContent = agora.toLocaleDateString('pt-BR') + ' ' +
-                agora.getHours().toString().padStart(2, '0') + ':' +
-                agora.getMinutes().toString().padStart(2, '0');
-        }
-
         if (dadosFiltrados.length === 0) {
             console.log('Nenhum dado encontrado, criando gráficos vazios');
-            criarTodosGraficosVazios();
-            mostrarErro('Nenhum dado encontrado para o período selecionado');
+            Object.keys(charts).forEach(key => {
+                destruirGrafico(key);
+            });
             return;
         }
-        
-        const errorMsg = document.querySelector('.error-message');
-        if (errorMsg) errorMsg.remove();
         
         try {
             atualizarGraficoComparativoAnos(dadosFiltrados);
             atualizarGraficoTipificacaoMes(dadosFiltrados);
             atualizarGraficoTipificacaoPorMes(dadosFiltrados);
-            atualizarGraficoEvolucaoMensal(dadosFiltrados);
-            // Novos gráficos adicionados para completar a lista
             atualizarGraficoBcsMes(dadosFiltrados);
             atualizarGraficoGerenciaMes(dadosFiltrados);
             atualizarGraficoTipificacaoAnual(dadosFiltrados);
             atualizarGraficoGerenciaAnual(dadosFiltrados);
             atualizarGraficoBcsComparativo(dadosFiltrados);
-
+            atualizarGraficoEvolucaoMensal(dadosFiltrados);
             console.log('Todos os gráficos foram atualizados com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar gráficos:', error);
-            mostrarErro('Erro ao atualizar gráficos: ' + error.message);
         }
     }
 
-    // --- Funções de KPIs ---
+    // KPI Functions
     function atualizarKPIs() {
         console.log('Atualizando KPIs...');
         const dadosFiltrados = filtrarDadosPorPeriodo();
-        
-        document.querySelectorAll('.metric-card').forEach(card => card.classList.remove('shimmer'));
         
         const totalIces = dadosFiltrados.length;
         const acionamentosReais = dadosFiltrados.filter(ice => ice.acionamento_real === 'sim').length;
         const simulados = dadosFiltrados.filter(ice => ice.acionamento_real === 'simulado').length;
         const taxaReal = totalIces > 0 ? ((acionamentosReais / totalIces) * 100).toFixed(1) : 0;
         
-        const totalBcs = dadosFiltrados.reduce((total, ice) => total + (parseInt(ice.quantidade_bcs) || 0), 0);
+        const totalBcs = dadosFiltrados.reduce((total, ice) => {
+            const bcs = parseInt(ice.quantidade_bcs) || 0;
+            return total + bcs;
+        }, 0);
         
+        // Animate the numbers
         animateNumber('total_ices', totalIces);
         animateNumber('acionamentos_reais', acionamentosReais);
         animateNumber('simulados', simulados);
@@ -1494,116 +1741,133 @@
     function animateNumber(elementId, targetValue) {
         const element = document.getElementById(elementId);
         if (!element) return;
+        
         const startValue = 0;
         const duration = 1500;
         const startTime = performance.now();
+        
         function updateNumber(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            const easedProgress = 1 - Math.pow(1 - progress, 3);
-            const currentValue = Math.floor(startValue + (targetValue - startValue) * easedProgress);
-            element.textContent = currentValue.toLocaleString('pt-BR');
-            if (progress < 1) requestAnimationFrame(updateNumber);
+            
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOutQuart);
+            
+            element.textContent = currentValue;
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateNumber);
+            }
         }
+        
         requestAnimationFrame(updateNumber);
     }
-    
-    // --- Funções Principais do Dashboard ---
+
+    // Main Dashboard Functions
     async function carregarDadosDashboard() {
         console.log('Carregando dados do dashboard...');
-        const metricCards = document.querySelectorAll('.metric-card');
-        metricCards.forEach(card => card.classList.add('shimmer'));
+        
+        // Show loading
+        const metricCards = document.querySelectorAll('.kpi-value');
+        metricCards.forEach(card => {
+            card.innerHTML = '<div class="loading-spinner" style="width: 24px; height: 24px; margin: 0 auto;"></div>';
+        });
         
         try {
             const responseIce = await callAPI('GET', 'listarIce');
             
-            if (responseIce.status === 'success' && Array.isArray(responseIce.ice)) {
-                dadosIce = responseIce.ice;
+            if (responseIce.status === 'success') {
+                dadosIce = responseIce.ice || [];
                 console.log('Dados ICE carregados:', dadosIce.length, 'registros');
+                
                 atualizarKPIs();
-                setTimeout(() => atualizarTodosGraficos(), 500);
+                
+                setTimeout(() => {
+                    atualizarTodosGraficos();
+                }, 500);
             } else {
-                console.error('Erro ao carregar ICEs: Formato de dados inesperado.', responseIce);
+                console.error('Erro ao carregar ICEs:', responseIce.message);
                 dadosIce = [];
                 atualizarKPIs();
-                criarTodosGraficosVazios();
-                mostrarErro('Erro no formato dos dados da API.');
             }
+            
         } catch (error) {
             console.error('Erro ao carregar dados do dashboard:', error);
             metricCards.forEach(card => {
                 card.textContent = '0';
-                card.classList.remove('shimmer');
             });
-            criarTodosGraficosVazios();
-            mostrarErro('Erro ao carregar dados: ' + error.message);
         }
     }
 
     function atualizarDashboard() {
         console.log('Atualizando dashboard manualmente...');
-        const errorMsg = document.querySelector('.error-message');
-        if (errorMsg) errorMsg.remove();
         carregarDadosDashboard();
     }
-    
-    // --- Listeners de Eventos e Inicialização ---
+
+    // Event Listeners
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM carregado, configurando event listeners...');
+        
         const filtroPeriodo = document.getElementById('filtro_periodo');
         if (filtroPeriodo) {
             filtroPeriodo.addEventListener('change', function() {
                 const valor = this.value;
                 const dataInicio = document.getElementById('data_inicio');
                 const dataFim = document.getElementById('data_fim');
-                const isCustom = valor === 'personalizado';
+                
                 if (dataInicio && dataFim) {
-                    dataInicio.style.display = isCustom ? 'block' : 'none';
-                    dataFim.style.display = isCustom ? 'block' : 'none';
-                }
-                setTimeout(() => {
-                    if (dadosIce.length > 0) {
-                        atualizarKPIs();
-                        atualizarTodosGraficos();
+                    if (valor === 'personalizado') {
+                        dataInicio.style.display = 'block';
+                        dataFim.style.display = 'block';
+                        dataInicio.parentElement.style.display = 'block';
+                        dataFim.parentElement.style.display = 'block';
+                    } else {
+                        dataInicio.style.display = 'none';
+                        dataFim.style.display = 'none';
+                        dataInicio.parentElement.style.display = 'none';
+                        dataFim.parentElement.style.display = 'none';
+                        
+                        setTimeout(() => {
+                            if (dadosIce.length > 0) {
+                                atualizarKPIs();
+                                atualizarTodosGraficos();
+                            }
+                        }, 100);
                     }
-                }, 100);
+                }
             });
         }
-        
+
         const dataInicio = document.getElementById('data_inicio');
         const dataFim = document.getElementById('data_fim');
-        if (dataInicio) dataInicio.addEventListener('change', () => {
-            if (document.getElementById('filtro_periodo').value === 'personalizado') {
-                setTimeout(() => { atualizarKPIs(); atualizarTodosGraficos(); }, 100);
-            }
-        });
-        if (dataFim) dataFim.addEventListener('change', () => {
-            if (document.getElementById('filtro_periodo').value === 'personalizado') {
-                setTimeout(() => { atualizarKPIs(); atualizarTodosGraficos(); }, 100);
-            }
-        });
+        
+        if (dataInicio) {
+            dataInicio.addEventListener('change', function() {
+                if (document.getElementById('filtro_periodo').value === 'personalizado') {
+                    setTimeout(() => {
+                        atualizarKPIs();
+                        atualizarTodosGraficos();
+                    }, 100);
+                }
+            });
+        }
 
-        const btnAjuda = document.getElementById('btn_ajuda');
-        if (btnAjuda) {
-            btnAjuda.addEventListener('click', function() {
-                alert("Sistema de Monitoramento ICE - Ajuda\n\n" +
-                    "Este dashboard permite monitorar os indicadores de ICE (Índice de Controle de Emergência).\n\n" +
-                    "Para utilizar os filtros, selecione o período desejado no campo 'Período' e clique em 'Atualizar Dashboard'.\n\n" +
-                    "Os gráficos são interativos: passe o mouse sobre eles para ver detalhes específicos.");
+        if (dataFim) {
+            dataFim.addEventListener('change', function() {
+                if (document.getElementById('filtro_periodo').value === 'personalizado') {
+                    setTimeout(() => {
+                        atualizarKPIs();
+                        atualizarTodosGraficos();
+                    }, 100);
+                }
             });
         }
     });
 
+    // System Initialization
     window.addEventListener('load', function() {
         console.log('Dashboard ICE inicializando...');
-        const hoje = new Date();
-        const dataInicio = document.getElementById('data_inicio');
-        const dataFim = document.getElementById('data_fim');
-        if (dataFim) dataFim.valueAsDate = hoje;
-        if (dataInicio) {
-            const mesPassado = new Date();
-            mesPassado.setMonth(hoje.getMonth() - 1);
-            dataInicio.valueAsDate = mesPassado;
-        }
+        
         setTimeout(async () => {
             try {
                 console.log('Iniciando carregamento dos dados...');
@@ -1611,12 +1875,10 @@
                 console.log('Dashboard ICE inicializado com sucesso!');
             } catch (error) {
                 console.error('Erro na inicialização:', error);
-                mostrarErro('Erro ao inicializar o dashboard. Verifique a conexão com a API.');
             }
         }, 1000);
     });
 
+    // Global Functions
     window.atualizarDashboard = atualizarDashboard;
 </script>
-<section>
-</html>
