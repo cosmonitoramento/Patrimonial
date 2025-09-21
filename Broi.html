@@ -3,299 +3,609 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard BROI - Análise de Ocorrências</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>BROI Analytics - Dashboard Moderno</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            --primary-color: #1e3c72;
-            --secondary-color: #2a5298;
-            --accent-color: #4776E6;
-            --light-bg: #f0f2f5;
-            --dark-bg: #1a1a2e;
-            --light-card: #ffffff;
-            --dark-card: #16213e;
-            --light-text: #333333;
-            --dark-text: #f0f0f0;
-            --shadow: 0 4px 15px rgba(0,0,0,0.08);
-            --dark-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            --danger: #dc3545;
-            --success: #28a745;
-            --warning: #f39c12;
-            --info: #17a2b8;
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --bg-glass-hover: rgba(255, 255, 255, 0.08);
+            --accent-primary: #4f46e5;
+            --accent-secondary: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-blue: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-purple: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-green: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --accent-orange: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-secondary: rgba(255, 255, 255, 0.05);
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 15px 0 rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 30px 0 rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 20px rgba(103, 232, 249, 0.3);
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        [data-theme="dark"] {
-            --primary-color: #3a506b;
-            --secondary-color: #5d8aa8;
-            --accent-color: #6f9ceb;
-            --light-bg: var(--dark-bg);
-            --light-card: var(--dark-card);
-            --light-text: var(--dark-text);
-            --shadow: var(--dark-shadow);
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --bg-glass: rgba(255, 255, 255, 0.7);
+            --bg-glass-hover: rgba(255, 255, 255, 0.9);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --border-primary: rgba(0, 0, 0, 0.1);
+            --border-secondary: rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 30px 0 rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 20px rgba(103, 232, 249, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-bg);
-            color: var(--light-text);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: backgroundShift 20s ease-in-out infinite;
         }
 
-        header {
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            position: relative;
+        @keyframes backgroundShift {
+            0%, 100% { background-position: 0% 50%, 100% 50%, 50% 50%; }
+            50% { background-position: 100% 50%, 0% 50%, 50% 0%; }
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 2.2rem;
+        .header {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border-primary);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
         }
 
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            transition: background 0.3s ease;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .logo-text h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
         }
 
         .theme-toggle:hover {
-            background: rgba(255,255,255,0.3);
+            background: var(--bg-glass-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .container {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        .controls {
-            background-color: var(--light-card);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 20px;
-            margin-bottom: 30px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
+        .controls-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .date-filter {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .date-filter label {
-            font-weight: 600;
-        }
-
-        .date-filter input {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background-color: var(--light-card);
-            color: var(--light-text);
-        }
-
-        .export-buttons {
-            display: flex;
-            gap: 10px;
-            margin-left: auto;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn:hover {
-            background-color: var(--accent-color);
-            transform: translateY(-2px);
-        }
-
-        .btn-refresh {
-            background-color: var(--info);
-        }
-
-        .btn-export-csv {
-            background-color: var(--success);
-        }
-
-        .btn-export-pdf {
-            background-color: var(--warning);
-        }
-
-        .grid {
+        .filters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .card {
-            background-color: var(--light-card);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 20px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        .filter-group {
             position: relative;
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .card-title {
-            margin: 0;
-            font-size: 1.2rem;
+        .filter-label {
+            display: block;
+            font-size: 0.875rem;
             font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .card-actions {
-            display: flex;
-            gap: 10px;
+        .filter-input, .filter-select {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-size: 0.925rem;
+            font-weight: 500;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
         }
 
-        .card-btn {
-            background: none;
-            border: none;
-            color: var(--light-text);
-            cursor: pointer;
-            font-size: 1rem;
-            opacity: 0.6;
-            transition: opacity 0.2s ease;
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            background: var(--bg-glass-hover);
         }
 
-        .card-btn:hover {
-            opacity: 1;
+        .filter-input::placeholder {
+            color: var(--text-muted);
         }
 
-        canvas {
-            width: 100% !important;
-            height: 350px !important;
-        }
-
-        .table-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--light-card);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-height: 80vh;
-            max-width: 90vw;
-            width: 800px;
-            overflow-y: auto;
-            z-index: 1000;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .table-controls {
+        .actions-bar {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 0.925rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-primary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-glass-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            animation: fadeInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 2rem;
+        }
+
+        .chart-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chart-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .chart-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-secondary);
+            background: var(--bg-glass);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
 
-        .table-title {
-            font-size: 1.3rem;
-            margin: 0;
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
+        .chart-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 0.5rem;
             cursor: pointer;
-            color: var(--light-text);
-            opacity: 0.7;
-            transition: opacity 0.2s ease;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
         }
 
-        .close-btn:hover {
-            opacity: 1;
+        .chart-btn:hover {
+            background: var(--bg-glass-hover);
+            color: var(--text-primary);
+            transform: scale(1.1);
         }
 
-        .overlay-bg {
+        .chart-content {
+            padding: 2rem;
+            height: 450px;
+            position: relative;
+        }
+
+        .chart-canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .no-data {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .no-data-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            backdrop-filter: blur(3px);
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
         }
 
-        table {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--border-radius-lg);
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            animation: slideInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-glass);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            overflow: auto;
+            flex: 1;
+        }
+
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px 12px;
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
             text-align: left;
+            border-bottom: 1px solid var(--border-secondary);
         }
 
-        th {
-            background-color: var(--secondary-color);
-            color: white;
+        .data-table th {
+            background: var(--bg-glass);
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             position: sticky;
             top: 0;
+            backdrop-filter: blur(10px);
         }
 
-        tbody tr:nth-child(even) {
-            background-color: rgba(0,0,0,0.03);
+        .data-table tbody tr {
+            transition: var(--transition);
         }
 
-        tbody tr:hover {
-            background-color: rgba(0,0,0,0.06);
-        }
-
-        .hidden {
-            display: none;
+        .data-table tbody tr:hover {
+            background: var(--bg-glass-hover);
         }
 
         .loading {
@@ -304,52 +614,33 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 2000;
-            backdrop-filter: blur(2px);
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 0.3s ease;
         }
 
         .loading-content {
-            background-color: white;
-            padding: 25px 40px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--border-radius-lg);
+            padding: 3rem;
             text-align: center;
+            box-shadow: var(--shadow-lg);
         }
 
-        .loading-spinner {
-            border: 4px solid rgba(0,0,0,0.1);
-            border-top: 4px solid var(--secondary-color);
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--border-primary);
+            border-top: 3px solid var(--accent-primary);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        .error-message {
-            background-color: #fee;
-            border-left: 4px solid var(--danger);
-            padding: 15px;
-            margin: 20px 0;
-            color: #333;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 350px;
-        }
-
-        .no-data {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #999;
+            margin: 0 auto 1.5rem;
         }
 
         @keyframes spin {
@@ -357,1128 +648,1564 @@
             100% { transform: rotate(360deg); }
         }
 
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 4000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: var(--transition);
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            color: white;
+        }
+
+        .toast.success .toast-icon { background: var(--accent-green); }
+        .toast.error .toast-icon { background: var(--accent-purple); }
+        .toast.warning .toast-icon { background: var(--accent-orange); }
+        .toast.info .toast-icon { background: var(--accent-blue); }
+
+        .hidden {
+            display: none !important;
+        }
+
         @media (max-width: 768px) {
-            .grid {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header-content {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .charts-grid {
                 grid-template-columns: 1fr;
             }
             
-            .controls {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-bar {
                 flex-direction: column;
                 align-items: stretch;
             }
             
-            .export-buttons {
-                margin-left: 0;
-                margin-top: 15px;
+            .btn-group {
+                justify-content: center;
             }
             
-            .date-filter {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            canvas {
-                height: 280px !important;
-            }
-            
-            .table-overlay {
-                width: 95vw;
-                padding: 15px;
+            .chart-content {
+                height: 350px;
+                padding: 1rem;
             }
         }
 
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            border-radius: 6px;
-            padding: 12px 20px;
-            font-size: 0.9rem;
-            z-index: 2000;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* Animações de entrada escalonadas */
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .stat-card:nth-child(5) { animation-delay: 0.5s; }
+        .stat-card:nth-child(6) { animation-delay: 0.6s; }
 
-        .toast.success {
-            border-left: 4px solid var(--success);
-        }
-        
-        .toast.error {
-            border-left: 4px solid var(--danger);
-        }
-        
-        .toast.info {
-            border-left: 4px solid var(--info);
-        }
-        
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .toast-icon {
-            font-size: 1.2rem;
-        }
-        
-        .toast.success .toast-icon {
-            color: var(--success);
-        }
-        
-        .toast.error .toast-icon {
-            color: var(--danger);
-        }
-        
-        .toast.info .toast-icon {
-            color: var(--info);
-        }
+        .chart-card:nth-child(1) { animation-delay: 0.2s; }
+        .chart-card:nth-child(2) { animation-delay: 0.4s; }
+        .chart-card:nth-child(3) { animation-delay: 0.6s; }
+        .chart-card:nth-child(4) { animation-delay: 0.8s; }
     </style>
 </head>
-<body data-theme="light">
-<header>
-    <h1>📊 Dashboard BROI</h1>
-    <p>Análise Estratégica com Visualização Interativa</p>
-    <button class="theme-toggle" id="themeToggle" title="Alternar tema">
-        <i class="fas fa-moon"></i>
-    </button>
-</header>
-
-<div class="container">
-    <div class="controls">
-        <div class="date-filter">
-            <label for="dataInicio">Período:</label>
-            <input type="date" id="dataInicio" placeholder="Data inicial">
-            <label for="dataFim">até</label>
-            <input type="date" id="dataFim" placeholder="Data final">
-            <button class="btn btn-primary" id="btnFiltrar">
-                <i class="fas fa-filter"></i> Filtrar
-            </button>
-        </div>
-        <div class="export-buttons">
-            <button class="btn btn-refresh" id="btnRefresh">
-                <i class="fas fa-sync-alt"></i> Atualizar
-            </button>
-            <button class="btn btn-export-csv" id="btnExportCSV">
-                <i class="fas fa-file-csv"></i> Exportar CSV
-            </button>
-            <button class="btn btn-export-pdf" id="btnExportPDF">
-                <i class="fas fa-file-pdf"></i> Exportar PDF
-            </button>
-        </div>
-    </div>
-    
-    <div class="grid" id="charts"></div>
-</div>
-
-<div id="overlay" class="hidden">
-    <div class="overlay-bg" onclick="closeOverlay()"></div>
-    <div class="table-overlay" id="overlayContent"></div>
-</div>
-
-<div id="loadingOverlay" class="loading hidden">
-    <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <p>Carregando dados...</p>
-        <button class="btn" onclick="forceHideLoading()" style="margin-top: 15px; background-color: #dc3545;">
-            <i class="fas fa-times"></i> Cancelar
-        </button>
-    </div>
-</div>
-
-<div id="toast" class="toast"></div>
-
-<script>
-    // URL da API do Google Script
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyGibVjw2Bc0x7LzBnNq8iIaPdG_G8Q5TbLnCx59U1SWsvx3mHxZdqC9dtTV-uUWDCoJA/exec";   
-    
-    // Referências globais
-    const chartRefs = {};
-    let rawData = [];
-    let filteredData = [];
-    
-    // Inicialização
-    document.addEventListener('DOMContentLoaded', function() {
-        // Configurar eventos
-        document.getElementById('btnFiltrar').addEventListener('click', aplicarFiltros);
-        document.getElementById('btnRefresh').addEventListener('click', refreshData);
-        document.getElementById('btnExportCSV').addEventListener('click', exportarCSV);
-        document.getElementById('btnExportPDF').addEventListener('click', exportarPDF);
-        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-        
-        // Definir data inicial padrão (último ano)
-        const hoje = new Date();
-        const umAnoAtras = new Date();
-        umAnoAtras.setFullYear(hoje.getFullYear() - 1);
-        
-        document.getElementById('dataInicio').valueAsDate = umAnoAtras;
-        document.getElementById('dataFim').valueAsDate = hoje;
-        
-        // Carregar dados iniciais
-        loadData();
-    });
-    
-    // Função para alternar tema claro/escuro
-    function toggleTheme() {
-        const body = document.body;
-        const themeIcon = document.querySelector('.theme-toggle i');
-        
-        if (body.getAttribute('data-theme') === 'light') {
-            body.setAttribute('data-theme', 'dark');
-            themeIcon.className = 'fas fa-sun';
-            showToast('Tema escuro ativado', 'info');
-        } else {
-            body.setAttribute('data-theme', 'light');
-            themeIcon.className = 'fas fa-moon';
-            showToast('Tema claro ativado', 'info');
-        }
-        
-        // Atualizar gráficos para o novo tema
-        updateChartsTheme();
-    }
-    
-    // Atualizar os gráficos para o tema atual
-    function updateChartsTheme() {
-        const isDarkMode = document.body.getAttribute('data-theme') === 'dark';
-        const textColor = isDarkMode ? '#f0f0f0' : '#333333';
-        
-        Object.values(chartRefs).forEach(chart => {
-            if (chart) {
-                chart.options.plugins.legend.labels.color = textColor;
-                if (chart.options.scales && chart.options.scales.x) {
-                    chart.options.scales.x.ticks.color = textColor;
-                    chart.options.scales.y.ticks.color = textColor;
-                    chart.options.scales.x.grid.color = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-                    chart.options.scales.y.grid.color = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-                }
-                chart.update();
-            }
-        });
-    }
-    
-    // Mostrar mensagem toast
-    function showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        let icon = '';
-        
-        switch (type) {
-            case 'success':
-                icon = '<i class="fas fa-check-circle toast-icon"></i>';
-                break;
-            case 'error':
-                icon = '<i class="fas fa-exclamation-circle toast-icon"></i>';
-                break;
-            case 'info':
-            default:
-                icon = '<i class="fas fa-info-circle toast-icon"></i>';
-        }
-        
-        toast.innerHTML = `${icon}<span>${message}</span>`;
-        toast.className = `toast ${type} show`;
-        
-        setTimeout(() => {
-            toast.className = `toast ${type}`;
-        }, 3000);
-    }
-    
-    // Função de emergência para forçar ocultação do loading
-    function forceHideLoading() {
-        console.log('Forçando ocultação do loading...');
-        const loadingElement = document.getElementById('loadingOverlay');
-        if (loadingElement) {
-            loadingElement.classList.add('hidden');
-            loadingElement.style.display = 'none';
-        }
-        showToast('Loading cancelado pelo usuário', 'info');
-    }
-    
-    // Mostrar/ocultar o overlay de carregamento - FUNÇÃO CORRIGIDA
-    function toggleLoading(show) {
-        const loadingElement = document.getElementById('loadingOverlay');
-        console.log('toggleLoading chamado:', show, 'elemento encontrado:', !!loadingElement);
-        
-        if (!loadingElement) {
-            console.error('Elemento loadingOverlay não encontrado!');
-            return;
-        }
-        
-        if (show) {
-            loadingElement.classList.remove('hidden');
-            loadingElement.style.display = 'flex';
-            console.log('Loading mostrado');
-        } else {
-            loadingElement.classList.add('hidden');
-            loadingElement.style.display = 'none';
-            console.log('Loading ocultado');
-        }
-    }
-     
-    // Carregar dados da API - FUNÇÃO CORRIGIDA
-    async function loadData() {
-        console.log('Iniciando carregamento de dados...');
-        toggleLoading(true);
-        
-        try {
-            console.log('Fazendo requisição para:', scriptURL);
-            const response = await fetch(scriptURL);
-            
-            if (!response.ok) {
-                throw new Error(`Erro ao carregar dados: ${response.statusText}`);
-            }
-            
-            console.log('Resposta recebida, convertendo para JSON...');
-            rawData = await response.json();
-            console.log('Dados recebidos:', rawData?.length || 0, 'registros');
-            
-            // Validar se os dados foram carregados corretamente
-            if (!rawData || !Array.isArray(rawData) || rawData.length === 0) {
-                throw new Error('Nenhum dado foi retornado da API');
-            }
-            
-            console.log('Aplicando filtros...');
-            // Aplicar filtros com os valores atuais
-            aplicarFiltros();
-            
-            showToast('Dados carregados com sucesso!', 'success');
-            console.log('Carregamento concluído com sucesso');
-        } catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            
-            // Limpar dados existentes em caso de erro
-            rawData = [];
-            filteredData = [];
-            
-            document.getElementById('charts').innerHTML = `
-                <div class="error-message">
-                    <h3>Erro ao carregar dados</h3>
-                    <p>${error.message}</p>
-                    <button class="btn" onclick="refreshData()">Tentar novamente</button>
+<body data-theme="dark">
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">B</div>
+                <div class="logo-text">
+                    <h1>BROI Analytics</h1>
+                    <p>Sistema Inteligente de Monitoramento</p>
                 </div>
-            `;
-            showToast('Erro ao carregar dados. Tente novamente.', 'error');
-        } finally {
-            // SEMPRE remover o loading, independente do resultado
-            console.log('Removendo loading...');
-            setTimeout(() => {
-                toggleLoading(false);
-            }, 500); // Pequeno delay para garantir que seja removido
-        }
-    }
-    
-    // Recarregar dados - FUNÇÃO CORRIGIDA
-    function refreshData() {
-        showToast('Atualizando dados...', 'info');
-        
-        // Limpar gráficos existentes
-        Object.values(chartRefs).forEach(chart => {
-            if (chart && typeof chart.destroy === 'function') {
-                chart.destroy();
-            }
-        });
-        
-        // Limpar referências
-        Object.keys(chartRefs).forEach(key => delete chartRefs[key]);
-        
-        // Recarregar dados
-        loadData();
-    }
-    
-    // Aplicar filtros de data - FUNÇÃO CORRIGIDA
-    function aplicarFiltros() {
-        console.log('Aplicando filtros...');
-        const dataInicio = document.getElementById('dataInicio').valueAsDate;
-        const dataFim = document.getElementById('dataFim').valueAsDate;
-        
-        // Se não há dados ou datas não selecionadas, usar todos os dados
-        if (!rawData || rawData.length === 0) {
-            console.log('Sem dados para filtrar');
-            filteredData = [];
-            prepareCharts(filteredData);
-            return;
-        }
-        
-        if (!dataInicio || !dataFim) {
-            // Se não há filtro de data, usar todos os dados
-            console.log('Sem filtro de data, usando todos os dados');
-            filteredData = [...rawData];
-        } else {
-            // Ajustar a data final para incluir o dia inteiro
-            const ajustedDataFim = new Date(dataFim);
-            ajustedDataFim.setHours(23, 59, 59, 999);
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="controls-panel">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label" for="dataInicio">Data Inicial</label>
+                    <input type="date" id="dataInicio" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label" for="dataFim">Data Final</label>
+                    <input type="date" id="dataFim" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label" for="gerenciaFilter">Gerência</label>
+                    <select id="gerenciaFilter" class="filter-select">
+                        <option value="">Todas as Gerências</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label" for="empresaFilter">Empresa</label>
+                    <select id="empresaFilter" class="filter-select">
+                        <option value="">Todas as Empresas</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label" for="tipificacaoFilter">Tipificação</label>
+                    <select id="tipificacaoFilter" class="filter-select">
+                        <option value="">Todas as Tipificações</option>
+                    </select>
+                </div>
+            </div>
             
-            // Filtrar os dados
-            filteredData = rawData.filter(row => {
-                const dataOcorrencia = new Date(row['Data']);
-                return dataOcorrencia >= dataInicio && dataOcorrencia <= ajustedDataFim;
-            });
-            
-            console.log('Dados filtrados:', filteredData.length);
-            showToast(`Filtro aplicado: ${filteredData.length} ocorrências encontradas`, 'success');
-        }
-        
-        // Preparar gráficos com os dados filtrados
-        console.log('Preparando gráficos...');
-        prepareCharts(filteredData);
-        console.log('Gráficos preparados');
-    }
-    
-    // Função para sanitizar strings (evitar XSS)
-    function sanitizeString(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-    
-    // Mostrar tabela no overlay
-    function showTableInOverlay(title, tableHTML) {
-        document.getElementById('overlayContent').innerHTML = `
-            <div class="table-controls">
-                <h3 class="table-title">${sanitizeString(title)}</h3>
-                <button class="close-btn" onclick="closeOverlay()">
+            <div class="actions-bar">
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="applyFilters()">
+                        <i class="fas fa-filter"></i>
+                        Aplicar Filtros
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                        Atualizar
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="exportCSV()">
+                        <i class="fas fa-file-csv"></i>
+                        Exportar CSV
+                    </button>
+                    <button class="btn btn-warning" onclick="exportPDF()">
+                        <i class="fas fa-file-pdf"></i>
+                        Relatório PDF
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-grid" id="statsContainer">
+            <!-- Stats preenchidas dinamicamente -->
+        </section>
+
+        <section class="charts-grid" id="chartsContainer">
+            <!-- Gráficos preenchidos dinamicamente -->
+        </section>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Detalhes</h3>
+                <button class="chart-btn" onclick="closeModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="table-actions" style="margin-bottom: 15px;">
-                <button class="btn btn-export-csv" onclick="exportarTabelaCSV('${sanitizeString(title)}')">
-                    <i class="fas fa-file-csv"></i> CSV
-                </button>
-                <button class="btn btn-export-pdf" onclick="exportarTabelaPDF('${sanitizeString(title)}')">
-                    <i class="fas fa-file-pdf"></i> PDF
-                </button>
+            <div class="modal-body" id="modalBody">
+                <!-- Conteúdo dinâmico -->
             </div>
-            ${tableHTML}
-        `;
-        document.getElementById('overlay').classList.remove('hidden');
-    }
-    
-    // Fechar overlay
-    function closeOverlay() {
-        document.getElementById('overlay').classList.add('hidden');
-    }
-    
-    // Criar gráficos com dados e tabela associada
-    function createChartWithTable(id, type, title, labels, datasets, options = {}) {
-        const div = document.createElement('div');
-        div.className = 'card';
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading hidden">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h3>Carregando dados...</h3>
+            <p>Processando informações em tempo real</p>
+            <button class="btn btn-secondary" onclick="hideLoading()" style="margin-top: 1rem;">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <div class="toast-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="toast-message">
+            Mensagem do sistema
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURAÇÕES GLOBAIS =====
+        const API_URL = "https://script.google.com/macros/s/AKfycbyGibVjw2Bc0x7LzBnNq8iIaPdG_G8Q5TbLnCx59U1SWsvx3mHxZdqC9dtTV-uUWDCoJA/exec";
         
-        const canvasID = `canvas-${id}`;
-        
-        div.innerHTML = `
-            <div class="card-header">
-                <h3 class="card-title">${sanitizeString(title)}</h3>
-                <div class="card-actions">
-                    <button class="card-btn" title="Ver tabela" onclick="showDataTable('${id}')">
-                        <i class="fas fa-table"></i>
-                    </button>
-                    <button class="card-btn" title="Alternar tipo de gráfico" onclick="toggleChartType('${id}')">
-                        <i class="fas fa-chart-line"></i>
-                    </button>
-                    <button class="card-btn" title="Exportar" onclick="exportChart('${id}')">
-                        <i class="fas fa-download"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="chart-container">
-                <canvas id="${canvasID}"></canvas>
-                ${labels.length === 0 ? '<div class="no-data">Sem dados para exibir</div>' : ''}
-            </div>
-        `;
-        
-        document.getElementById('charts').appendChild(div);
-        
-        // Configurações padrão do gráfico
-        const defaultOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { 
-                    position: 'bottom',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 15
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    padding: 10,
-                    cornerRadius: 4,
-                    titleFont: {
-                        size: 14
-                    },
-                    bodyFont: {
-                        size: 13
-                    }
-                }
-            },
-            interaction: {
-                mode: 'index',
-                intersect: false
-            }
+        // ===== VARIÁVEIS GLOBAIS =====
+        let rawData = [];
+        let filteredData = [];
+        let charts = {};
+        let isLoading = false;
+
+        // ===== CONFIGURAÇÃO DE GRÁFICOS MODERNOS =====
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = 'rgba(255, 255, 255, 0.8)';
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        Chart.defaults.plugins.legend.labels.padding = 20;
+        Chart.defaults.elements.point.radius = 6;
+        Chart.defaults.elements.point.hoverRadius = 8;
+        Chart.defaults.elements.line.borderWidth = 3;
+        Chart.defaults.elements.bar.borderRadius = 8;
+
+        // ===== GRADIENTES MODERNOS =====
+        const gradients = {
+            blue: ['#667eea', '#764ba2'],
+            purple: ['#f093fb', '#f5576c'],
+            green: ['#4facfe', '#00f2fe'],
+            orange: ['#43e97b', '#38f9d7'],
+            pink: ['#fa709a', '#fee140'],
+            cyan: ['#a8edea', '#fed6e3']
         };
-        
-        // Adicionar scales somente para gráficos apropriados
-        if (type === 'bar' || type === 'line') {
-            defaultOptions.scales = {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 }
-                },
-                x: {
-                    ticks: { 
-                        maxRotation: 45, 
-                        minRotation: 45
+
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            setupDates();
+            setupEventListeners();
+            loadData();
+        }
+
+        function setupDates() {
+            const today = new Date();
+            const lastYear = new Date();
+            lastYear.setFullYear(today.getFullYear() - 1);
+            
+            document.getElementById('dataInicio').valueAsDate = lastYear;
+            document.getElementById('dataFim').valueAsDate = today;
+        }
+
+        function setupEventListeners() {
+            // Filtros automáticos
+            document.getElementById('gerenciaFilter').addEventListener('change', debounce(applyFilters, 300));
+            document.getElementById('empresaFilter').addEventListener('change', debounce(applyFilters, 300));
+            document.getElementById('tipificacaoFilter').addEventListener('change', debounce(applyFilters, 300));
+            
+            // Modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+            });
+            
+            // Atalhos de teclado
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey)) {
+                    switch(e.key) {
+                        case 'r':
+                            e.preventDefault();
+                            refreshData();
+                            break;
+                        case 'e':
+                            e.preventDefault();
+                            exportCSV();
+                            break;
+                        case 'p':
+                            e.preventDefault();
+                            exportPDF();
+                            break;
                     }
                 }
+            });
+        }
+
+        // ===== UTILITÁRIOS =====
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
             };
         }
-        
-        // Mesclar opções personalizadas com as padrão
-        const chartOptions = {...defaultOptions, ...options};
-        
-        // Verificar se temos dados para criar o gráfico
-        if (labels.length > 0) {
-            // Criar gráfico
-            const ctx = document.getElementById(canvasID).getContext('2d');
-            const chart = new Chart(ctx, {
-                type,
-                data: { labels, datasets },
-                options: chartOptions
+
+        function showLoading() {
+            if (isLoading) return;
+            isLoading = true;
+            document.getElementById('loading').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            isLoading = false;
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icons = {
+                success: 'fa-check',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            toast.querySelector('.toast-icon i').className = `fas ${icons[type]}`;
+            toast.querySelector('.toast-message').textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.querySelector('.theme-toggle i');
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            
+            // Atualizar cores dos gráficos
+            updateChartsTheme();
+            
+            showToast(`Tema ${isDark ? 'claro' : 'escuro'} ativado`, 'success');
+        }
+
+        function updateChartsTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const textColor = isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+
+            Object.values(charts).forEach(chart => {
+                if (chart?.options?.plugins?.legend?.labels) {
+                    chart.options.plugins.legend.labels.color = textColor;
+                }
+                if (chart?.options?.scales) {
+                    Object.values(chart.options.scales).forEach(scale => {
+                        if (scale.ticks) scale.ticks.color = textColor;
+                        if (scale.grid) scale.grid.color = gridColor;
+                    });
+                }
+                chart?.update?.('none');
+            });
+        }
+
+        // ===== CARREGAMENTO DE DADOS =====
+        async function loadData() {
+            showLoading();
+            
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                if (!Array.isArray(data) || data.length === 0) {
+                    throw new Error('Dados inválidos recebidos da API');
+                }
+                
+                rawData = data;
+                populateFilters();
+                applyFilters();
+                showToast('Dados carregados com sucesso!', 'success');
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                showToast(`Erro ao carregar dados: ${error.message}`, 'error');
+                showErrorState();
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function refreshData() {
+            // Destruir gráficos existentes
+            Object.values(charts).forEach(chart => {
+                try {
+                    chart.destroy();
+                } catch (e) {
+                    console.warn('Erro ao destruir gráfico:', e);
+                }
+            });
+            charts = {};
+            
+            // Recarregar dados
+            loadData();
+        }
+
+        function populateFilters() {
+            const gerencias = [...new Set(rawData.map(item => item.Gerência).filter(Boolean))].sort();
+            const empresas = [...new Set(rawData.map(item => item.Empresa).filter(Boolean))].sort();
+            const tipificacoes = [...new Set(rawData.map(item => item.Tipificação).filter(Boolean))].sort();
+            
+            populateSelect('gerenciaFilter', gerencias, 'Todas as Gerências');
+            populateSelect('empresaFilter', empresas, 'Todas as Empresas');
+            populateSelect('tipificacaoFilter', tipificacoes, 'Todas as Tipificações');
+        }
+
+        function populateSelect(id, options, placeholder) {
+            const select = document.getElementById(id);
+            const currentValue = select.value;
+            
+            select.innerHTML = `<option value="">${placeholder}</option>`;
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option;
+                opt.textContent = option;
+                if (option === currentValue) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        // ===== FILTROS =====
+        function applyFilters() {
+            const dataInicio = document.getElementById('dataInicio').valueAsDate;
+            const dataFim = document.getElementById('dataFim').valueAsDate;
+            const gerencia = document.getElementById('gerenciaFilter').value;
+            const empresa = document.getElementById('empresaFilter').value;
+            const tipificacao = document.getElementById('tipificacaoFilter').value;
+            
+            filteredData = rawData.filter(item => {
+                try {
+                    const itemDate = new Date(item.Data);
+                    
+                    if (dataInicio && itemDate < dataInicio) return false;
+                    if (dataFim && itemDate > dataFim) return false;
+                    if (gerencia && item.Gerência !== gerencia) return false;
+                    if (empresa && item.Empresa !== empresa) return false;
+                    if (tipificacao && item.Tipificação !== tipificacao) return false;
+                    
+                    return true;
+                } catch (error) {
+                    console.warn('Erro ao filtrar item:', item, error);
+                    return false;
+                }
             });
             
-            // Armazenar referência para uso posterior
-            chartRefs[id] = chart;
-            chartRefs[id].originalType = type;
-            chartRefs[id].chartData = { labels, datasets };
-            chartRefs[id].chartTitle = title;
-        }
-    }
-    
-    // Alternar tipo de gráfico
-    function toggleChartType(id) {
-        const chart = chartRefs[id];
-        if (!chart) return;
-        
-        // Mapear tipos de gráficos para alternância
-        const typeMap = {
-            'bar': 'line',
-            'line': 'bar',
-            'pie': 'doughnut',
-            'doughnut': 'pie'
-        };
-        
-        // Determinar o próximo tipo
-        const currentType = chart.config.type;
-        const newType = typeMap[currentType] || 'bar';
-        
-        // Destruir gráfico atual
-        chart.destroy();
-        
-        // Criar novo gráfico com o tipo alternado
-        const ctx = document.getElementById(`canvas-${id}`).getContext('2d');
-        const newChart = new Chart(ctx, {
-            type: newType,
-            data: chart.chartData,
-            options: chart.options
-        });
-        
-        // Atualizar referência
-        chartRefs[id] = newChart;
-        chartRefs[id].originalType = chart.originalType;
-        chartRefs[id].chartData = chart.chartData;
-        chartRefs[id].chartTitle = chart.chartTitle;
-        
-        showToast(`Gráfico alterado para ${newType === 'bar' ? 'barras' : 
-                                        newType === 'line' ? 'linhas' : 
-                                        newType === 'pie' ? 'pizza' : 'rosca'}`, 'info');
-    }
-    
-    // Exportar gráfico individual
-    function exportChart(id) {
-        const chart = chartRefs[id];
-        if (!chart) return;
-        
-        // Obter imagem do gráfico
-        const imageURL = chart.toBase64Image();
-        
-        // Criar link de download
-        const link = document.createElement('a');
-        link.download = `grafico-${id}-${new Date().toISOString().split('T')[0]}.png`;
-        link.href = imageURL;
-        link.click();
-        
-        showToast('Gráfico exportado com sucesso!', 'success');
-    }
-    
-    // Mostrar tabela de dados do gráfico
-    function showDataTable(id) {
-        const chart = chartRefs[id];
-        if (!chart) return;
-        
-        const { labels, datasets } = chart.chartData;
-        const title = chart.chartTitle;
-        
-        showTableInOverlay(title, generateTableHTML(labels, datasets));
-    }
-    
-    // Gerar HTML da tabela
-    function generateTableHTML(labels, datasets) {
-        if (!labels || !labels.length || !datasets || !datasets.length) {
-            return '<p>Sem dados disponíveis para exibir.</p>';
-        }
-        
-        let html = '<table><thead><tr><th>Categoria</th>';
-        
-        // Adicionar cabeçalhos para cada dataset
-        datasets.forEach(dataset => {
-            html += `<th>${sanitizeString(dataset.label)}</th>`;
-        });
-        
-        html += '</tr></thead><tbody>';
-        
-        // Adicionar linhas para cada label
-        labels.forEach((label, i) => {
-            html += `<tr><td>${sanitizeString(label)}</td>`;
+            updateStats();
+            createCharts();
             
-            // Adicionar valores de cada dataset
-            datasets.forEach(dataset => {
-                html += `<td>${dataset.data[i]}</td>`;
-            });
+            if (filteredData.length === 0) {
+                showToast('Nenhum resultado encontrado para os filtros aplicados', 'warning');
+            } else {
+                showToast(`${filteredData.length} registros encontrados`, 'info');
+            }
+        }
+
+        // ===== ESTATÍSTICAS =====
+        function updateStats() {
+            const stats = calculateStats(filteredData);
             
-            html += '</tr>';
-        });
-        
-        html += '</tbody></table>';
-        return html;
-    }
-    
-    // Exportar tabela atual para CSV
-    function exportarTabelaCSV(title) {
-        const table = document.querySelector('#overlayContent table');
-        if (!table) return;
-        
-        let csv = [];
-        const rows = table.querySelectorAll('tr');
-        
-        rows.forEach(row => {
-            const cols = row.querySelectorAll('td, th');
-            const rowData = Array.from(cols).map(col => `"${col.innerText.replace(/"/g, '""')}"`);
-            csv.push(rowData.join(','));
-        });
-        
-        const csvContent = csv.join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `${title.replace(/[^\w\s]/gi, '')}-${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-        
-        showToast('Tabela exportada para CSV com sucesso!', 'success');
-    }
-    
-    // Exportar tabela atual para PDF
-    function exportarTabelaPDF(title) {
-        const table = document.querySelector('#overlayContent table');
-        if (!table) return;
-        
-        // Preparar dados para jsPDF
-        const header = [];
-        const data = [];
-        
-        // Extrair cabeçalhos
-        const headerRow = table.querySelector('thead tr');
-        const headerCells = headerRow.querySelectorAll('th');
-        headerCells.forEach(cell => {
-            header.push(cell.innerText);
-        });
-        
-        // Extrair dados
-        const rows = table.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-            const rowData = [];
-            const cells = row.querySelectorAll('td');
-            cells.forEach(cell => {
-                rowData.push(cell.innerText);
-            });
-            data.push(rowData);
-        });
-        
-        // Criar PDF
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        // Adicionar título
-        doc.setFontSize(16);
-        doc.text(title, 14, 15);
-        
-        // Adicionar data
-        doc.setFontSize(10);
-        doc.text(`Exportado em: ${new Date().toLocaleDateString()}`, 14, 22);
-        
-        // Adicionar tabela
-        doc.autoTable({
-            head: [header],
-            body: data,
-            startY: 30,
-            styles: {
-                fontSize: 9,
-                cellPadding: 3,
-                lineColor: [0, 0, 0],
-                lineWidth: 0.1
-            },
-            headStyles: {
-                fillColor: [42, 82, 152],
-                textColor: [255, 255, 255],
-                fontStyle: 'bold'
-            },
-            alternateRowStyles: {
-                fillColor: [240, 240, 240]
-            }
-        });
-        
-        // Salvar PDF
-        doc.save(`${title.replace(/[^\w\s]/gi, '')}-${new Date().toISOString().split('T')[0]}.pdf`);
-        
-        showToast('Tabela exportada para PDF com sucesso!', 'success');
-    }
-    
-    // Exportar todos os dados para CSV
-    function exportarCSV() {
-        if (!filteredData || filteredData.length === 0) {
-            showToast('Sem dados para exportar', 'error');
-            return;
-        }
-        
-        // Obter cabeçalhos das colunas
-        const headers = Object.keys(filteredData[0]);
-        
-        // Converter dados para CSV
-        let csvContent = headers.join(',') + '\n';
-        
-        filteredData.forEach(row => {
-            const values = headers.map(header => {
-                const value = row[header] || '';
-                // Escapar aspas e formatar valor
-                return `"${String(value).replace(/"/g, '""')}"`;
-            });
-            csvContent += values.join(',') + '\n';
-        });
-        
-        // Criar arquivo e link para download
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `dashboard-broi-export-${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-        
-        showToast('Dados exportados para CSV com sucesso!', 'success');
-    }
-    
-    // Exportar resumo para PDF
-    function exportarPDF() {
-        if (!filteredData || filteredData.length === 0) {
-            showToast('Sem dados para exportar', 'error');
-            return;
-        }
-        
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        // Título e cabeçalho
-        doc.setFontSize(18);
-        doc.text('Dashboard BROI - Relatório', 14, 20);
-        
-        // Data e período do relatório
-        const dataInicio = document.getElementById('dataInicio').value;
-        const dataFim = document.getElementById('dataFim').value;
-        
-        doc.setFontSize(11);
-        doc.text(`Período: ${dataInicio} a ${dataFim}`, 14, 30);
-        doc.text(`Total de ocorrências: ${filteredData.length}`, 14, 38);
-        doc.text(`Relatório gerado em: ${new Date().toLocaleDateString()}`, 14, 46);
-        
-        // Linha separadora
-        doc.setLineWidth(0.5);
-        doc.line(14, 50, 196, 50);
-        
-        let yPosition = 60;
-        
-        // Resumo das ocorrências por mês
-        const ocorrenciasPorMesAno = {};
-        filteredData.forEach(row => {
-            const dataOcorrencia = new Date(row['Data']);
-            const mesAno = `${dataOcorrencia.getFullYear()}-${(dataOcorrencia.getMonth() + 1).toString().padStart(2, '0')}`;
-            ocorrenciasPorMesAno[mesAno] = (ocorrenciasPorMesAno[mesAno] || 0) + 1;
-        });
-        
-        // Criar tabela de ocorrências por mês
-        const ocorrenciasHeader = ['Mês/Ano', 'Quantidade'];
-        const ocorrenciasData = Object.entries(ocorrenciasPorMesAno)
-            .sort((a, b) => a[0].localeCompare(b[0]))
-            .map(([mesAno, qtd]) => [mesAno, qtd]);
-        
-        doc.setFontSize(14);
-        doc.text('Ocorrências por Mês', 14, yPosition);
-        
-        doc.autoTable({
-            head: [ocorrenciasHeader],
-            body: ocorrenciasData,
-            startY: yPosition + 5,
-            styles: { fontSize: 10 },
-            headStyles: {
-                fillColor: [42, 82, 152],
-                textColor: [255, 255, 255]
-            }
-        });
-        
-        yPosition = doc.lastAutoTable.finalY + 15;
-        
-        // Verificar se precisa adicionar nova página
-        if (yPosition > 250) {
-            doc.addPage();
-            yPosition = 20;
-        }
-        
-        // Resumo por gerência
-        const porGerencia = {};
-        filteredData.forEach(row => {
-            const gerencia = row['Gerência'] || 'Não Informado';
-            porGerencia[gerencia] = (porGerencia[gerencia] || 0) + 1;
-        });
-        
-        const gerenciaHeader = ['Gerência', 'Quantidade'];
-        const gerenciaData = Object.entries(porGerencia)
-            .sort((a, b) => b[1] - a[1])
-            .map(([gerencia, qtd]) => [gerencia, qtd]);
-        
-        doc.setFontSize(14);
-        doc.text('Ocorrências por Gerência', 14, yPosition);
-        
-        doc.autoTable({
-            head: [gerenciaHeader],
-            body: gerenciaData,
-            startY: yPosition + 5,
-            styles: { fontSize: 10 },
-            headStyles: {
-                fillColor: [42, 82, 152],
-                textColor: [255, 255, 255]
-            }
-        });
-        
-        yPosition = doc.lastAutoTable.finalY + 15;
-        
-        // Verificar se precisa adicionar nova página
-        if (yPosition > 250) {
-            doc.addPage();
-            yPosition = 20;
-        }
-        
-        // Resumo por tipificação
-        const porTipificacao = {};
-        filteredData.forEach(row => {
-            const tipo = row['Tipificação'] || 'Não Informada';
-            porTipificacao[tipo] = (porTipificacao[tipo] || 0) + 1;
-        });
-        
-        const tipoHeader = ['Tipificação', 'Quantidade'];
-        const tipoData = Object.entries(porTipificacao)
-            .sort((a, b) => b[1] - a[1])
-            .map(([tipo, qtd]) => [tipo, qtd]);
-        
-        doc.setFontSize(14);
-        doc.text('Ocorrências por Tipificação', 14, yPosition);
-        
-        doc.autoTable({
-            head: [tipoHeader],
-            body: tipoData,
-            startY: yPosition + 5,
-            styles: { fontSize: 10 },
-            headStyles: {
-                fillColor: [42, 82, 152],
-                textColor: [255, 255, 255]
-            }
-        });
-        
-        // Salvar PDF
-        doc.save(`dashboard-broi-relatorio-${new Date().toISOString().split('T')[0]}.pdf`);
-        
-        showToast('Relatório PDF gerado com sucesso!', 'success');
-    }
-    
-    // Preparar dados e criar gráficos - FUNÇÃO CORRIGIDA
-    function prepareCharts(data) {
-        // Limpar container de gráficos
-        document.getElementById('charts').innerHTML = '';
-        
-        // Destruir gráficos existentes para liberar memória
-        Object.values(chartRefs).forEach(chart => {
-            if (chart && typeof chart.destroy === 'function') {
-                chart.destroy();
-            }
-        });
-        
-        // Limpar referências
-        Object.keys(chartRefs).forEach(key => delete chartRefs[key]);
-        
-        // Se não houver dados, mostrar mensagem
-        if (!data || data.length === 0) {
-            document.getElementById('charts').innerHTML = `
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Sem dados para exibir</h3>
+            document.getElementById('statsContainer').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total BROI</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
                     </div>
-                    <div style="text-align: center; padding: 40px 20px;">
-                        <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
-                        <p>Não foram encontrados dados para o período selecionado.</p>
-                        <p>Tente ajustar os filtros ou carregar novos dados.</p>
-                        <button class="btn btn-primary" onclick="refreshData()">
-                            <i class="fas fa-sync-alt"></i> Atualizar Dados
+                    <div class="stat-value">${stats.total.toLocaleString()}</div>
+                    <div class="stat-label">Ocorrências Registradas</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Embarcações</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-ship"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.embarcacoes.toLocaleString()}</div>
+                    <div class="stat-label">Interceptadas</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Prisões</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-handcuffs"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.prisoes.toLocaleString()}</div>
+                    <div class="stat-label">Efetuadas</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Furtos</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.furtos.toLocaleString()}</div>
+                    <div class="stat-label">Registrados</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Gerências</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.gerencias}</div>
+                    <div class="stat-label">Envolvidas</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Empresas</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-industry"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.empresas}</div>
+                    <div class="stat-label">Afetadas</div>
+                </div>
+            `;
+        }
+
+        function calculateStats(data) {
+            return {
+                total: data.length,
+                embarcacoes: data.reduce((sum, item) => sum + (parseInt(item['Embarcações Interceptadas']) || 0), 0),
+                prisoes: data.reduce((sum, item) => sum + (parseInt(item['Quantitativo de Prisões']) || 0), 0),
+                furtos: data.reduce((sum, item) => sum + (parseInt(item['Quantitativo de Furto']) || 0), 0),
+                gerencias: new Set(data.map(item => item.Gerência).filter(Boolean)).size,
+                empresas: new Set(data.map(item => item.Empresa).filter(Boolean)).size
+            };
+        }
+
+        // ===== CRIAÇÃO DE GRÁFICOS =====
+        function createCharts() {
+            const container = document.getElementById('chartsContainer');
+            container.innerHTML = '';
+            
+            // Destruir gráficos existentes
+            Object.values(charts).forEach(chart => {
+                try {
+                    chart.destroy();
+                } catch (e) {
+                    console.warn('Erro ao destruir gráfico:', e);
+                }
+            });
+            charts = {};
+            
+            if (filteredData.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            // Criar todos os gráficos com design moderno
+            createComparativoAnual();
+            createBroiPorGerencia();
+            createBroiPorTipificacao();
+            createBroiPorGradacao();
+            createEmbarcacaoNaoAutorizada();
+            createFiscalizacaoTransito();
+            createAtendimentoSeguranca();
+            createIncendio();
+            createNeutralizacaoOcorrencia();
+            createDanoMeioAmbiente();
+            createAbandonoExtravio();
+            createAcidenteTransito();
+            createQuantitativoFurto();
+            createQuantitativoPrisoes();
+            createAtitudeInconveniente();
+            createInvasaoFurtoNMP();
+            createTiposDanoMeioAmbiente();
+            createEmbarcacoesInterceptadas();
+        }
+
+        function createModernChart(id, type, title, icon, labels, datasets, options = {}) {
+            const chartCard = document.createElement('div');
+            chartCard.className = 'chart-card';
+            chartCard.innerHTML = `
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <div class="chart-icon">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        ${title}
+                    </div>
+                    <div class="chart-actions">
+                        <button class="chart-btn" onclick="showTable('${id}', '${title}')" title="Ver dados">
+                            <i class="fas fa-table"></i>
+                        </button>
+                        <button class="chart-btn" onclick="toggleChartType('${id}')" title="Alterar tipo">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        <button class="chart-btn" onclick="exportChart('${id}')" title="Exportar">
+                            <i class="fas fa-download"></i>
                         </button>
                     </div>
                 </div>
+                <div class="chart-content">
+                    <canvas id="chart-${id}" class="chart-canvas"></canvas>
+                </div>
             `;
-            return;
-        }
-        
-        // Estruturas para armazenar dados agregados
-        const ocorrenciasPorMesAno = {}; 
-        const porGerencia = {}; 
-        const porTipificacao = {}; 
-        const embarcacoesPorMes = {}; 
-        const prisoesPorMes = {}; 
-        const perdas = {}; 
-        const reincidencias = {};
-        const porHoraDia = Array(24).fill(0);
-        const porDiaSemana = Array(7).fill(0);
-        const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-        
-        // Processar cada registro
-        data.forEach(row => {
+            
+            document.getElementById('chartsContainer').appendChild(chartCard);
+            
+            if (labels.length === 0) {
+                chartCard.querySelector('.chart-content').innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <h3>Sem dados</h3>
+                        <p>Nenhum registro encontrado para este período</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const ctx = document.getElementById(`chart-${id}`).getContext('2d');
+            
+            // Aplicar gradientes modernos aos datasets
+            datasets.forEach((dataset, index) => {
+                const gradientColors = gradients[Object.keys(gradients)[index % Object.keys(gradients).length]];
+                
+                if (type === 'line') {
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, gradientColors[0] + '80');
+                    gradient.addColorStop(1, gradientColors[1] + '20');
+                    dataset.backgroundColor = gradient;
+                    dataset.borderColor = gradientColors[0];
+                    dataset.borderWidth = 3;
+                    dataset.fill = true;
+                    dataset.tension = 0.4;
+                    dataset.pointBackgroundColor = gradientColors[0];
+                    dataset.pointBorderColor = '#ffffff';
+                    dataset.pointBorderWidth = 2;
+                }
+                
+                if (type === 'bar') {
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, gradientColors[0]);
+                    gradient.addColorStop(1, gradientColors[1]);
+                    dataset.backgroundColor = gradient;
+                    dataset.borderColor = gradientColors[0];
+                    dataset.borderWidth = 0;
+                    dataset.borderRadius = 8;
+                    dataset.borderSkipped = false;
+                }
+                
+                if (type === 'doughnut' || type === 'pie') {
+                    dataset.backgroundColor = labels.map((_, i) => {
+                        const colorIndex = i % Object.keys(gradients).length;
+                        const colors = gradients[Object.keys(gradients)[colorIndex]];
+                        return colors[0];
+                    });
+                    dataset.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    dataset.borderWidth = 2;
+                    dataset.hoverBorderColor = '#ffffff';
+                    dataset.hoverBorderWidth = 3;
+                }
+            });
+            
+            const defaultOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1,
+                        cornerRadius: 12,
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            weight: '600'
+                        },
+                        bodyFont: {
+                            size: 13,
+                            weight: '500'
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                }
+            };
+            
+            if (type === 'bar' || type === 'line') {
+                defaultOptions.scales = {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                weight: '500'
+                            },
+                            padding: 10
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                weight: '500'
+                            },
+                            maxRotation: 45,
+                            padding: 10
+                        }
+                    }
+                };
+            }
+            
+            const finalOptions = { ...defaultOptions, ...options };
+            
             try {
-                // Processar data e mês/ano
-                const dataOcorrencia = new Date(row['Data']);
-                if (isNaN(dataOcorrencia.getTime())) {
-                    console.warn('Data inválida encontrada:', row['Data']);
-                    return; // Pular este registro se a data for inválida
-                }
+                charts[id] = new Chart(ctx, {
+                    type,
+                    data: { labels, datasets },
+                    options: finalOptions
+                });
                 
-                const mesAno = `${dataOcorrencia.getFullYear()}-${(dataOcorrencia.getMonth() + 1).toString().padStart(2, '0')}`;
-                
-                // Agregar ocorrências por mês/ano
-                ocorrenciasPorMesAno[mesAno] = (ocorrenciasPorMesAno[mesAno] || 0) + 1;
-                
-                // Agregar embarcações por mês
-                embarcacoesPorMes[mesAno] = (embarcacoesPorMes[mesAno] || 0) + (parseInt(row['Qtde de Embarcações']) || 0);
-                
-                // Agregar prisões por mês
-                prisoesPorMes[mesAno] = (prisoesPorMes[mesAno] || 0) + (parseInt(row['Prisões']) || 0);
-                
-                // Agregar por gerência
-                const ger = row['Gerência'] || 'Não Informado';
-                porGerencia[ger] = (porGerencia[ger] || 0) + 1;
-                
-                // Agregar por tipificação
-                const tipo = row['Tipificação'] || 'Não Informada';
-                porTipificacao[tipo] = (porTipificacao[tipo] || 0) + 1;
-                
-                // Agregar por tipo de perda
-                const perda = row['PERDAS'] || 'Não Informado';
-                perdas[perda] = (perdas[perda] || 0) + 1;
-                
-                // Agregar reincidências por empresa
-                const empresa = row['Empresas'] || 'Não Informada';
-                if (row['REINCIDENTE'] && row['REINCIDENTE'].toString().toLowerCase().includes('sim')) {
-                    reincidencias[empresa] = (reincidencias[empresa] || 0) + 1;
-                }
-                
-                // Agregar por hora do dia
-                const hora = dataOcorrencia.getHours();
-                if (hora >= 0 && hora < 24) {
-                    porHoraDia[hora]++;
-                }
-                
-                // Agregar por dia da semana
-                const diaSemana = dataOcorrencia.getDay(); // 0 = Domingo, 6 = Sábado
-                if (diaSemana >= 0 && diaSemana < 7) {
-                    porDiaSemana[diaSemana]++;
-                }
+                charts[id].chartData = { labels, datasets };
+                charts[id].chartTitle = title;
+                charts[id].originalType = type;
             } catch (error) {
-                console.warn('Erro ao processar registro:', row, error);
+                console.error(`Erro ao criar gráfico ${id}:`, error);
+                chartCard.querySelector('.chart-content').innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>Erro</h3>
+                        <p>Não foi possível carregar este gráfico</p>
+                    </div>
+                `;
             }
-        });
-        
-        // Ordenar dados por mês/ano
-        const labelsMesAno = Object.keys(ocorrenciasPorMesAno).sort();
-        
-        // 1. Gráfico de ocorrências por mês/ano
-        createChartWithTable('ocorrencias', 'bar', 'Ocorrências por Mês/Ano', labelsMesAno, [
-            {
-                label: 'Ocorrências',
-                data: labelsMesAno.map(k => ocorrenciasPorMesAno[k]),
-                backgroundColor: '#2a5298',
-                borderColor: '#1e3c72',
-                borderWidth: 1
-            }
-        ]);
-        
-        // 2. Gráfico de embarcações por mês
-        createChartWithTable('embarcacoes', 'line', 'Embarcações por Mês', labelsMesAno, [
-            {
-                label: 'Embarcações',
-                data: labelsMesAno.map(k => embarcacoesPorMes[k]),
-                borderColor: '#28a745',
-                backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.1
-            }
-        ]);
-        
-        // 3. Gráfico de prisões por mês
-        createChartWithTable('prisoes', 'line', 'Prisões por Mês', labelsMesAno, [
-            {
-                label: 'Prisões',
-                data: labelsMesAno.map(k => prisoesPorMes[k]),
-                borderColor: '#dc3545',
-                backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.1
-            }
-        ]);
-        
-        // 4. Gráfico de ocorrências por gerência
-        const gerenciaLabels = Object.keys(porGerencia);
-        const gerenciaValues = Object.values(porGerencia);
-        
-        if (gerenciaLabels.length > 0) {
-            createChartWithTable('gerencia', 'doughnut', 'Ocorrências por Gerência', gerenciaLabels, [
-                {
+        }
+
+        // ===== IMPLEMENTAÇÃO DOS GRÁFICOS =====
+        function createComparativoAnual() {
+            const dadosPorAno = {};
+            
+            filteredData.forEach(item => {
+                try {
+                    const ano = new Date(item.Data).getFullYear();
+                    const empresa = item.Empresa || 'Não Informada';
+                    
+                    if (!dadosPorAno[ano]) dadosPorAno[ano] = {};
+                    dadosPorAno[ano][empresa] = (dadosPorAno[ano][empresa] || 0) + 1;
+                } catch (error) {
+                    console.warn('Erro ao processar data:', item.Data, error);
+                }
+            });
+            
+            const anos = Object.keys(dadosPorAno).sort();
+            const empresas = [...new Set(filteredData.map(item => item.Empresa).filter(Boolean))].slice(0, 10);
+            
+            const datasets = anos.map((ano, index) => ({
+                label: ano,
+                data: empresas.map(empresa => dadosPorAno[ano]?.[empresa] || 0)
+            }));
+            
+            createModernChart(
+                'comparativo-anual',
+                'line',
+                'Comparativo Anual BROI por Empresa',
+                'fa-chart-line',
+                empresas,
+                datasets
+            );
+        }
+
+        function createBroiPorGerencia() {
+            const dados = {};
+            filteredData.forEach(item => {
+                const gerencia = item.Gerência || 'Não Informada';
+                dados[gerencia] = (dados[gerencia] || 0) + 1;
+            });
+            
+            const sortedData = Object.entries(dados)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8);
+            
+            const labels = sortedData.map(item => item[0]);
+            const values = sortedData.map(item => item[1]);
+            
+            createModernChart(
+                'broi-gerencia',
+                'doughnut',
+                'BROI por Gerência',
+                'fa-building',
+                labels,
+                [{
                     label: 'Ocorrências',
-                    data: gerenciaValues,
-                    backgroundColor: gerenciaLabels.map((_, i) => `hsl(${i * 30}, 70%, 60%)`),
-                    borderColor: 'white',
-                    borderWidth: 2
-                }
-            ]);
+                    data: values
+                }]
+            );
         }
-        
-        // 5. Gráfico de distribuição por tipificação
-        const tiposOrdenados = Object.entries(porTipificacao)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10); // Limitar aos 10 principais
-        
-        if (tiposOrdenados.length > 0) {
-            createChartWithTable('tipificacao', 'pie', 'Top 10 Tipificações', 
-                tiposOrdenados.map(e => e[0]), [
-                {
+
+        function createBroiPorTipificacao() {
+            const dados = {};
+            filteredData.forEach(item => {
+                const tipo = item.Tipificação || 'Não Informada';
+                dados[tipo] = (dados[tipo] || 0) + 1;
+            });
+            
+            const sortedData = Object.entries(dados)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 12);
+            
+            const labels = sortedData.map(item => item[0]);
+            const values = sortedData.map(item => item[1]);
+            
+            createModernChart(
+                'broi-tipificacao',
+                'bar',
+                'Top 12 BROI por Tipificação',
+                'fa-list-alt',
+                labels,
+                [{
                     label: 'Ocorrências',
-                    data: tiposOrdenados.map(e => e[1]),
-                    backgroundColor: tiposOrdenados.map((_, i) => `hsl(${i * 36}, 70%, 60%)`),
-                    borderColor: 'white',
-                    borderWidth: 2
-                }
-            ]);
+                    data: values
+                }]
+            );
         }
-        
-        // 6. Gráfico de tipos de perdas
-        const perdasLabels = Object.keys(perdas);
-        const perdasValues = Object.values(perdas);
-        
-        if (perdasLabels.length > 0) {
-            createChartWithTable('perdas', 'bar', 'Tipos de Perdas', perdasLabels, [
-                {
+
+        function createBroiPorGradacao() {
+            const dados = {};
+            filteredData.forEach(item => {
+                const gradacao = item.Gradação || 'Não Informada';
+                dados[gradacao] = (dados[gradacao] || 0) + 1;
+            });
+            
+            const labels = Object.keys(dados);
+            const values = Object.values(dados);
+            
+            createModernChart(
+                'broi-gradacao',
+                'pie',
+                'BROI por Gradação',
+                'fa-chart-pie',
+                labels,
+                [{
                     label: 'Ocorrências',
-                    data: perdasValues,
-                    backgroundColor: '#f39c12',
-                    borderColor: '#e67e22',
-                    borderWidth: 1
-                }
-            ]);
+                    data: values
+                }]
+            );
         }
-        
-        // 7. Gráfico de empresas reincidentes
-        const topReincidencias = Object.entries(reincidencias)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10); // Limitar aos 10 principais
-        
-        if (topReincidencias.length > 0) {
-            createChartWithTable('reincidencias', 'bar', 'Top 10 Empresas Reincidentes', 
-                topReincidencias.map(e => e[0]), [
-                {
-                    label: 'Reincidências',
-                    data: topReincidencias.map(e => e[1]),
-                    backgroundColor: '#8e44ad',
-                    borderColor: '#6c3483',
-                    borderWidth: 1
-                }
-            ]);
+
+        function createEmbarcacaoNaoAutorizada() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('embarcação não autorizada')
+                )
+            );
+            
+            createModernChart(
+                'embarcacao-nao-autorizada',
+                'line',
+                'Embarcação Não Autorizada',
+                'fa-ship',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
         }
-        
-        // 8. Gráfico de ocorrências por hora do dia
-        const horasLabels = Array(24).fill().map((_, i) => `${i.toString().padStart(2, '0')}:00`);
-        
-        createChartWithTable('horasDia', 'bar', 'Ocorrências por Hora do Dia', horasLabels, [
-            {
-                label: 'Ocorrências',
-                data: porHoraDia,
-                backgroundColor: 'rgba(52, 152, 219, 0.7)',
-                borderColor: '#2980b9',
-                borderWidth: 1
-            }
-        ]);
-        
-        // 9. Gráfico de ocorrências por dia da semana
-        createChartWithTable('diasSemana', 'bar', 'Ocorrências por Dia da Semana', diasSemana, [
-            {
-                label: 'Ocorrências',
-                data: porDiaSemana,
-                backgroundColor: 'rgba(46, 204, 113, 0.7)',
-                borderColor: '#27ae60',
-                borderWidth: 1
-            }
-        ]);
-        
-        // 10. Resumo de estatísticas
-        const estatisticas = {
-            'Total de Ocorrências': data.length,
-            'Total de Embarcações': Object.values(embarcacoesPorMes).reduce((a, b) => a + b, 0),
-            'Total de Prisões': Object.values(prisoesPorMes).reduce((a, b) => a + b, 0),
-            'Gerências Afetadas': Object.keys(porGerencia).length,
-            'Tipos de Ocorrências': Object.keys(porTipificacao).length,
-            'Empresas Reincidentes': Object.keys(reincidencias).length
-        };
-        
-        const estatisticasCard = document.createElement('div');
-        estatisticasCard.className = 'card';
-        estatisticasCard.innerHTML = `
-            <div class="card-header">
-                <h3 class="card-title">Resumo de Estatísticas</h3>
-            </div>
-            <div style="padding: 10px 0;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tbody>
-                        ${Object.entries(estatisticas).map(([key, value]) => `
+
+        function createFiscalizacaoTransito() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('fiscalização de trânsito')
+                )
+            );
+            
+            createModernChart(
+                'fiscalizacao-transito',
+                'bar',
+                'Fiscalização de Trânsito',
+                'fa-car',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
+        }
+
+        function createAtendimentoSeguranca() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('atendimento de segurança')
+                )
+            );
+            
+            createModernChart(
+                'atendimento-seguranca',
+                'line',
+                'Atendimento de Segurança',
+                'fa-shield-alt',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
+        }
+
+        function createIncendio() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('incêndio')
+                )
+            );
+            
+            createModernChart(
+                'incendio',
+                'bar',
+                'Incêndio',
+                'fa-fire',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
+        }
+
+        function createNeutralizacaoOcorrencia() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('neutralização')
+                )
+            );
+            
+            createModernChart(
+                'neutralizacao-ocorrencia',
+                'line',
+                'Neutralização de Ocorrência',
+                'fa-ban',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
+        }
+
+        function createDanoMeioAmbiente() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('dano ao meio ambiente')
+                )
+            );
+            
+            createModernChart(
+                'dano-meio-ambiente',
+                'bar',
+                'Dano ao Meio Ambiente',
+                'fa-leaf',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
+        }
+
+        function createAbandonoExtravio() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('abandono') || 
+                    item.Tipificação?.toLowerCase().includes('extravio')
+                )
+            );
+            
+            createModernChart(
+                'abandono-extravio',
+                'line',
+                'Abandono/Extravio',
+                'fa-exclamation-triangle',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
+        }
+
+        function createAcidenteTransito() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('acidente de trânsito')
+                )
+            );
+            
+            createModernChart(
+                'acidente-transito',
+                'bar',
+                'Acidente de Trânsito',
+                'fa-car-crash',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
+        }
+
+        function createQuantitativoFurto() {
+            const dadosPorMes = {};
+            filteredData.forEach(item => {
+                try {
+                    const data = new Date(item.Data);
+                    const mesAno = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+                    const furtos = parseInt(item['Quantitativo de Furto']) || 0;
+                    dadosPorMes[mesAno] = (dadosPorMes[mesAno] || 0) + furtos;
+                } catch (error) {
+                    console.warn('Erro ao processar furto:', item, error);
+                }
+            });
+            
+            const labels = Object.keys(dadosPorMes).sort();
+            const values = labels.map(label => dadosPorMes[label]);
+            
+            createModernChart(
+                'quantitativo-furto',
+                'bar',
+                'Quantitativo de Furto',
+                'fa-user-secret',
+                labels,
+                [{
+                    label: 'Furtos',
+                    data: values
+                }]
+            );
+        }
+
+        function createQuantitativoPrisoes() {
+            const dadosPorMes = {};
+            filteredData.forEach(item => {
+                try {
+                    const data = new Date(item.Data);
+                    const mesAno = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+                    const prisoes = parseInt(item['Quantitativo de Prisões']) || 0;
+                    dadosPorMes[mesAno] = (dadosPorMes[mesAno] || 0) + prisoes;
+                } catch (error) {
+                    console.warn('Erro ao processar prisão:', item, error);
+                }
+            });
+            
+            const labels = Object.keys(dadosPorMes).sort();
+            const values = labels.map(label => dadosPorMes[label]);
+            
+            createModernChart(
+                'quantitativo-prisoes',
+                'line',
+                'Quantitativo de Prisões',
+                'fa-handcuffs',
+                labels,
+                [{
+                    label: 'Prisões',
+                    data: values
+                }]
+            );
+        }
+
+        function createAtitudeInconveniente() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('atitude inconveniente')
+                )
+            );
+            
+            createModernChart(
+                'atitude-inconveniente',
+                'bar',
+                'Atitude Inconveniente',
+                'fa-user-times',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
+        }
+
+        function createInvasaoFurtoNMP() {
+            const dadosPorMes = processarDadosPorMes(
+                filteredData.filter(item => 
+                    item.Tipificação?.toLowerCase().includes('invasão') && 
+                    item.Tipificação?.toLowerCase().includes('furto')
+                )
+            );
+            
+            createModernChart(
+                'invasao-furto-nmp',
+                'line',
+                'Invasão e Furto em NMP',
+                'fa-home',
+                dadosPorMes.labels,
+                [{
+                    label: 'Ocorrências',
+                    data: dadosPorMes.values
+                }]
+            );
+        }
+
+        function createTiposDanoMeioAmbiente() {
+            const tipos = {};
+            filteredData
+                .filter(item => item.Tipificação?.toLowerCase().includes('dano ao meio ambiente'))
+                .forEach(item => {
+                    const tipo = item.Tipificação || 'Não Especificado';
+                    tipos[tipo] = (tipos[tipo] || 0) + 1;
+                });
+            
+            const labels = Object.keys(tipos);
+            const values = Object.values(tipos);
+            
+            createModernChart(
+                'tipos-dano-meio-ambiente',
+                'doughnut',
+                'Tipos de Dano ao Meio Ambiente',
+                'fa-tree',
+                labels,
+                [{
+                    label: 'Ocorrências',
+                    data: values
+                }]
+            );
+        }
+
+        function createEmbarcacoesInterceptadas() {
+            const dadosPorMes = {};
+            filteredData.forEach(item => {
+                try {
+                    const data = new Date(item.Data);
+                    const mesAno = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+                    const embarcacoes = parseInt(item['Embarcações Interceptadas']) || 0;
+                    dadosPorMes[mesAno] = (dadosPorMes[mesAno] || 0) + embarcacoes;
+                } catch (error) {
+                    console.warn('Erro ao processar embarcação:', item, error);
+                }
+            });
+            
+            const labels = Object.keys(dadosPorMes).sort();
+            const values = labels.map(label => dadosPorMes[label]);
+            
+            createModernChart(
+                'embarcacoes-interceptadas',
+                'line',
+                'Embarcações Interceptadas',
+                'fa-anchor',
+                labels,
+                [{
+                    label: 'Embarcações',
+                    data: values
+                }]
+            );
+        }
+
+        // ===== UTILITÁRIOS PARA GRÁFICOS =====
+        function processarDadosPorMes(data) {
+            const dadosPorMes = {};
+            
+            data.forEach(item => {
+                try {
+                    const itemDate = new Date(item.Data);
+                    const mesAno = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}`;
+                    dadosPorMes[mesAno] = (dadosPorMes[mesAno] || 0) + 1;
+                } catch (error) {
+                    console.warn('Erro ao processar data:', item.Data, error);
+                }
+            });
+            
+            const labels = Object.keys(dadosPorMes).sort();
+            const values = labels.map(label => dadosPorMes[label]);
+            
+            return { labels, values };
+        }
+
+        function showEmptyState() {
+            document.getElementById('chartsContainer').innerHTML = `
+                <div class="chart-card">
+                    <div class="chart-content">
+                        <div class="no-data">
+                            <div class="no-data-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3>Nenhum dado encontrado</h3>
+                            <p>Ajuste os filtros para visualizar os gráficos</p>
+                            <button class="btn btn-primary" onclick="clearFilters()" style="margin-top: 1rem;">
+                                <i class="fas fa-eraser"></i>
+                                Limpar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showErrorState() {
+            document.getElementById('chartsContainer').innerHTML = `
+                <div class="chart-card">
+                    <div class="chart-content">
+                        <div class="no-data">
+                            <div class="no-data-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h3>Erro ao carregar dados</h3>
+                            <p>Verifique sua conexão e tente novamente</p>
+                            <button class="btn btn-primary" onclick="refreshData()" style="margin-top: 1rem;">
+                                <i class="fas fa-sync-alt"></i>
+                                Tentar Novamente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== FUNCIONALIDADES DOS GRÁFICOS =====
+        function showTable(chartId, title) {
+            const chart = charts[chartId];
+            if (!chart) return;
+            
+            const { labels, datasets } = chart.chartData;
+            let tableHTML = `
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <td style="padding: 12px; border-bottom: 1px solid #eee; font-weight: 600;">${sanitizeString(key)}</td>
-                                <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${value}</td>
+                                <th>Categoria</th>
+                                ${datasets.map(ds => `<th>${ds.label}</th>`).join('')}
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-        document.getElementById('charts').appendChild(estatisticasCard);
-        
-        console.log('Gráficos criados com sucesso:', Object.keys(chartRefs));
-    }
-</script>
+                        </thead>
+                        <tbody>
+                            ${labels.map((label, i) => `
+                                <tr>
+                                    <td>${label}</td>
+                                    ${datasets.map(ds => `<td>${(ds.data[i] || 0).toLocaleString()}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = tableHTML;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function toggleChartType(chartId) {
+            const chart = charts[chartId];
+            if (!chart) return;
+            
+            const typeMap = {
+                'bar': 'line',
+                'line': 'bar',
+                'pie': 'doughnut',
+                'doughnut': 'pie'
+            };
+            
+            const currentType = chart.config.type;
+            const newType = typeMap[currentType] || 'bar';
+            
+            // Destruir e recriar com novo tipo
+            const { labels, datasets } = chart.chartData;
+            const title = chart.chartTitle;
+            const canvas = chart.canvas;
+            const chartCard = canvas.closest('.chart-card');
+            
+            chart.destroy();
+            
+            // Recriar com novo tipo
+            const ctx = canvas.getContext('2d');
+            
+            try {
+                charts[chartId] = new Chart(ctx, {
+                    type: newType,
+                    data: { labels, datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { duration: 800 },
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+                
+                charts[chartId].chartData = { labels, datasets };
+                charts[chartId].chartTitle = title;
+                charts[chartId].originalType = chart.originalType;
+                
+                showToast(`Gráfico alterado para ${newType}`, 'success');
+            } catch (error) {
+                console.error('Erro ao alterar tipo do gráfico:', error);
+                showToast('Erro ao alterar tipo do gráfico', 'error');
+            }
+        }
+
+        function exportChart(chartId) {
+            const chart = charts[chartId];
+            if (!chart) return;
+            
+            try {
+                const url = chart.toBase64Image('image/png', 1.0);
+                const link = document.createElement('a');
+                link.download = `${chartId}-${new Date().toISOString().split('T')[0]}.png`;
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Gráfico exportado com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao exportar gráfico:', error);
+                showToast('Erro ao exportar gráfico', 'error');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // ===== EXPORTAÇÃO =====
+        function exportCSV() {
+            if (filteredData.length === 0) {
+                showToast('Nenhum dado para exportar', 'warning');
+                return;
+            }
+            
+            try {
+                const headers = Object.keys(filteredData[0]);
+                let csv = '\uFEFF' + headers.join(',') + '\n'; // BOM para UTF-8
+                
+                filteredData.forEach(row => {
+                    const values = headers.map(header => {
+                        const value = row[header] || '';
+                        return `"${String(value).replace(/"/g, '""')}"`;
+                    });
+                    csv += values.join(',') + '\n';
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `broi-analytics-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Dados exportados para CSV!', 'success');
+            } catch (error) {
+                console.error('Erro ao exportar CSV:', error);
+                showToast('Erro ao exportar CSV', 'error');
+            }
+        }
+
+        function exportPDF() {
+            if (filteredData.length === 0) {
+                showToast('Nenhum dado para exportar', 'warning');
+                return;
+            }
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Cabeçalho
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text('BROI Analytics - Relatório Executivo', 14, 25);
+                
+                // Informações do relatório
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                const dataInicio = document.getElementById('dataInicio').value;
+                const dataFim = document.getElementById('dataFim').value;
+                const agora = new Date().toLocaleDateString('pt-BR');
+                
+                doc.text(`Período de análise: ${dataInicio} até ${dataFim}`, 14, 35);
+                doc.text(`Total de registros: ${filteredData.length.toLocaleString()}`, 14, 42);
+                doc.text(`Relatório gerado em: ${agora}`, 14, 49);
+                
+                // Linha separadora
+                doc.setLineWidth(0.5);
+                doc.line(14, 55, 196, 55);
+                
+                // Estatísticas resumo
+                const stats = calculateStats(filteredData);
+                let yPos = 65;
+                
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Resumo Executivo', 14, yPos);
+                
+                yPos += 10;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                
+                const resumoData = [
+                    ['Métrica', 'Valor'],
+                    ['Total de Ocorrências', stats.total.toLocaleString()],
+                    ['Embarcações Interceptadas', stats.embarcacoes.toLocaleString()],
+                    ['Prisões Efetuadas', stats.prisoes.toLocaleString()],
+                    ['Furtos Registrados', stats.furtos.toLocaleString()],
+                    ['Gerências Envolvidas', stats.gerencias.toString()],
+                    ['Empresas Afetadas', stats.empresas.toString()]
+                ];
+                
+                doc.autoTable({
+                    head: [resumoData[0]],
+                    body: resumoData.slice(1),
+                    startY: yPos,
+                    styles: { 
+                        fontSize: 9,
+                        cellPadding: 3
+                    },
+                    headStyles: {
+                        fillColor: [30, 58, 95],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    alternateRowStyles: {
+                        fillColor: [245, 245, 245]
+                    }
+                });
+                
+                // Análise por período
+                yPos = doc.lastAutoTable.finalY + 15;
+                
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Análise Temporal', 14, yPos);
+                
+                // Dados por mês
+                const dadosPorMes = {};
+                filteredData.forEach(item => {
+                    try {
+                        const data = new Date(item.Data);
+                        const mesAno = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+                        dadosPorMes[mesAno] = (dadosPorMes[mesAno] || 0) + 1;
+                    } catch (error) {
+                        console.warn('Erro ao processar data para PDF:', item.Data);
+                    }
+                });
+                
+                const mesesData = [['Mês/Ano', 'Ocorrências']];
+                Object.entries(dadosPorMes)
+                    .sort(([a], [b]) => a.localeCompare(b))
+                    .forEach(([mes, qtd]) => {
+                        mesesData.push([mes, qtd.toString()]);
+                    });
+                
+                doc.autoTable({
+                    head: [mesesData[0]],
+                    body: mesesData.slice(1),
+                    startY: yPos + 8,
+                    styles: { 
+                        fontSize: 8,
+                        cellPadding: 2
+                    },
+                    headStyles: {
+                        fillColor: [30, 58, 95],
+                        textColor: [255, 255, 255]
+                    }
+                });
+                
+                // Salvar PDF
+                doc.save(`broi-analytics-relatorio-${new Date().toISOString().split('T')[0]}.pdf`);
+                showToast('Relatório PDF gerado com sucesso!', 'success');
+                
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                showToast('Erro ao gerar relatório PDF', 'error');
+            }
+        }
+
+        // ===== FUNÇÕES AUXILIARES =====
+        function clearFilters() {
+            document.getElementById('gerenciaFilter').value = '';
+            document.getElementById('empresaFilter').value = '';
+            document.getElementById('tipificacaoFilter').value = '';
+            setupDates();
+            applyFilters();
+            showToast('Filtros limpos', 'info');
+        }
+
+        // ===== LOG DE INICIALIZAÇÃO =====
+        console.log('🚀 BROI Analytics Dashboard inicializado');
+        console.log('⌨️  Atalhos disponíveis:');
+        console.log('   Ctrl/Cmd + R: Atualizar dados');
+        console.log('   Ctrl/Cmd + E: Exportar CSV');
+        console.log('   Ctrl/Cmd + P: Gerar PDF');
+        console.log('   ESC: Fechar modal');
+    </script>
 </body>
 </html>
